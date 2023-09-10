@@ -122,9 +122,8 @@ class ARK_PT_Materials(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        session = addon.session()
-        preferences = addon.preferences().materials
         session = addon.session().materials
+        preferences = addon.preferences().materials
         materials = MaterialList(session, preferences).get()
 
         column = layout.column(align=True)

@@ -30,7 +30,7 @@ class ARK_PREFS(bpy.types.AddonPreferences):
             case 'CAMERAS':
                 cameras.ARK_PREFS_Cameras_UI(self, col)
             case 'MATERIALS':
-                cameras.ARK_PREFS_Materials_UI(self, col)
+                materials.ARK_PREFS_Materials_UI(self, col)
             case _:
                 pass
         return None

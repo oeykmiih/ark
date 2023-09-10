@@ -477,19 +477,19 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
                 ARK_OT_SetCameraActive.bl_idname,
                 text="",
                 icon='RESTRICT_RENDER_OFF',
-                ).name=item.name
+            ).name=item.name
         else:
             row.operator(
                 ARK_OT_SetCameraActive.bl_idname,
                 text="",
                 icon='RESTRICT_RENDER_ON',
-                ).name=item.name
+            ).name=item.name
 
         op = row.operator(
             utils.blop.UTILS_OT_Select.bl_idname,
             text="",
             icon="%s" % 'RESTRICT_SELECT_OFF' if item.select_get() or item.parent is not None and item.parent.select_get() else 'RESTRICT_SELECT_ON',
-            )
+        )
         op.obj_name = item.name
         op.parent_instead = True
 
@@ -538,6 +538,7 @@ def ARK_PREFS_Cameras_UI(preferences, layout):
     box.prop(preferences.cameras, "container_props")
     box.prop(preferences.cameras, "container_blockouts")
     box.prop(preferences.cameras, "trackers_camera")
+    return None
 
 CLASSES = [
     ARK_OT_CreateArkHierachy,
