@@ -13,7 +13,7 @@ class ARK_OT_CreateArkHierachy(bpy.types.Operator):
     """ARK Operator to set active camera."""
     bl_idname = f"{addon.name}.create_ark_hierarchy"
     bl_label = ""
-    bl_options = {'UNDO'}
+    bl_options = {'UNDO' , 'INTERNAL'}
 
     @classmethod
     def poll(cls, context):
@@ -44,7 +44,7 @@ class ARK_OT_CreateCamHierachy(bpy.types.Operator):
     """ARK Operator to set active camera."""
     bl_idname = f"{addon.name}.create_cam_hierarchy"
     bl_label = ""
-    bl_options = {'UNDO'}
+    bl_options = {'UNDO', 'INTERNAL'}
 
     @classmethod
     def poll(cls, context):
@@ -78,7 +78,7 @@ class ARK_OT_SetCameraActive(bpy.types.Operator):
     """ARK Operator to set active camera."""
     bl_idname = f"{addon.name}.set_camera_active"
     bl_label = ""
-    bl_options = {'UNDO'}
+    bl_options = {'UNDO', 'INTERNAL'}
 
     name: bpy.props.StringProperty()
 
@@ -138,7 +138,7 @@ class ARK_OT_ForceCameraVerticals(bpy.types.Operator):
     """ARK Operator to force 2 point perspective."""
     bl_idname = f"{addon.name}.force_camera_verticals"
     bl_label = ""
-    bl_options = {'UNDO'}
+    bl_options = {'UNDO', 'INTERNAL'}
 
     @classmethod
     def poll(cls, context):
