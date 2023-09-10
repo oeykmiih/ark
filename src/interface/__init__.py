@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 import bpy
 
+from . import headers
+
 class ARK_PROPS_WindowManager_Interface(bpy.types.PropertyGroup):
     pass
 
@@ -12,6 +14,9 @@ def ARK_PREFS_Interface_UI(preferences, layout):
     return None
 
 CLASSES = [
+    headers.ARK_OT_SetEditorType,
+    headers.ARK_OT_SetEditorMode,
+    headers.ARK_MT_PIE_SetEditorMode,
     ARK_PROPS_WindowManager_Interface,
     ARK_PREFS_Interface,
 ]
