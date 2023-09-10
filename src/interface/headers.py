@@ -6,7 +6,7 @@ from .. import utils
 
 from . import enums
 
-class ARK_OT_SetEditorType(bpy.types.Operator):
+class ARK_OT_QuickEditorType(bpy.types.Operator):
     """Tooltip"""
     bl_idname = f"{addon.name}.set_editor_type"
     bl_label = ""
@@ -59,7 +59,7 @@ class ARK_OT_SetEditorMode(bpy.types.Operator):
 def ARK_BT_NODE_SetEditorType(self, context):
     ui_type = 'VIEW_3D'
     operator = self.layout.operator(
-        ARK_OT_SetEditorType.bl_idname,
+        ARK_OT_QuickEditorType.bl_idname,
         text="",
         icon=enums.EDITOR_TYPE_ICONS[ui_type],
     )
@@ -70,7 +70,7 @@ def ARK_BT_NODE_SetEditorType(self, context):
 def ARK_BT_OUTLINER_SetEditorType(self, context):
     ui_type = 'PROPERTIES'
     operator = self.layout.operator(
-        ARK_OT_SetEditorType.bl_idname,
+        ARK_OT_QuickEditorType.bl_idname,
         text="",
         icon=enums.EDITOR_TYPE_ICONS[ui_type],
     )
@@ -81,7 +81,7 @@ def ARK_BT_OUTLINER_SetEditorType(self, context):
 def ARK_BT_PROPERTIES_SetEditorType(self, context):
     ui_type = 'OUTLINER'
     operator = self.layout.operator(
-        ARK_OT_SetEditorType.bl_idname,
+        ARK_OT_QuickEditorType.bl_idname,
         text="",
         icon=enums.EDITOR_TYPE_ICONS[ui_type],
     )
@@ -92,7 +92,7 @@ def ARK_BT_PROPERTIES_SetEditorType(self, context):
 def ARK_BT_VIEW3D_SetEditorType(self, context):
     ui_type = 'ShaderNodeTree'
     operator = self.layout.operator(
-        ARK_OT_SetEditorType.bl_idname,
+        ARK_OT_QuickEditorType.bl_idname,
         text="",
         icon=enums.EDITOR_TYPE_ICONS[ui_type],
     )
