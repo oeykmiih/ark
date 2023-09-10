@@ -41,6 +41,7 @@ if LIBRARIES:
 FEATURES = {
     "cameras" : None,
     "materials" : None,
+    "interface" : None,
 }
 MODULES = {}
 MODULES["utils"] = None

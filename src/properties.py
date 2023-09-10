@@ -5,6 +5,7 @@ from . import addon
 
 from . import cameras
 from . import materials
+from . import interface
 
 class ARK_PREFS(bpy.types.AddonPreferences):
     """Store options"""
@@ -16,11 +17,13 @@ class ARK_PREFS(bpy.types.AddonPreferences):
         items = [
             ('CAMERAS', "Cameras", ""),
             ('MATERIALS', "Materials", ""),
+            ('INTERFACE', "Interface", ""),
         ]
     )
 
     cameras : bpy.props.PointerProperty(type=cameras.ARK_PREFS_Cameras)
     materials : bpy.props.PointerProperty(type=materials.ARK_PREFS_Materials)
+    interface : bpy.props.PointerProperty(type=interface.ARK_PREFS_Interface)
 
     def draw(self, context):
         layout = self.layout
@@ -31,6 +34,8 @@ class ARK_PREFS(bpy.types.AddonPreferences):
                 cameras.ARK_PREFS_Cameras_UI(self, col)
             case 'MATERIALS':
                 materials.ARK_PREFS_Materials_UI(self, col)
+            case 'INTERFACE':
+                interface.ARK_PREFS_Interface_UI(self, col)
             case _:
                 pass
         return None
@@ -38,6 +43,7 @@ class ARK_PREFS(bpy.types.AddonPreferences):
 class ARK_PROPS_WindowManager(bpy.types.PropertyGroup):
     """Store state"""
     materials : bpy.props.PointerProperty(type=materials.ARK_PROPS_WindowManager_Materials)
+    interface : bpy.props.PointerProperty(type=interface.ARK_PROPS_WindowManager_Interface)
 
 class ARK_PROPS_Scene(bpy.types.PropertyGroup):
     """Define Custom Properties"""
