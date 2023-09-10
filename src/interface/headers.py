@@ -12,6 +12,7 @@ class ARK_OT_QuickEditorType(bpy.types.Operator):
     bl_label = ""
 
     shift : bpy.props.BoolProperty()
+    ctrl : bpy.props.BoolProperty()
 
     ui_type : bpy.props.EnumProperty(
         name = "",
@@ -22,11 +23,16 @@ class ARK_OT_QuickEditorType(bpy.types.Operator):
 
     def invoke(self, context, event):
         self.shift = event.shift
+        self.ctrl = event.ctrl
         return self.execute(context)
 
     def execute(self, context):
-        if self.shift:
+        if self.shift and self.ctrl:
+            pass
+        elif self.shift:
             bpy.ops.wm.call_menu_pie(name=ARK_MT_PIE_SetEditorMode.__name__)
+        elif self.ctrl:
+            pass
         else:
             bpy.context.area.ui_type = self.ui_type
         return {'FINISHED'}
