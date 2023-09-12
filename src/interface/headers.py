@@ -35,7 +35,7 @@ class ARK_OT_QuickEditorType(bpy.types.Operator):
             pass
         else:
             bpy.context.area.ui_type = self.ui_type
-        return {'FINISHED'}
+        return {'INTERFACE'}
 
 class ARK_OT_SetEditorMode(bpy.types.Operator):
     """Tooltip"""
@@ -60,7 +60,7 @@ class ARK_OT_SetEditorMode(bpy.types.Operator):
         if self.ui_mode != 'NONE':
             for attribute, value in enums.EDITOR_MODE[self.ui_type][self.ui_mode].items():
                 utils.rsetattr(bpy, attribute, value)
-        return {'FINISHED'}
+        return {'INTERFACE'}
 
 class ARK_MT_PIE_SetEditorMode(bpy.types.Menu):
     bl_label = ""
