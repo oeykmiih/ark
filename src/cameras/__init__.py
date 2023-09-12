@@ -395,7 +395,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
             row = layout.row()
             row.operator(
                 utils.UTILS_OT_Placeholder.bl_idname,
-                text="Cameras must be inside {container_cameras.name} to appear.",
+                text = "Cameras must be inside {container_cameras.name} to appear.",
             )
         elif not ARK_OT_CreateCamHierachy.check_cam_hierarchy(context):
             row = layout.row()

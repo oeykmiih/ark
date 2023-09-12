@@ -62,6 +62,27 @@ class ARK_OT_SetEditorMode(bpy.types.Operator):
                 utils.rsetattr(bpy, attribute, value)
         return {'FINISHED'}
 
+class ARK_MT_PIE_SetEditorMode(bpy.types.Menu):
+    bl_label = ""
+
+    def draw(self, context):
+        layout = self.layout.menu_pie()
+
+        session = addon.session().interface
+        pie_count = 0
+
+        for ui_type, children in enums.EDITOR_MODE.items():
+            pie_count += 1
+            while pie_count in [3, 5, 6]:
+                layout.separator()
+                pie_count += 1
+
+            operator = layout.operator(
+                ARK_OT_SetEditorMode.bl_idname,
+                icon = enums.EDITOR_TYPE_ICONS[ui_type]
+            )
+            operator.ui_type = ui_type
+        return None
 def ARK_BT_NODE_SetEditorType(self, context):
     ui_type = 'VIEW_3D'
     operator = self.layout.operator(
@@ -70,7 +91,6 @@ def ARK_BT_NODE_SetEditorType(self, context):
         icon=enums.EDITOR_TYPE_ICONS[ui_type],
     )
     operator.ui_type = ui_type
-    # self.layout.separator()
     return None
 
 def ARK_BT_OUTLINER_SetEditorType(self, context):
@@ -105,25 +125,3 @@ def ARK_BT_VIEW3D_SetEditorType(self, context):
     operator.ui_type = ui_type
     # self.layout.separator()
     return None
-
-class ARK_MT_PIE_SetEditorMode(bpy.types.Menu):
-    bl_label = ""
-
-    def draw(self, context):
-        layout = self.layout.menu_pie()
-
-        session = addon.session().interface
-        pie_count = 0
-
-        for ui_type, children in enums.EDITOR_MODE.items():
-            pie_count += 1
-            while pie_count in [3, 5, 6]:
-                layout.separator()
-                pie_count += 1
-
-            operator = layout.operator(
-                ARK_OT_SetEditorMode.bl_idname,
-                icon = enums.EDITOR_TYPE_ICONS[ui_type]
-            )
-            operator.ui_type = ui_type
-        return None

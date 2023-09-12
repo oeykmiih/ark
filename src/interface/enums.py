@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-
 EDITOR_TYPE = [
     ('VIEW_3D', "VIEW_3D", ""),
     ('IMAGE_EDITOR', "IMAGE_EDITOR", ""),
