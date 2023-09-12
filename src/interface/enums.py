@@ -55,6 +55,9 @@ EDITOR_MODE_ICONS = {
         'WORLD' : 'WORLD',
     },
     'VIEW_3D' : {
+        'RENDERED' : 'SHADING_RENDERED',
+        'SOLID' : 'SHADING_SOLID',
+        'WIREFRAME' : 'SHADING_WIRE',
     },
 }
 
@@ -129,5 +132,14 @@ EDITOR_MODE = {
         },
     },
     'VIEW_3D' : {
+        'RENDERED' : {
+            "context.space_data.shading.type" : 'RENDERED',
+        },
+        'SOLID' : {
+            "context.space_data.shading.type" : 'SOLID',
+        },
+        'WIREFRAME' : {
+            "context.space_data.shading.type" : 'WIREFRAME',
+        },
     },
 }
