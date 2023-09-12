@@ -96,6 +96,22 @@ def ARK_BT_NODE_SetEditorType(self, context):
 def ARK_BT_OUTLINER_SetEditorType(self, context):
     ui_type = 'PROPERTIES'
     operator = self.layout.operator(
+class ARK_OT_VIEW3D_ZoomExtents(bpy.types.Operator):
+    bl_idname = f"{addon.name}.zoom_extents"
+    bl_label = ""
+    bl_options = {'INTERNAL'}
+
+    @classmethod
+    def poll(cls, context):
+        return context.area.ui_type == 'VIEW_3D'
+
+    def execute(self, context):
+        if context.area.spaces.active.region_3d.view_perspective != 'CAMERA':
+            bpy.ops.view3d.view_all()
+            pass
+        else:
+            bpy.ops.view3d.view_center_camera()
+        return {"INTERFACE"}
         ARK_OT_QuickEditorType.bl_idname,
         text="",
         icon=enums.EDITOR_TYPE_ICONS[ui_type],

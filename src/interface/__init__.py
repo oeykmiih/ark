@@ -14,6 +14,7 @@ def ARK_PREFS_Interface_UI(preferences, layout):
     return None
 
 CLASSES = [
+    headers.ARK_OT_VIEW3D_ZoomExtents,
     headers.ARK_OT_QuickEditorType,
     headers.ARK_OT_SetEditorMode,
     headers.ARK_MT_PIE_SetEditorMode,
