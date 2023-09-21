@@ -1,13 +1,14 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 import importlib
 import math
+import enum
+
 import bpy
+import utils
+addon = utils.bpy.Addon()
 
-from .. import addon
-from .. import utils
-
-from . import enums
 from . import defaults
+from . import enums
 
 class ARK_OT_CreateArkHierachy(bpy.types.Operator):
     """ARK Operator to set active camera."""
@@ -25,18 +26,18 @@ class ARK_OT_CreateArkHierachy(bpy.types.Operator):
 
     @staticmethod
     def create_ark_hierarchy(context):
-        preferences = addon.preferences().cameras
-        blcol_cameras = utils.blcol.obt(preferences.container_cameras, force=True, parent=context.scene.collection)
-        blcol_blockouts = utils.blcol.obt(preferences.container_blockouts, force=True, parent=context.scene.collection)
-        blcol_props = utils.blcol.obt(preferences.container_props, force=True, parent=context.scene.collection)
+        preferences = addon.preferences
+        blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, force=True, parent=context.scene.collection)
+        blcol_blockouts = utils.bpy.col.obt(preferences.container_blockouts, force=True, parent=context.scene.collection)
+        blcol_props = utils.bpy.col.obt(preferences.container_props, force=True, parent=context.scene.collection)
         return None
 
     @staticmethod
     def check_ark_hierarchy(context):
-        preferences = addon.preferences().cameras
+        preferences = addon.preferences
         conditions = [
-            utils.blcol.obt(preferences.container_blockouts, local=True),
-            utils.blcol.obt(preferences.container_props, local=True),
+            utils.bpy.col.obt(preferences.container_blockouts, local=True),
+            utils.bpy.col.obt(preferences.container_props, local=True),
         ]
         return all(conditions)
 
@@ -56,21 +57,21 @@ class ARK_OT_CreateCamHierachy(bpy.types.Operator):
 
     @staticmethod
     def create_cam_hierarchy(context):
-        preferences = addon.preferences().cameras
-        blcol_props = utils.blcol.obt(preferences.container_props, force=True)
-        utils.blcol.obt(f"PR:{context.scene.camera.name}", force=True, parent=blcol_props)
-        blcol_blockouts = utils.blcol.obt(preferences.container_blockouts, force=True)
-        utils.blcol.obt(f"BK:{context.scene.camera.name}", force=True, parent=blcol_blockouts)
+        preferences = addon.preferences
+        blcol_props = utils.bpy.col.obt(preferences.container_props, force=True)
+        utils.bpy.col.obt(f"PR:{context.scene.camera.name}", force=True, parent=blcol_props)
+        blcol_blockouts = utils.bpy.col.obt(preferences.container_blockouts, force=True)
+        utils.bpy.col.obt(f"BK:{context.scene.camera.name}", force=True, parent=blcol_blockouts)
         return
 
     @staticmethod
     def check_cam_hierarchy(context):
-        preferences = addon.preferences().cameras
+        preferences = addon.preferences
         conditions = [
-            utils.blcol.obt(preferences.container_props),
-            utils.blcol.obt(f"PR:{context.scene.camera.name}", local=True),
-            utils.blcol.obt(preferences.container_blockouts),
-            utils.blcol.obt(f"BK:{context.scene.camera.name}", local=True),
+            utils.bpy.col.obt(preferences.container_props),
+            utils.bpy.col.obt(f"PR:{context.scene.camera.name}", local=True),
+            utils.bpy.col.obt(preferences.container_blockouts),
+            utils.bpy.col.obt(f"BK:{context.scene.camera.name}", local=True),
         ]
         return all(conditions)
 
@@ -83,12 +84,12 @@ class ARK_OT_SetCameraActive(bpy.types.Operator):
     name: bpy.props.StringProperty()
 
     def execute(self, context):
-        preferences = addon.preferences().cameras
+        preferences = addon.preferences
         cam = context.scene.camera = bpy.data.objects.get(self.name)
         props_cam = eval(f"context.scene.camera.data.{addon.name}")
-        blcol_cameras = utils.blcol.obt(preferences.container_cameras, local=True)
+        blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, local=True)
 
-        tracker = utils.blob.obt(preferences.trackers_camera, parent=blcol_cameras, force=True, local=True)
+        tracker = utils.bpy.obj.obt(preferences.trackers_camera, parent=blcol_cameras, force=True, local=True)
         tracker.matrix_world = cam.matrix_world
         tracker.use_fake_user = True
         tracker.hide_select = True
@@ -99,12 +100,12 @@ class ARK_OT_SetCameraActive(bpy.types.Operator):
 
     def update_cam_properties(self, context, props_cam):
         self.update_visibilities(context)
-        ARK_PROPS_Camera.update_exposure(props_cam, context)
-        ARK_PROPS_Camera.update_resolution(props_cam, context)
+        ARK_Camera.update_exposure(props_cam, context)
+        ARK_Camera.update_resolution(props_cam, context)
         return None
 
     def update_visibilities(self, context):
-        preferences = addon.preferences().cameras
+        preferences = addon.preferences
         containers = {}
         containers["props"] = preferences.container_props
         containers["blockouts"] = preferences.container_blockouts
@@ -125,8 +126,8 @@ class ARK_OT_SetCameraActive(bpy.types.Operator):
             else:
                 bl_layer_collection.exclude = False
 
-        if utils.blcol.obt(f"BK:{self.name}") is not None:
-            for blob in utils.blcol.obt(f"BK:{self.name}").objects:
+        if utils.bpy.col.obt(f"BK:{self.name}") is not None:
+            for blob in utils.bpy.col.obt(f"BK:{self.name}").objects:
                 blob.visible_camera = False
                 blob.visible_diffuse = False
                 blob.visible_glossy = False
@@ -150,7 +151,7 @@ class ARK_OT_ForceCameraVerticals(bpy.types.Operator):
         cam_rot[1] = math.radians(0)
         return {'FINISHED'}
 
-class ARK_PROPS_Camera(bpy.types.PropertyGroup):
+class ARK_Camera(bpy.types.PropertyGroup):
     """ARK Camera Properties"""
     def set_aperture(self, value):
         self["aperture"] = value
@@ -219,7 +220,7 @@ class ARK_PROPS_Camera(bpy.types.PropertyGroup):
         description = "",
         items = enums.EXPOSURE_MODE,
         options = {'HIDDEN'},
-        update = update_exposure
+        update = update_exposure,
     )
 
     def set_iso(self, value):
@@ -360,9 +361,9 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
-        preferences = addon.preferences().cameras
-        props_scene = addon.props("scene")
-        container_cameras = utils.blcol.obt(preferences.container_cameras, local=True)
+        preferences = addon.preferences
+        props_scene = addon.get_property("scene")
+        container_cameras = utils.bpy.col.obt(preferences.container_cameras, local=True)
         cam_list = self.get_cam_list(container_cameras)
         props_cam = None
 
@@ -388,13 +389,13 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
         if not context.scene.camera:
             row = layout.row(align=True)
             row.alert=True
-            utils.blui.label(row, text="No active camera.")
+            utils.bpy.ui.label(row, text="No active camera.")
             row.prop(context.scene, "camera", text="")
             return None
         elif not cam_list:
             row = layout.row()
             row.operator(
-                utils.UTILS_OT_Placeholder.bl_idname,
+                utils.bpy.ops.UTILS_OT_Placeholder.bl_idname,
                 text = "Cameras must be inside {container_cameras.name} to appear.",
             )
         elif not ARK_OT_CreateCamHierachy.check_cam_hierarchy(context):
@@ -447,7 +448,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 pass
         row = col.row()
         if self.check_cam_rotation(context.scene.camera):
-            utils.blui.label(row, text="Camera is vertical.", depress=True)
+            utils.bpy.ui.label(row, text="Camera is vertical.", depress=True)
         else:
             row.alert = True
             row.operator(
@@ -486,7 +487,7 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
             ).name=item.name
 
         op = row.operator(
-            utils.blop.UTILS_OT_Select.bl_idname,
+            utils.bpy.ops.UTILS_OT_Select.bl_idname,
             text="",
             icon="%s" % 'RESTRICT_SELECT_OFF' if item.select_get() or item.parent is not None and item.parent.select_get() else 'RESTRICT_SELECT_ON',
         )
@@ -511,7 +512,8 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
 
         return filtered, ordered
 
-class ARK_PREFS_Cameras(bpy.types.PropertyGroup):
+@addon.property
+class ARK_Preferences_Cameras(bpy.types.PropertyGroup):
     container_blockouts : bpy.props.StringProperty(
         name="Blockouts",
         default="#Blockouts",
@@ -532,12 +534,12 @@ class ARK_PREFS_Cameras(bpy.types.PropertyGroup):
         default="#CameraTracker",
     )
 
-def ARK_PREFS_Cameras_UI(preferences, layout):
+def Preferences_UI(preferences, layout):
     box = layout.box()
-    box.prop(preferences.cameras, "container_cameras")
-    box.prop(preferences.cameras, "container_props")
-    box.prop(preferences.cameras, "container_blockouts")
-    box.prop(preferences.cameras, "trackers_camera")
+    box.prop(preferences, "container_cameras")
+    box.prop(preferences, "container_props")
+    box.prop(preferences, "container_blockouts")
+    box.prop(preferences, "trackers_camera")
     return None
 
 CLASSES = [
@@ -545,22 +547,23 @@ CLASSES = [
     ARK_OT_CreateCamHierachy,
     ARK_OT_SetCameraActive,
     ARK_OT_ForceCameraVerticals,
-    ARK_PREFS_Cameras,
-    ARK_PROPS_Camera,
+    ARK_Preferences_Cameras,
+    ARK_Camera,
     ARK_PT_PROPERTIES_Scene,
     ARK_UL_PROPERTIES_CameraList,
 ]
 
-def register():
-    for cls in CLASSES:
-        bpy.utils.register_class(cls)
+PROPS = [
+    ARK_Camera,
+]
 
-    addon.set_props(ARK_PROPS_Camera)
+def register():
+    utils.bpy.register_modules(MODULES)
+    utils.bpy.register_classes(CLASSES)
+    addon.set_properties(PROPS)
     return None
 
 def unregister():
-    addon.del_props(ARK_PROPS_Camera)
-
-    for cls in reversed(CLASSES):
-        bpy.utils.unregister_class(cls)
+    utils.bpy.unregister_classes(CLASSES)
+    utils.bpy.unregister_modules(MODULES)
     return None
