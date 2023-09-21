@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 import bpy
 
-from .. import addon
-from .. import utils
+import utils
+addon = utils.bpy.Addon()
 
 from . import enums
 
@@ -118,7 +118,7 @@ def ARK_OUTLINER_HT_draw(self, context):
         ARK_OT_SetEditorMode.bl_idname,
         text = "",
         icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.blpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
+        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
     )
     bt.ui_type = ui_type
     bt.ui_mode = ui_mode
@@ -128,7 +128,7 @@ def ARK_OUTLINER_HT_draw(self, context):
         ARK_OT_SetEditorMode.bl_idname,
         text = "",
         icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.blpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
+        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
     )
     bt.ui_type = ui_type
     bt.ui_mode = ui_mode
@@ -138,7 +138,7 @@ def ARK_OUTLINER_HT_draw(self, context):
         ARK_OT_SetEditorMode.bl_idname,
         text = "",
         icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.blpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
+        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
     )
     bt.ui_type = ui_type
     bt.ui_mode = ui_mode
@@ -148,7 +148,7 @@ def ARK_OUTLINER_HT_draw(self, context):
         ARK_OT_SetEditorMode.bl_idname,
         text = "",
         icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.blpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
+        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
     )
     bt.ui_type = ui_type
     bt.ui_mode = ui_mode
@@ -170,7 +170,7 @@ def ARK_OUTLINER_HT_draw(self, context):
         ARK_OT_SetEditorMode.bl_idname,
         text = "",
         icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.blpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
+        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
     )
     bt.ui_type = ui_type
     bt.ui_mode = ui_mode
@@ -180,7 +180,7 @@ def ARK_OUTLINER_HT_draw(self, context):
         ARK_OT_SetEditorMode.bl_idname,
         text = "",
         icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.blpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
+        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
     )
     bt.ui_type = ui_type
     bt.ui_mode = ui_mode
@@ -190,7 +190,7 @@ def ARK_OUTLINER_HT_draw(self, context):
         ARK_OT_SetEditorMode.bl_idname,
         text = "",
         icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.blpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
+        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
     )
     bt.ui_type = ui_type
     bt.ui_mode = ui_mode
@@ -215,7 +215,7 @@ def ARK_VIEW3D_HT_draw(self, context):
         ARK_OT_SetEditorMode.bl_idname,
         text = "",
         icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.blpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode])
+        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode])
     )
     bt.ui_type = ui_type
     bt.ui_mode = ui_mode
@@ -225,7 +225,7 @@ def ARK_VIEW3D_HT_draw(self, context):
         ARK_OT_SetEditorMode.bl_idname,
         text = "",
         icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.blpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode])
+        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode])
     )
     bt.ui_type = ui_type
     bt.ui_mode = ui_mode
@@ -235,7 +235,7 @@ def ARK_VIEW3D_HT_draw(self, context):
         ARK_OT_SetEditorMode.bl_idname,
         text = "",
         icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.blpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode])
+        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode])
     )
     bt.ui_type = ui_type
     bt.ui_mode = ui_mode
@@ -317,4 +317,18 @@ def ARK_VIEW3D_HT_draw(self, context):
     )
 
     layout.separator_spacer()
+    return None
+CLASSES = [
+    ARK_OT_QuickEditorType,
+    ARK_OT_SetEditorMode,
+    ARK_MT_PIE_SetEditorMode,
+    ARK_OT_VIEW3D_ZoomExtents,
+]
+
+def register():
+    utils.bpy.register_classes(CLASSES)
+    return None
+
+def unregister():
+    utils.bpy.unregister_classes(CLASSES)
     return None

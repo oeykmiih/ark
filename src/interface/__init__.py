@@ -1,33 +1,53 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 import bpy
 
-from . import headers
+import utils
+addon = utils.bpy.Addon()
 
-class ARK_PROPS_WindowManager_Interface(bpy.types.PropertyGroup):
+MODULES = {
+    "headers" : None,
+    "quickassetbrowser" : None,
+}
+MODULES = utils.import_modules(MODULES)
+
+class ARK_OT_ToogleInterface(bpy.types.Operator):
     pass
 
-class ARK_PREFS_Interface(bpy.types.PropertyGroup):
+@addon.property
+class ARK_WindowManager_Interface(bpy.types.PropertyGroup):
     pass
 
-def ARK_PREFS_Interface_UI(preferences, layout):
-    box = layout.box()
+@addon.property
+class ARK_Preferences_Interface(bpy.types.PropertyGroup):
+    pass
+
+def Preferences_UI(preferences, layout):
+    items = (name for name, module in MODULES.items() if hasattr(module, "Preferences_UI"))
+    for name in items:
+        module = MODULES[name]
+        properties = getattr(preferences, name)
+        layout = layout.box()
+        module.Preferences_UI(properties, layout)
     return None
 
+    # box = layout.box()
+    box.prop(preferences.interface, "assets_library_default")
+    split = box.row(align=True).split(factor=0.35)
+    split.label(text="QuickAssetBrowser Factor")
+    split.prop(preferences.interface, "assets_split_factor", text="")
+    # return None
+
 CLASSES = [
-    headers.ARK_OT_VIEW3D_ZoomExtents,
-    headers.ARK_OT_QuickEditorType,
-    headers.ARK_OT_SetEditorMode,
-    headers.ARK_MT_PIE_SetEditorMode,
-    ARK_PROPS_WindowManager_Interface,
-    ARK_PREFS_Interface,
+    ARK_WindowManager_Interface,
+    ARK_Preferences_Interface,
 ]
 
 def register():
-    for cls in CLASSES:
-        bpy.utils.register_class(cls)
+    utils.bpy.register_modules(MODULES)
+    utils.bpy.register_classes(CLASSES)
     return None
 
 def unregister():
-    for cls in reversed(CLASSES):
-        bpy.utils.unregister_class(cls)
+    utils.bpy.unregister_classes(CLASSES)
+    utils.bpy.unregister_modules(MODULES)
     return None
