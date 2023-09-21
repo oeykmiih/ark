@@ -10,6 +10,7 @@ class ARK_OT_QuickEditorType(bpy.types.Operator):
     """Tooltip"""
     bl_idname = f"{addon.name}.set_editor_type"
     bl_label = ""
+    bl_options = {'INTERNAL'}
 
     shift : bpy.props.BoolProperty()
     ctrl : bpy.props.BoolProperty()
@@ -41,6 +42,7 @@ class ARK_OT_SetEditorMode(bpy.types.Operator):
     """Tooltip"""
     bl_idname = f"{addon.name}.set_editor_mode"
     bl_label = ""
+    bl_options = {'INTERNAL'}
 
     ui_type : bpy.props.EnumProperty(
         name = "",
@@ -299,8 +301,7 @@ def ARK_VIEW3D_HT_draw(self, context):
 
     row = layout.row(align=True)
     object_mode = 'OBJECT' if context.active_object is None else context.active_object.mode
-    if object_mode not in {'OBJECT', 'EDIT'}:
-        row.enabled = False
+    row.enabled = object_mode in {'OBJECT', 'EDIT'}
     row.prop(
         context.tool_settings,
         "transform_pivot_point",

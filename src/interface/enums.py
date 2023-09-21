@@ -29,7 +29,7 @@ EDITOR_TYPE_ICONS = {
     'ASSETS' : 'ASSET_MANAGER',
     'OUTLINER' : 'OUTLINER',
     'PROPERTIES' : 'PROPERTIES',
-    'ShaderNodeTree' : 'NODE_MATERIAL',
+    'ShaderNodeTree' : 'MATERIAL',
     'VIEW_3D' : 'VIEW3D',
 }
 
