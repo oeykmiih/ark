@@ -2,10 +2,13 @@
 import builtins
 import bpy
 
-from . import std
+from .. import std
 
-def enum_from_list(list):
-    return [(str(item).upper(), str(item).capitalize(), '') for item in list]
+def enum_from_list(list, raw=False):
+    if raw:
+        return [(str(item), str(item).capitalize(), '') for item in list]
+    else:
+        return [(str(item).upper(), str(item).capitalize(), '') for item in list]
 
 def obt(datablock, id, data=None, scope=None, force=False, overwrite=None):
     """Returns a new object if objects does not exist."""

@@ -3,7 +3,7 @@ import bpy
 import bmesh
 import mathutils
 
-from . import blpy
+from . import meta
 
 #CREDIT: https://blender.stackexchange.com/a/159540
 def apply_transform(ob, loc=False, rot=False, sca=False):
@@ -85,14 +85,14 @@ def obt(name, data=None, local=False, force=False, overwrite=None, parent=None, 
         scope = bpy.context.scene.objects
 
     if hollow:
-        data = blpy.obt(
+        data = meta.obt(
             bpy.data.meshes,
             name,
             force = force,
             overwrite = overwrite,
         )
 
-    blob = blpy.obt(
+    blob = meta.obt(
         bpy.data.objects,
         name,
         data = data,
