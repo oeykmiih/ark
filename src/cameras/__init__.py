@@ -558,12 +558,10 @@ PROPS = [
 ]
 
 def register():
-    utils.bpy.register_modules(MODULES)
     utils.bpy.register_classes(CLASSES)
     addon.set_properties(PROPS)
     return None
 
 def unregister():
     utils.bpy.unregister_classes(CLASSES)
-    utils.bpy.unregister_modules(MODULES)
     return None
