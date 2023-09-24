@@ -118,7 +118,7 @@ def unlink(blcol, objects=False, recursive=False):
             blcol.objects.unlink(objects.pop())
     return None
 
-def remove(blob, purge_data=True, recusive=True):
+def remove(blob, purge_data=True, recursive=True):
     if recursive:
         objects = [o for o in blob.children if o.users <= 1]
         while objects:
@@ -132,5 +132,5 @@ def remove(blob, purge_data=True, recusive=True):
             case _:
                 pass
     if blob is not None:
-        bpy.data.objects.remove()
+        bpy.data.objects.remove(blob)
     return None

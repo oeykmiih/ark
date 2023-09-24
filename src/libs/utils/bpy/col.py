@@ -19,16 +19,15 @@ def obt(name, force=False, parent=None, local=False, overwrite=None):
         parent.children.link(blcol)
     return blcol
 
-def unlink(blcol, objects=False, recursive=False):
+def empty(blcol, objects=False, recursive=False):
     if recursive:
         collections = [c for c in blcol.children]
         while collections:
             child = collections.pop()
-            unlink(child, recursive=True, objects=objects)
+            empty(child, recursive=True, objects=objects)
             blcol.children.unlink(child)
     if objects:
         objects = [o for o in blcol.objects]
         while objects:
             blcol.objects.unlink(objects.pop())
     return None
-
