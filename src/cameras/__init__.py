@@ -61,6 +61,20 @@ class CameraHierarchy():
         return None
 
     @staticmethod
+    def remove(context):
+        preferences = addon.preferences
+        blcol_blockouts = utils.bpy.col.obt(preferences.container_blockouts, force=True)
+        cam_blockouts = utils.bpy.col.obt(f"BK:{context.scene.camera.name}", local=True)
+        blcol_props = utils.bpy.col.obt(preferences.container_props, force=True)
+        cam_props = utils.bpy.col.obt(f"PR:{context.scene.camera.name}", local=True)
+
+        utils.bpy.col.empty(cam_blockouts, objects=True)
+        blcol_blockouts.children.unlink(cam_blockouts)
+        utils.bpy.col.empty(cam_props, objects=True)
+        blcol_props.children.unlink(cam_props)
+        return None
+
+    @staticmethod
     def audit(context):
         preferences = addon.preferences
         conditions = [
@@ -217,6 +231,22 @@ class ARK_OT_DuplicateCamera(bpy.types.Operator):
         bpy.ops.ark.add_cam_hierarchy()
         return {'FINISHED'}
 
+class ARK_OT_RemoveCamera(bpy.types.Operator):
+    bl_idname = f"{addon.name}.remove_camera"
+    bl_label = ""
+    bl_options = {'UNDO', 'INTERNAL'}
+
+    @classmethod
+    def poll(cls, context):
+        return context.scene.camera
+
+    def execute(self, context):
+        preferences = addon.preferences
+        blcam = context.scene.camera
+
+        CameraHierarchy.remove(context)
+
+        utils.bpy.obj.remove(blcam, purge_data=True)
         return {'FINISHED'}
 
 class ARK_OT_ForceCameraVerticals(bpy.types.Operator):
@@ -475,6 +505,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 )
             col = row.column(align=True)
             col.operator(ARK_OT_AddCamera.bl_idname, text="", icon='ADD')
+            col.operator(ARK_OT_RemoveCamera.bl_idname, text="", icon='REMOVE')
             col.operator(ARK_OT_DuplicateCamera.bl_idname, text="", icon='DUPLICATE')
 
         if not context.scene.camera:
@@ -645,6 +676,7 @@ CLASSES = [
     ARK_OT_SetCameraActive,
     ARK_OT_AddCamera,
     ARK_OT_DuplicateCamera,
+    ARK_OT_RemoveCamera,
     ARK_OT_ForceCameraVerticals,
     ARK_Preferences_Cameras,
     ARK_Camera_Hierarchy,
