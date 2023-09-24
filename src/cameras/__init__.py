@@ -413,8 +413,9 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 text = "Missing structure for cameras, fix it?",
             )
         else:
-            col = layout.column(align=True)
-            col.template_list(
+            box = layout.box()
+            row = box.row()
+            row.template_list(
                     "ARK_UL_PROPERTIES_CameraList",
                     "Camera List",
                     container_cameras,
