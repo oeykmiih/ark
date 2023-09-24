@@ -28,7 +28,7 @@ class ArkHierarchy():
         ]
         return all(conditions)
 
-class ARK_OT_CreateArkHierachy(bpy.types.Operator, ArkHierarchy):
+class ARK_OT_CreateArkHierarchy(bpy.types.Operator, ArkHierarchy):
     bl_idname = f"{addon.name}.create_ark_hierarchy"
     bl_label = ""
     bl_options = {'UNDO' , 'INTERNAL'}
@@ -39,34 +39,40 @@ class ARK_OT_CreateArkHierachy(bpy.types.Operator, ArkHierarchy):
 
 class CameraHierarchy():
     @staticmethod
-    def create(context):
+    def create(context, blcam=None):
         preferences = addon.preferences
+        name = blcam.name
+
         blcol_blockouts = utils.bpy.col.obt(preferences.container_blockouts, force=True)
-        utils.bpy.col.obt(f"BK:{context.scene.camera.name}", force=True, parent=blcol_blockouts)
+        utils.bpy.col.obt(f"BK:{name}", force=True, parent=blcol_blockouts)
         blcol_props = utils.bpy.col.obt(preferences.container_props, force=True)
-        utils.bpy.col.obt(f"PR:{context.scene.camera.name}", force=True, parent=blcol_props)
+        utils.bpy.col.obt(f"PR:{name}", force=True, parent=blcol_props)
         return None
 
     @staticmethod
-    def update(context):
+    def update(context, blcam=None):
         preferences = addon.preferences
-        props_cam = eval(f"context.scene.camera.data.{addon.name}")
+        name = blcam.name
+        props_cam = getattr(blcam.data, addon.name)
+
         blcol_blockouts = utils.bpy.col.obt(preferences.container_blockouts, force=True)
         cam_blockouts = utils.bpy.col.obt(props_cam.hierarchy.blockouts, parent=blcol_blockouts)
         blcol_props = utils.bpy.col.obt(preferences.container_props, force=True)
         cam_props = utils.bpy.col.obt(props_cam.hierarchy.props, parent=blcol_props)
 
-        cam_blockouts.name = f"BK:{context.scene.camera.name}"
-        cam_props.name = f"PR:{context.scene.camera.name}"
+        cam_blockouts.name = f"BK:{name}"
+        cam_props.name = f"PR:{name}"
         return None
 
     @staticmethod
-    def remove(context):
+    def remove(context, blcam=None):
         preferences = addon.preferences
+        name = blcam.name
+
         blcol_blockouts = utils.bpy.col.obt(preferences.container_blockouts, force=True)
-        cam_blockouts = utils.bpy.col.obt(f"BK:{context.scene.camera.name}", local=True)
+        cam_blockouts = utils.bpy.col.obt(f"BK:{name}", local=True)
         blcol_props = utils.bpy.col.obt(preferences.container_props, force=True)
-        cam_props = utils.bpy.col.obt(f"PR:{context.scene.camera.name}", local=True)
+        cam_props = utils.bpy.col.obt(f"PR:{name}", local=True)
 
         utils.bpy.col.empty(cam_blockouts, objects=True)
         blcol_blockouts.children.unlink(cam_blockouts)
@@ -75,20 +81,22 @@ class CameraHierarchy():
         return None
 
     @staticmethod
-    def audit(context):
+    def audit(context, blcam=None):
         preferences = addon.preferences
+        name = blcam.name
+
         conditions = [
             utils.bpy.col.obt(preferences.container_blockouts),
-            utils.bpy.col.obt(f"BK:{context.scene.camera.name}", local=True),
+            utils.bpy.col.obt(f"BK:{name}", local=True),
             utils.bpy.col.obt(preferences.container_props),
-            utils.bpy.col.obt(f"PR:{context.scene.camera.name}", local=True),
+            utils.bpy.col.obt(f"PR:{name}", local=True),
         ]
         return all(conditions)
 
     @staticmethod
-    def audit_previous(context):
+    def audit_previous(context, blcam=None):
         preferences = addon.preferences
-        props_cam = eval(f"context.scene.camera.data.{addon.name}")
+        props_cam = getattr(blcam.data, addon.name)
         conditions = [
             utils.bpy.col.obt(preferences.container_blockouts),
             utils.bpy.col.obt(props_cam.hierarchy.blockouts, local=True),
@@ -98,20 +106,20 @@ class CameraHierarchy():
         return all(conditions)
 
     @staticmethod
-    def save_refs(context):
-        props_cam = eval(f"context.scene.camera.data.{addon.name}")
+    def save_refs(context, blcam=None):
+        props_cam = getattr(blcam.data, addon.name)
         props_cam.hierarchy.blockouts = f"BK:{context.scene.camera.name}"
         props_cam.hierarchy.props = f"PR:{context.scene.camera.name}"
         return None
 
     @staticmethod
     def cleanse_refs(blcam):
-        props_cam = eval(f"blcam.data.{addon.name}")
+        props_cam = getattr(blcam.data, addon.name)
         props_cam.hierarchy.blockouts = ""
         props_cam.hierarchy.props = ""
         return None
 
-class ARK_OT_AddCameraHierachy(bpy.types.Operator, CameraHierarchy):
+class ARK_OT_AddCameraHierarchy(bpy.types.Operator, CameraHierarchy):
     bl_idname = f"{addon.name}.add_cam_hierarchy"
     bl_label = ""
     bl_options = {'UNDO', 'INTERNAL'}
@@ -119,11 +127,12 @@ class ARK_OT_AddCameraHierachy(bpy.types.Operator, CameraHierarchy):
     renamed : bpy.props.BoolProperty(default = False)
 
     def execute(self, context):
+        blcam = context.scene.camera
         if self.renamed:
-            self.update(context)
+            self.update(context, blcam)
         else:
-            self.create(context)
-        self.save_refs(context)
+            self.create(context, blcam)
+        self.save_refs(context, blcam)
         return {'FINISHED'}
 
 class ARK_OT_SetCameraActive(bpy.types.Operator):
@@ -215,19 +224,21 @@ class ARK_OT_DuplicateCamera(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.scene.camera
+        ao = context.active_object
+        return ao is not None and ao.type == 'CAMERA' and ao.select_get()
 
     def execute(self, context):
         preferences = addon.preferences
         blcol_cameras = utils.bpy.col.obt(preferences.container_cameras)
+        blcam = context.active_object
 
-        blcam = context.scene.camera.copy()
-        blcam.data = blcam.data.copy()
-        CameraHierarchy.cleanse_refs(blcam)
+        new_cam = blcam.copy()
+        new_cam.data = blcam.data.copy()
+        CameraHierarchy.cleanse_refs(new_cam)
 
-        blcol_cameras.objects.link(blcam)
+        blcol_cameras.objects.link(new_cam)
 
-        bpy.ops.ark.set_camera_active(name=blcam.name)
+        bpy.ops.ark.set_camera_active(name=new_cam.name)
         bpy.ops.ark.add_cam_hierarchy()
         return {'FINISHED'}
 
@@ -238,13 +249,15 @@ class ARK_OT_RemoveCamera(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.scene.camera
+        ao = context.active_object
+        return ao is not None and ao.type == 'CAMERA' and ao.select_get()
 
     def execute(self, context):
         preferences = addon.preferences
-        blcam = context.scene.camera
+        blcam = context.active_object
 
-        CameraHierarchy.remove(context)
+        if CameraHierarchy.audit(context, blcam):
+            CameraHierarchy.remove(context, blcam)
 
         utils.bpy.obj.remove(blcam, purge_data=True)
         return {'FINISHED'}
@@ -484,12 +497,12 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
         cam_list = self.get_cam_list(container_cameras)
         props_cam = None
 
-        if not container_cameras and not ARK_OT_CreateArkHierachy.audit(context):
+        if not container_cameras and not ArkHierarchy.audit(context):
             box = layout.box()
             row = box.row()
             row.alert = True
             row.operator(
-                ARK_OT_CreateArkHierachy.bl_idname,
+                ARK_OT_CreateArkHierarchy.bl_idname,
                 text = "Missing structure for cameras, fix it?",
             )
         else:
@@ -508,7 +521,8 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
             col.operator(ARK_OT_RemoveCamera.bl_idname, text="", icon='REMOVE')
             col.operator(ARK_OT_DuplicateCamera.bl_idname, text="", icon='DUPLICATE')
 
-        if not context.scene.camera:
+        blcam = context.scene.camera
+        if not blcam:
             row = layout.row(align=True)
             row.alert=True
             utils.bpy.ui.label(row, text="No active camera.")
@@ -519,19 +533,19 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 utils.bpy.ops.UTILS_OT_Placeholder.bl_idname,
                 text = "Cameras must be inside {container_cameras.name} to appear.",
             )
-        elif not CameraHierarchy.audit(context):
-            renamed = CameraHierarchy.audit_previous(context)
+        elif not CameraHierarchy.audit(context, blcam):
+            renamed = CameraHierarchy.audit_previous(context, blcam)
             text = "%s" % "Camera was renamed, sync hierarchy?" if renamed else "Missing camera hierarchy, fix it?"
             row = layout.row()
             row.alert = True
             row.operator(
-                CameraHierarchy.bl_idname,
+                ARK_OT_AddCameraHierarchy.bl_idname,
                 text = text,
             ).renamed = renamed
         else:
             layout.label(text="")
 
-        props_cam = eval(f"context.scene.camera.data.{addon.name}")
+        props_cam = getattr(blcam.data, addon.name)
         box = layout.box()
         col = box.column(align=True)
         row = col.row(align=True)
@@ -613,6 +627,7 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
             utils.bpy.ops.UTILS_OT_Select.bl_idname,
             text="",
             icon="%s" % 'RESTRICT_SELECT_OFF' if item.select_get() or item.parent is not None and item.parent.select_get() else 'RESTRICT_SELECT_ON',
+            depress= context.active_object == item and item.select_get(),
         )
         op.obj_name = item.name
         op.parent_instead = True
@@ -622,9 +637,13 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
 
     def filter_items(self, context, data, propname):
         """Filter and order items in the list."""
+        helper_funcs = bpy.types.UI_UL_list
+
         filtered = []
         ordered = []
         items = getattr(data, propname)
+
+        ordered = helper_funcs.sort_items_by_name(items, 'name')
 
         # Initialize with all items visible
         filtered = [self.bitflag_filter_item] * len(items)
@@ -671,8 +690,8 @@ def Preferences_UI(preferences, layout):
     return None
 
 CLASSES = [
-    ARK_OT_CreateArkHierachy,
-    ARK_OT_AddCameraHierachy,
+    ARK_OT_CreateArkHierarchy,
+    ARK_OT_AddCameraHierarchy,
     ARK_OT_SetCameraActive,
     ARK_OT_AddCamera,
     ARK_OT_DuplicateCamera,
