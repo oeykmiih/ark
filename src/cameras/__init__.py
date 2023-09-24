@@ -11,7 +11,6 @@ from . import defaults
 from . import enums
 
 class ARK_OT_CreateArkHierachy(bpy.types.Operator):
-    """ARK Operator to set active camera."""
     bl_idname = f"{addon.name}.create_ark_hierarchy"
     bl_label = ""
     bl_options = {'UNDO' , 'INTERNAL'}
@@ -41,31 +40,55 @@ class ARK_OT_CreateArkHierachy(bpy.types.Operator):
         ]
         return all(conditions)
 
-class ARK_OT_CreateCamHierachy(bpy.types.Operator):
-    """ARK Operator to set active camera."""
-    bl_idname = f"{addon.name}.create_cam_hierarchy"
+class ARK_OT_CameraHierachy(bpy.types.Operator):
+    bl_idname = f"{addon.name}.cam_hierarchy"
     bl_label = ""
     bl_options = {'UNDO', 'INTERNAL'}
 
-    @classmethod
-    def poll(cls, context):
-        return True
+    renamed : bpy.props.BoolProperty(
+        name = "Update Hierarchy",
+        default = False,
+    )
 
     def execute(self, context):
-        self.create_cam_hierarchy(context)
+        if self.renamed:
+            self.update(context)
+        else:
+            self.create(context)
+        self.save(context)
         return {'FINISHED'}
 
     @staticmethod
-    def create_cam_hierarchy(context):
+    def create(context):
         preferences = addon.preferences
-        blcol_props = utils.bpy.col.obt(preferences.container_props, force=True)
-        utils.bpy.col.obt(f"PR:{context.scene.camera.name}", force=True, parent=blcol_props)
         blcol_blockouts = utils.bpy.col.obt(preferences.container_blockouts, force=True)
         utils.bpy.col.obt(f"BK:{context.scene.camera.name}", force=True, parent=blcol_blockouts)
-        return
+        blcol_props = utils.bpy.col.obt(preferences.container_props, force=True)
+        utils.bpy.col.obt(f"PR:{context.scene.camera.name}", force=True, parent=blcol_props)
+        return None
 
     @staticmethod
-    def check_cam_hierarchy(context):
+    def update(context):
+        preferences = addon.preferences
+        props_cam = eval(f"context.scene.camera.data.{addon.name}")
+        blcol_blockouts = utils.bpy.col.obt(preferences.container_blockouts, force=True)
+        cam_blockouts = utils.bpy.col.obt(props_cam.hierarchy.blockouts, parent=blcol_blockouts)
+        blcol_props = utils.bpy.col.obt(preferences.container_props, force=True)
+        cam_props = utils.bpy.col.obt(props_cam.hierarchy.props, parent=blcol_props)
+
+        cam_blockouts.name = f"BK:{context.scene.camera.name}"
+        cam_props.name = f"PR:{context.scene.camera.name}"
+        return None
+
+    @staticmethod
+    def save(context):
+        props_cam = eval(f"context.scene.camera.data.{addon.name}")
+        props_cam.hierarchy.blockouts = f"BK:{context.scene.camera.name}"
+        props_cam.hierarchy.props = f"PR:{context.scene.camera.name}"
+        return None
+
+    @staticmethod
+    def audit(context):
         preferences = addon.preferences
         conditions = [
             utils.bpy.col.obt(preferences.container_props),
@@ -75,8 +98,19 @@ class ARK_OT_CreateCamHierachy(bpy.types.Operator):
         ]
         return all(conditions)
 
+    @staticmethod
+    def audit_previous(context):
+        preferences = addon.preferences
+        props_cam = eval(f"context.scene.camera.data.{addon.name}")
+        conditions = [
+            utils.bpy.col.obt(preferences.container_blockouts),
+            utils.bpy.col.obt(props_cam.hierarchy.blockouts, local=True),
+            utils.bpy.col.obt(preferences.container_props),
+            utils.bpy.col.obt(props_cam.hierarchy.props, local=True),
+        ]
+        return all(conditions)
+
 class ARK_OT_SetCameraActive(bpy.types.Operator):
-    """ARK Operator to set active camera."""
     bl_idname = f"{addon.name}.set_camera_active"
     bl_label = ""
     bl_options = {'UNDO', 'INTERNAL'}
@@ -151,8 +185,20 @@ class ARK_OT_ForceCameraVerticals(bpy.types.Operator):
         cam_rot[1] = math.radians(0)
         return {'FINISHED'}
 
+class ARK_Camera_Hierarchy(bpy.types.PropertyGroup):
+    blockouts : bpy.props.StringProperty(
+        name = "Blockouts",
+        default = "",
+    )
+
+    props : bpy.props.StringProperty(
+        name = "Props",
+        default = "",
+    )
+
 class ARK_Camera(bpy.types.PropertyGroup):
-    """ARK Camera Properties"""
+    hierarchy : bpy.props.PointerProperty(type=ARK_Camera_Hierarchy)
+
     def set_aperture(self, value):
         self["aperture"] = value
         self.update_exposure(bpy.context)
@@ -390,7 +436,6 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
             row = layout.row(align=True)
             row.alert=True
             utils.bpy.ui.label(row, text="No active camera.")
-            row.prop(context.scene, "camera", text="")
             return None
         elif not cam_list:
             row = layout.row()
@@ -398,13 +443,15 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 utils.bpy.ops.UTILS_OT_Placeholder.bl_idname,
                 text = "Cameras must be inside {container_cameras.name} to appear.",
             )
-        elif not ARK_OT_CreateCamHierachy.check_cam_hierarchy(context):
+        elif not ARK_OT_CameraHierachy.audit(context):
+            renamed = ARK_OT_CameraHierachy.audit_previous(context)
+            text = "%s" % "Camera was renamed, sync hierarchy?" if renamed else "Missing camera hierarchy, fix it?"
             row = layout.row()
             row.alert = True
             row.operator(
-                ARK_OT_CreateCamHierachy.bl_idname,
-                text = "Missing structure for active camera, fix it?",
-            )
+                ARK_OT_CameraHierachy.bl_idname,
+                text = text,
+            ).renamed = renamed
         else:
             layout.label(text="")
 
@@ -544,10 +591,11 @@ def Preferences_UI(preferences, layout):
 
 CLASSES = [
     ARK_OT_CreateArkHierachy,
-    ARK_OT_CreateCamHierachy,
+    ARK_OT_CameraHierachy,
     ARK_OT_SetCameraActive,
     ARK_OT_ForceCameraVerticals,
     ARK_Preferences_Cameras,
+    ARK_Camera_Hierarchy,
     ARK_Camera,
     ARK_PT_PROPERTIES_Scene,
     ARK_UL_PROPERTIES_CameraList,
