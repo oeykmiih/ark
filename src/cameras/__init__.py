@@ -169,6 +169,52 @@ class ARK_OT_SetCameraActive(bpy.types.Operator):
                 blob.visible_volume_scatter = False
         return None
 
+class ARK_OT_AddCamera(bpy.types.Operator):
+    bl_idname = f"{addon.name}.add_camera"
+    bl_label = ""
+    bl_options = {'UNDO', 'INTERNAL'}
+
+    def execute(self, context):
+        preferences = addon.preferences
+        blcol_cameras = utils.bpy.col.obt(preferences.container_cameras)
+
+        name = preferences.default_name
+        bldata = utils.bpy.obt(bpy.data.cameras, name, force=True, overwrite='NEW')
+        blcam =  utils.bpy.obj.obt(
+            name,
+            data=bldata,
+            force=True,
+            parent=blcol_cameras,
+            overwrite='NEW',
+        )
+
+        bpy.ops.ark.set_camera_active(name=blcam.name)
+        bpy.ops.ark.cam_hierarchy()
+        return {'FINISHED'}
+
+class ARK_OT_DuplicateCamera(bpy.types.Operator):
+    bl_idname = f"{addon.name}.duplicate_camera"
+    bl_label = ""
+    bl_options = {'UNDO', 'INTERNAL'}
+
+    @classmethod
+    def poll(cls, context):
+        return context.scene.camera
+
+    def execute(self, context):
+        preferences = addon.preferences
+        blcol_cameras = utils.bpy.col.obt(preferences.container_cameras)
+
+        blcam = context.scene.camera.copy()
+        blcam.data = blcam.data.copy()
+        ARK_OT_HandleCameraHierachy.cleanse_refs(blcam)
+
+        blcol_cameras.objects.link(blcam)
+
+        bpy.ops.ark.set_camera_active(name=blcam.name)
+        bpy.ops.ark.cam_hierarchy()
+        return {'FINISHED'}
+
 class ARK_OT_ForceCameraVerticals(bpy.types.Operator):
     bl_idname = f"{addon.name}.force_camera_verticals"
     bl_label = ""
@@ -423,6 +469,9 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                     props_scene,
                     "active_camera_index",
                 )
+            col = row.column(align=True)
+            col.operator(ARK_OT_AddCamera.bl_idname, text='', icon='ADD')
+            col.operator(ARK_OT_DuplicateCamera.bl_idname, text='', icon='DUPLICATE')
 
         if not context.scene.camera:
             row = layout.row(align=True)
@@ -553,6 +602,11 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
 
 @addon.property
 class ARK_Preferences_Cameras(bpy.types.PropertyGroup):
+    default_name : bpy.props.StringProperty(
+        name="Camera Name",
+        default="Cam",
+    )
+
     container_blockouts : bpy.props.StringProperty(
         name="Blockouts",
         default="#Blockouts",
@@ -585,6 +639,8 @@ CLASSES = [
     ARK_OT_CreateArkHierachy,
     ARK_OT_HandleCameraHierachy,
     ARK_OT_SetCameraActive,
+    ARK_OT_AddCamera,
+    ARK_OT_DuplicateCamera,
     ARK_OT_ForceCameraVerticals,
     ARK_Preferences_Cameras,
     ARK_Camera_Hierarchy,
