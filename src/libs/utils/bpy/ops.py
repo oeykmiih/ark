@@ -39,15 +39,18 @@ class UTILS_OT_Select(bpy.types.Operator):
             if self.toggle:
                 if obj.select_get():
                     obj.select_set(False)
+                    if context.active_object == obj:
+                        context.view_layer.objects.active = None
                 else:
                     obj.select_set(True)
-                    bpy.context.view_layer.objects.active = obj
+                    context.view_layer.objects.active = obj
             elif self.deselect:
                 obj.select_set(False)
+                context.view_layer.objects.active = None
             else:
                 bpy.ops.object.select_all(action='DESELECT')
                 obj.select_set(True)
-                bpy.context.view_layer.objects.active = obj
+                context.view_layer.objects.active = obj
         return {'FINISHED'}
 
 CLASSES = [
