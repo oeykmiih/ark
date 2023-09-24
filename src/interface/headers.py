@@ -1,90 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 import bpy
+import bl_ui
 
 import utils
 addon = utils.bpy.Addon()
 
 from . import enums
-
-class ARK_OT_QuickEditorType(bpy.types.Operator):
-    """Tooltip"""
-    bl_idname = f"{addon.name}.set_editor_type"
-    bl_label = ""
-    bl_options = {'INTERNAL'}
-
-    shift : bpy.props.BoolProperty()
-    ctrl : bpy.props.BoolProperty()
-
-    ui_type : bpy.props.EnumProperty(
-        name = "",
-        description = "",
-        items = enums.EDITOR_TYPE,
-        default = 'VIEW_3D',
-    )
-
-    def invoke(self, context, event):
-        self.shift = event.shift
-        self.ctrl = event.ctrl
-        return self.execute(context)
-
-    def execute(self, context):
-        if self.shift and self.ctrl:
-            pass
-        elif self.shift:
-            bpy.ops.wm.call_menu_pie(name=ARK_MT_PIE_SetEditorMode.__name__)
-        elif self.ctrl:
-            pass
-        else:
-            bpy.context.area.ui_type = self.ui_type
-        return {'INTERFACE'}
-
-class ARK_OT_SetEditorMode(bpy.types.Operator):
-    """Tooltip"""
-    bl_idname = f"{addon.name}.set_editor_mode"
-    bl_label = ""
-    bl_options = {'INTERNAL'}
-
-    ui_type : bpy.props.EnumProperty(
-        name = "",
-        description = "",
-        items = enums.EDITOR_TYPE,
-        default = 'VIEW_3D',
-    )
-
-    ui_mode : bpy.props.StringProperty(
-        name = "",
-        description = "",
-        default = 'NONE',
-    )
-
-    def execute(self, context):
-        context.area.ui_type = self.ui_type
-        if self.ui_mode != 'NONE':
-            for attribute, value in enums.EDITOR_MODE[self.ui_type][self.ui_mode].items():
-                utils.rsetattr(bpy, attribute, value)
-        return {'INTERFACE'}
-
-class ARK_MT_PIE_SetEditorMode(bpy.types.Menu):
-    bl_label = ""
-
-    def draw(self, context):
-        layout = self.layout.menu_pie()
-
-        session = addon.session().interface
-        pie_count = 0
-
-        for ui_type, children in enums.EDITOR_MODE.items():
-            pie_count += 1
-            while pie_count in [3, 5, 6]:
-                layout.separator()
-                pie_count += 1
-
-            operator = layout.operator(
-                ARK_OT_SetEditorMode.bl_idname,
-                icon = enums.EDITOR_TYPE_ICONS[ui_type]
-            )
-            operator.ui_type = ui_type
-        return None
 
 class ARK_OT_VIEW3D_ZoomExtents(bpy.types.Operator):
     bl_idname = f"{addon.name}.zoom_extents"
@@ -103,11 +24,73 @@ class ARK_OT_VIEW3D_ZoomExtents(bpy.types.Operator):
             bpy.ops.view3d.view_center_camera()
         return {"INTERFACE"}
 
+def ARK_ASSETS_HT_draw(self, context):
+    layout = self.layout
+
+    row = layout.row(align=True)
+    row.alert = True
+    bt = row.operator(
+        f"{addon.name}.quick_editor_type",
+        text = "",
+        icon = 'PANEL_CLOSE',
+    )
+
+    row = layout.row(align=True)
+    ui_type = 'ASSETS'
+    for ui_mode in enums.EDITOR_MODE[ui_type]:
+        bt = row.operator(
+            f"{addon.name}.set_editor_mode",
+            text = "",
+            icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
+            depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
+        )
+        bt.ui_type = ui_type
+        bt.ui_mode = ui_mode
+
+    row = layout.row(align=True)
+    row.ui_units_x = 1
+    row.prop(bpy.context.space_data.params, "asset_library_ref", text="")
+
+    layout.separator()
+    return None
+
+def ARK_NODE_HT_draw(self, context):
+    layout = self.layout
+
+    bt = layout.operator(
+        f"{addon.name}.quick_editor_type",
+        text = "",
+        icon = enums.EDITOR_TYPE_ICONS['VIEW_3D'],
+    )
+    bt.ui_type = 'VIEW_3D'
+
+    row = layout.row(align=True)
+    ui_type = 'ShaderNodeTree'
+    for ui_mode in enums.EDITOR_MODE[ui_type]:
+        bt = row.operator(
+            f"{addon.name}.set_editor_mode",
+            text = "",
+            icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
+            depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
+        )
+        bt.ui_type = ui_type
+        bt.ui_mode = ui_mode
+
+    row = self.layout.row(align=True)
+    if not context.space_data.tree_type == "CompositorNodeTree":
+        row.prop(context.space_data, "pin", text="", emboss=False)
+
+    if context.space_data.id_from and context.active_object is not None and context.active_object.type != 'LIGHT':
+        panel = row.template_ID(context.space_data.id_from, "active_material")
+
+    layout.separator()
+    return None
+
 def ARK_OUTLINER_HT_draw(self, context):
     layout = self.layout
 
     bt = layout.operator(
-        ARK_OT_QuickEditorType.bl_idname,
+        f"{addon.name}.quick_editor_type",
         text = "",
         icon = enums.EDITOR_TYPE_ICONS['PROPERTIES'],
     )
@@ -115,49 +98,23 @@ def ARK_OUTLINER_HT_draw(self, context):
 
     row = layout.row(align=True)
     ui_type = 'OUTLINER'
-    ui_mode = 'VIEW_LAYER'
-    bt = row.operator(
-        ARK_OT_SetEditorMode.bl_idname,
-        text = "",
-        icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
-    )
-    bt.ui_type = ui_type
-    bt.ui_mode = ui_mode
-
-    ui_mode = 'FILE'
-    bt = row.operator(
-        ARK_OT_SetEditorMode.bl_idname,
-        text = "",
-        icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
-    )
-    bt.ui_type = ui_type
-    bt.ui_mode = ui_mode
-
-    ui_mode = 'FILE_MATERIAL'
-    bt = row.operator(
-        ARK_OT_SetEditorMode.bl_idname,
-        text = "",
-        icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
-    )
-    bt.ui_type = ui_type
-    bt.ui_mode = ui_mode
-
-    ui_mode = 'FILE_NODETREE'
-    bt = row.operator(
-        ARK_OT_SetEditorMode.bl_idname,
-        text = "",
-        icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
-    )
-    bt.ui_type = ui_type
-    bt.ui_mode = ui_mode
-
-    layout.separator()
+    orphan_loop = False
+    for ui_mode in enums.EDITOR_MODE[ui_type]:
+        if ui_mode.startswith("ORPHAN") and not orphan_loop:
+            row = layout.row(align=True)
+            row.alert = True
+            orphan_loop = True
+        bt = row.operator(
+            f"{addon.name}.set_editor_mode",
+            text = "",
+            icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
+            depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
+        )
+        bt.ui_type = ui_type
+        bt.ui_mode = ui_mode
 
     row = layout.row(align=True)
+    row.alert = True
     bt = row.operator(
         "outliner.orphans_purge",
         text = "Purge",
@@ -165,38 +122,18 @@ def ARK_OUTLINER_HT_draw(self, context):
     bt.do_recursive = True
 
     layout.separator()
+    return None
 
-    row = layout.row(align=True)
-    ui_mode = 'ORPHAN'
-    bt = row.operator(
-        ARK_OT_SetEditorMode.bl_idname,
+def ARK_PROPERTIES_HT_draw(self, context):
+    layout = self.layout
+    bt = layout.operator(
+        f"{addon.name}.quick_editor_type",
         text = "",
-        icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
+        icon = enums.EDITOR_TYPE_ICONS['OUTLINER'],
     )
-    bt.ui_type = ui_type
-    bt.ui_mode = ui_mode
-
-    ui_mode = 'ORPHAN_MATERIAL'
-    bt = row.operator(
-        ARK_OT_SetEditorMode.bl_idname,
-        text = "",
-        icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
-    )
-    bt.ui_type = ui_type
-    bt.ui_mode = ui_mode
-
-    ui_mode = 'ORPHAN_NODETREE'
-    bt = row.operator(
-        ARK_OT_SetEditorMode.bl_idname,
-        text = "",
-        icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
-    )
-    bt.ui_type = ui_type
-    bt.ui_mode = ui_mode
-
+    bt.ui_type = 'OUTLINER'
+    layout.separator_spacer()
+    layout.prop(context.space_data, "search_filter", icon='VIEWZOOM', text="")
     layout.separator_spacer()
     return None
 
@@ -204,7 +141,7 @@ def ARK_VIEW3D_HT_draw(self, context):
     layout = self.layout
 
     bt = layout.operator(
-        ARK_OT_QuickEditorType.bl_idname,
+        f"{addon.name}.quick_editor_type",
         text = "",
         icon = enums.EDITOR_TYPE_ICONS['ShaderNodeTree'],
     )
@@ -212,35 +149,15 @@ def ARK_VIEW3D_HT_draw(self, context):
 
     row = layout.row(align=True)
     ui_type = 'VIEW_3D'
-    ui_mode = 'WIREFRAME'
-    bt = row.operator(
-        ARK_OT_SetEditorMode.bl_idname,
-        text = "",
-        icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode])
-    )
-    bt.ui_type = ui_type
-    bt.ui_mode = ui_mode
-
-    ui_mode = 'SOLID'
-    bt = row.operator(
-        ARK_OT_SetEditorMode.bl_idname,
-        text = "",
-        icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode])
-    )
-    bt.ui_type = ui_type
-    bt.ui_mode = ui_mode
-
-    ui_mode = 'RENDERED'
-    bt = row.operator(
-        ARK_OT_SetEditorMode.bl_idname,
-        text = "",
-        icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-        depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode])
-    )
-    bt.ui_type = ui_type
-    bt.ui_mode = ui_mode
+    for ui_mode in enums.EDITOR_MODE[ui_type]:
+        bt = row.operator(
+            f"{addon.name}.set_editor_mode",
+            text = "",
+            icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
+            depress = utils.bpy.validate_props(enums.EDITOR_MODE[ui_type][ui_mode]),
+        )
+        bt.ui_type = ui_type
+        bt.ui_mode = ui_mode
 
     row = layout.row(align=True)
     bt = row.operator(
@@ -293,7 +210,7 @@ def ARK_VIEW3D_HT_draw(self, context):
         )
     else:
         sub.operator(
-            utils.UTILS_OT_Placeholder.bl_idname,
+            utils.bpy.ops.UTILS_OT_Placeholder.bl_idname,
             text = "",
             icon = 'CAMERA_STEREO',
         )
@@ -317,13 +234,54 @@ def ARK_VIEW3D_HT_draw(self, context):
         icon_only = True,
     )
 
-    layout.separator_spacer()
+    layout.separator()
     return None
+
+def enable():
+    bpy.types.FILEBROWSER_HT_header.draw = ARK_ASSETS_HT_draw
+    bpy.types.NODE_HT_header.draw = ARK_NODE_HT_draw
+    bpy.types.OUTLINER_HT_header.draw = ARK_OUTLINER_HT_draw
+    bpy.types.VIEW3D_HT_header.draw = ARK_VIEW3D_HT_draw
+    bpy.types.PROPERTIES_HT_header.draw = ARK_PROPERTIES_HT_draw
+    return None
+
+def disable():
+    import importlib
+    importlib.reload(bl_ui.space_filebrowser)
+    bpy.types.FILEBROWSER_HT_header.draw = bl_ui.space_filebrowser.FILEBROWSER_HT_header.draw
+    importlib.reload(bl_ui.space_node)
+    bpy.types.NODE_HT_header.draw = bl_ui.space_node.NODE_HT_header.draw
+    importlib.reload(bl_ui.space_outliner)
+    bpy.types.OUTLINER_HT_header.draw = bl_ui.space_outliner.OUTLINER_HT_header.draw
+    importlib.reload(bl_ui.space_properties)
+    bpy.types.PROPERTIES_HT_header.draw = bl_ui.space_properties.PROPERTIES_HT_header.draw
+    importlib.reload(bl_ui.space_view3d)
+    bpy.types.VIEW3D_HT_header.draw = bl_ui.space_view3d.VIEW3D_HT_header.draw
+    return None
+
+@addon.property
+class ARK_WindowManager_Interface_Headers(bpy.types.PropertyGroup):
+    def update_toggle(self, context):
+        if self.toggle:
+            enable()
+        else:
+            disable()
+        return None
+
+    toggle : bpy.props.BoolProperty(
+        name = "Toogle",
+        default = False,
+        update = update_toggle,
+    )
+
+@addon.property
+class ARK_Preferences_Interface_Headers(bpy.types.PropertyGroup):
+    pass
+
 CLASSES = [
-    ARK_OT_QuickEditorType,
-    ARK_OT_SetEditorMode,
-    ARK_MT_PIE_SetEditorMode,
     ARK_OT_VIEW3D_ZoomExtents,
+    ARK_WindowManager_Interface_Headers,
+    ARK_Preferences_Interface_Headers,
 ]
 
 def register():

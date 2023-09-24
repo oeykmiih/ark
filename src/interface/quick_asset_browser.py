@@ -6,6 +6,19 @@ addon = utils.bpy.Addon()
 
 from . import enums
 
+# NOTE: keep name in sync with headers.ARK_OT_QuickEditorType
+class ARK_OT_CloseAssetBrowser(bpy.types.Operator):
+    bl_idname = f"{addon.name}.close_asset_browser"
+    bl_label = ""
+    bl_description = "Closes the current Asset Browser"
+
+    def execute(self, context):
+        session = addon.session
+        session.library = bpy.context.space_data.params.asset_library_ref
+        bpy.ops.screen.area_close()
+        return {"FINISHED"}
+
+# NOTE: keep name in sync with headers.ARK_OT_QuickEditorType
 class ARK_OT_QuickAssetBrowser(bpy.types.Operator):
     bl_idname = f"{addon.name}.quick_asset_browser"
     bl_label = ""
@@ -63,6 +76,14 @@ class ARK_OT_QuickAssetBrowser(bpy.types.Operator):
                         bpy.context.space_data.params.asset_library_ref = session.library
                     else:
                         bpy.context.space_data.params.asset_library_ref = preferences.library
+
+                    match session.context:
+                        case 'VIEW_3D':
+                            for attribute,value in enums.EDITOR_MODE[area.ui_type]['MODELS'].items():
+                                    utils.rsetattr(bpy, attribute, value)
+                        case 'ShaderNodeTree':
+                            for attribute,value in enums.EDITOR_MODE[area.ui_type]['MATERIAL'].items():
+                                    utils.rsetattr(bpy, attribute, value)
                 break
         return None
 
@@ -93,24 +114,25 @@ class ARK_Preferences_Interface_QuickAssetBrowser(bpy.types.PropertyGroup):
         return items
 
     library : bpy.props.EnumProperty(
-        name = "QuickAssetBrowser Library",
+        name = "Default Library",
         items = get_libraries,
         default = None,
     )
 
     split_factor : bpy.props.FloatProperty(
-        name = "ARK_OT_ToogleAssetBrowser_library",
+        name = "Split Factor",
         default = 0.3,
     )
 
 def Preferences_UI(preferences, layout):
     layout.prop(preferences, "library")
     split = layout.row(align=True).split(factor=0.245)
-    split.label(text="QuickAssetBrowser Factor")
+    split.label(text="Split Factor")
     split.prop(preferences, "split_factor", text="")
     return None
 
 CLASSES = [
+    ARK_OT_CloseAssetBrowser,
     ARK_OT_QuickAssetBrowser,
     ARK_Preferences_Interface_QuickAssetBrowser,
     ARK_WindowManager_Interface_QuickAssetBrowser,
