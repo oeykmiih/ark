@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 import functools
+import itertools
 
 # CREDIT : Scatter5
 def import_modules(modules):
@@ -66,3 +67,10 @@ def traverse_tree(tree):
     yield tree
     for child in tree.children:
         yield from traverse_tree(child)
+
+def pad_lists(*lists, padding=None):
+    padded = [[] for _ in lists]
+    for lst in itertools.zip_longest(*lists, fillvalue=padding):
+        for i, elem in enumerate(lst):
+            padded[i].append(elem)
+    return padded
