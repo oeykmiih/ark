@@ -48,7 +48,7 @@ class ARK_OT_CameraHierachy(bpy.types.Operator):
             self.update(context)
         else:
             self.create(context)
-        self.save(context)
+        self.save_refs(context)
         return {'FINISHED'}
 
     @staticmethod
@@ -74,12 +74,6 @@ class ARK_OT_CameraHierachy(bpy.types.Operator):
         return None
 
     @staticmethod
-    def save(context):
-        props_cam = eval(f"context.scene.camera.data.{addon.name}")
-        props_cam.hierarchy.blockouts = f"BK:{context.scene.camera.name}"
-        props_cam.hierarchy.props = f"PR:{context.scene.camera.name}"
-        return None
-
     @staticmethod
     def audit(context):
         preferences = addon.preferences
@@ -102,6 +96,13 @@ class ARK_OT_CameraHierachy(bpy.types.Operator):
             utils.bpy.col.obt(props_cam.hierarchy.props, local=True),
         ]
         return all(conditions)
+
+    @staticmethod
+    def save_refs(context):
+        props_cam = eval(f"context.scene.camera.data.{addon.name}")
+        props_cam.hierarchy.blockouts = f"BK:{context.scene.camera.name}"
+        props_cam.hierarchy.props = f"PR:{context.scene.camera.name}"
+        return None
 
 class ARK_OT_SetCameraActive(bpy.types.Operator):
     bl_idname = f"{addon.name}.set_camera_active"
