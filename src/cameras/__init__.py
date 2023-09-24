@@ -36,7 +36,7 @@ class ARK_OT_CreateArkHierachy(bpy.types.Operator):
         ]
         return all(conditions)
 
-class ARK_OT_CameraHierachy(bpy.types.Operator):
+class ARK_OT_HandleCameraHierachy(bpy.types.Operator):
     bl_idname = f"{addon.name}.cam_hierarchy"
     bl_label = ""
     bl_options = {'UNDO', 'INTERNAL'}
@@ -435,13 +435,13 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 utils.bpy.ops.UTILS_OT_Placeholder.bl_idname,
                 text = "Cameras must be inside {container_cameras.name} to appear.",
             )
-        elif not ARK_OT_CameraHierachy.audit(context):
-            renamed = ARK_OT_CameraHierachy.audit_previous(context)
+        elif not ARK_OT_HandleCameraHierachy.audit(context):
+            renamed = ARK_OT_HandleCameraHierachy.audit_previous(context)
             text = "%s" % "Camera was renamed, sync hierarchy?" if renamed else "Missing camera hierarchy, fix it?"
             row = layout.row()
             row.alert = True
             row.operator(
-                ARK_OT_CameraHierachy.bl_idname,
+                ARK_OT_HandleCameraHierachy.bl_idname,
                 text = text,
             ).renamed = renamed
         else:
@@ -583,7 +583,7 @@ def Preferences_UI(preferences, layout):
 
 CLASSES = [
     ARK_OT_CreateArkHierachy,
-    ARK_OT_CameraHierachy,
+    ARK_OT_HandleCameraHierachy,
     ARK_OT_SetCameraActive,
     ARK_OT_ForceCameraVerticals,
     ARK_Preferences_Cameras,
