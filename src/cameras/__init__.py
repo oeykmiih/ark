@@ -15,10 +15,6 @@ class ARK_OT_CreateArkHierachy(bpy.types.Operator):
     bl_label = ""
     bl_options = {'UNDO' , 'INTERNAL'}
 
-    @classmethod
-    def poll(cls, context):
-        return True
-
     def execute(self, context):
         self.create_ark_hierarchy(context)
         return {'FINISHED'}
@@ -45,10 +41,7 @@ class ARK_OT_CameraHierachy(bpy.types.Operator):
     bl_label = ""
     bl_options = {'UNDO', 'INTERNAL'}
 
-    renamed : bpy.props.BoolProperty(
-        name = "Update Hierarchy",
-        default = False,
-    )
+    renamed : bpy.props.BoolProperty(default = False)
 
     def execute(self, context):
         if self.renamed:
@@ -170,7 +163,6 @@ class ARK_OT_SetCameraActive(bpy.types.Operator):
         return None
 
 class ARK_OT_ForceCameraVerticals(bpy.types.Operator):
-    """ARK Operator to force 2 point perspective."""
     bl_idname = f"{addon.name}.force_camera_verticals"
     bl_label = ""
     bl_options = {'UNDO', 'INTERNAL'}
@@ -186,15 +178,8 @@ class ARK_OT_ForceCameraVerticals(bpy.types.Operator):
         return {'FINISHED'}
 
 class ARK_Camera_Hierarchy(bpy.types.PropertyGroup):
-    blockouts : bpy.props.StringProperty(
-        name = "Blockouts",
-        default = "",
-    )
-
-    props : bpy.props.StringProperty(
-        name = "Props",
-        default = "",
-    )
+    blockouts : bpy.props.StringProperty()
+    props : bpy.props.StringProperty()
 
 class ARK_Camera(bpy.types.PropertyGroup):
     hierarchy : bpy.props.PointerProperty(type=ARK_Camera_Hierarchy)
@@ -383,7 +368,6 @@ class ARK_Camera(bpy.types.PropertyGroup):
     )
 
 class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
-    """ARK PANEL Scene Properties"""
     bl_label = "Cameras"
     bl_idname = "ARK_PT_PROPERTIES_Scene"
     bl_space_type = 'PROPERTIES'
