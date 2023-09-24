@@ -84,7 +84,7 @@ def obt(name, data=None, local=False, force=False, overwrite=None, parent=None, 
     if local:
         scope = bpy.context.scene.objects
 
-    if hollow:
+    if data is None and hollow:
         data = meta.obt(
             bpy.data.meshes,
             name,
@@ -101,7 +101,7 @@ def obt(name, data=None, local=False, force=False, overwrite=None, parent=None, 
         overwrite = overwrite,
     )
 
-    if parent is not None and blob is not None and name not in parent.objects:
+    if parent is not None and blob is not None and blob.name not in parent.objects:
         parent.objects.link(blob)
     return blob
 

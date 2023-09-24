@@ -19,6 +19,8 @@ def obt(datablock, id, data=None, scope=None, force=False, overwrite=None):
             scope = [item.name for item in scope]
     if id in scope:
         match overwrite:
+            case 'NEW':
+                bldat = _create(datablock, id, data)
             case 'SOFT':
                 datablock[id].name = f"{id}.old"
                 bldat = _create(datablock, id, data)
