@@ -50,7 +50,6 @@ class Addon:
     def property(self, cls):
         """Generates PropertyGroup from child modules (if any). And adds itself
         to parent key in {properties} dictionary.
-
         """
         parent_module = self.caller.parent
         module = self.caller.path
@@ -84,9 +83,12 @@ class Addon:
             self.set_property(cls)
         return None
 
-    def get_property(self, kind):
-        object = eval(f"bpy.context.{kind}")
-        return getattr(object, self.name)
+    def get_property(self, kind, root=False):
+        object = getattr(bpy.context, kind)
+        if root:
+            return getattr(object, self.name, None)
+        else:
+            return std.rgetattr(object, self.caller.path)
 
     def del_property(self, cls):
         kind = cls.__name__.split("_")[1]
