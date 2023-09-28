@@ -607,7 +607,6 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
         return None
 
 class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
-    """ARK UIList Camera List"""
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         row = layout.row(align=True)
 
