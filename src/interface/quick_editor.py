@@ -168,14 +168,9 @@ class ARK_OT_QuickEditorSplit(bpy.types.Operator):
 
 @addon.property
 class ARK_WindowManager_Interface_QuickEditor(bpy.types.PropertyGroup):
-    open : bpy.props.BoolProperty(
-        name = "ARK_OT_QuickEditorSplit.open",
-        default = False,
-    )
+    open : bpy.props.BoolProperty()
 
-    prev_scheme : bpy.props.StringProperty(
-        name = "ARK_OT_QuickEditorSplit.scheme"
-    )
+    area2 : bpy.props.StringProperty()
 
 @addon.property
 class ARK_Preferences_Interface_QuickEditor(bpy.types.PropertyGroup):
