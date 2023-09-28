@@ -51,6 +51,7 @@ class ARK_OT_AddCameraHierarchy(bpy.types.Operator, view_combinations.Collection
         blcam = context.scene.camera
         if self.renamed:
             self.update(context, blcam)
+            view_combinations.update_collection_hierarchy(context, blcam)
         else:
             self.create(context, blcam)
         self.save_refs(context, blcam)
