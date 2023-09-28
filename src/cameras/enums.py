@@ -27,8 +27,8 @@ APERTURE = [
 ]
 
 EXPOSURE_MODE = [
-    ('MANUAL',"Manual Exposure","Manual Settings using Shutter Speed, Aperture and ISO"),
     ('EV',"EV", "Exposure Value"),
+    ('MANUAL',"Manual Exposure","Manual Settings using Shutter Speed, Aperture and ISO"),
 ]
 
 ISO = [
