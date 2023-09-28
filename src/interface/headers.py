@@ -57,10 +57,13 @@ def ARK_ASSETS_HT_draw(self, context):
 def ARK_NODE_HT_draw(self, context):
     layout = self.layout
 
-    bt = layout.operator(
+    box = layout.box()
+    box.ui_units_x = 1.6
+    bt = box.operator(
         f"{addon.name}.quick_editor_type",
         text = "",
         icon = enums.EDITOR_TYPE_ICONS['VIEW_3D'],
+        emboss = False,
     )
     bt.ui_type = 'VIEW_3D'
 
@@ -89,10 +92,13 @@ def ARK_NODE_HT_draw(self, context):
 def ARK_OUTLINER_HT_draw(self, context):
     layout = self.layout
 
-    bt = layout.operator(
+    box = layout.box()
+    box.ui_units_x = 1.6
+    bt = box.operator(
         f"{addon.name}.quick_editor_type",
         text = "",
         icon = enums.EDITOR_TYPE_ICONS['PROPERTIES'],
+        emboss = False,
     )
     bt.ui_type = 'PROPERTIES'
 
@@ -126,24 +132,34 @@ def ARK_OUTLINER_HT_draw(self, context):
 
 def ARK_PROPERTIES_HT_draw(self, context):
     layout = self.layout
-    bt = layout.operator(
+
+    box = layout.box()
+    box.ui_units_x = 1.6
+    bt = box.operator(
         f"{addon.name}.quick_editor_type",
         text = "",
         icon = enums.EDITOR_TYPE_ICONS['OUTLINER'],
+        emboss = False,
     )
     bt.ui_type = 'OUTLINER'
+
     layout.separator_spacer()
+
     layout.prop(context.space_data, "search_filter", icon='VIEWZOOM', text="")
+
     layout.separator_spacer()
     return None
 
 def ARK_VIEW3D_HT_draw(self, context):
     layout = self.layout
 
-    bt = layout.operator(
+    box = layout.box()
+    box.ui_units_x = 1.6
+    bt = box.operator(
         f"{addon.name}.quick_editor_type",
         text = "",
         icon = enums.EDITOR_TYPE_ICONS['ShaderNodeTree'],
+        emboss = False,
     )
     bt.ui_type = 'ShaderNodeTree'
 
