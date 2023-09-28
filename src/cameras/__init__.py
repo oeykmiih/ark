@@ -515,7 +515,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                     container_cameras,
                     "all_objects",
                     props_scene,
-                    "active_camera_index",
+                    "uilist_index",
                 )
             col = row.column(align=True)
             col.operator(ARK_OT_AddCamera.bl_idname, text="", icon='ADD')
@@ -656,6 +656,13 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
         return filtered, ordered
 
 @addon.property
+class ARK_Scene_Interface_Cameras(bpy.types.PropertyGroup):
+    # NOTE: This index is just to fulfill call requirements,
+    ## it's not used in the UIList to search for properties.
+    uilist_index : bpy.props.IntProperty(
+        name="",
+        default=999,
+    )
 class ARK_Preferences_Cameras(bpy.types.PropertyGroup):
     default_name : bpy.props.StringProperty(
         name="Camera Name",
