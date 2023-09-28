@@ -78,16 +78,15 @@ class ARK_OT_QuickEditorType(bpy.types.Operator):
         return self.execute(context)
 
     def execute(self, context):
-        if context.area.ui_type == 'ASSETS' and not self.shift:
-            bpy.ops.ark.close_asset_browser()
-            return {'INTERFACE'}
-
         if self.shift and self.ctrl:
-            bpy.ops.ark.quick_editor_split()
-        elif self.shift:
             bpy.ops.wm.call_menu_pie(name=ARK_MT_PIE_SetEditorMode.__name__)
+        elif self.shift:
+            if context.area.ui_type in ['OUTLINER', 'PROPERTIES']:
+                bpy.ops.ark.quick_editor_split()
+            else:
+                bpy.ops.ark.quick_asset_browser()
         elif self.ctrl:
-            bpy.ops.ark.quick_asset_browser()
+            bpy.ops.ark.quick_editor_split()
         else:
             context.area.ui_type = self.ui_type
         return {'INTERFACE'}
