@@ -83,15 +83,9 @@ class ARK_OT_QuickAssetBrowser(bpy.types.Operator):
 
 @addon.property
 class ARK_WindowManager_Interface_QuickAssetBrowser(bpy.types.PropertyGroup):
-    context : bpy.props.StringProperty(
-        name="ARK_OT_ToogleAssetBrowser_context",
-        default="",
-    )
-
-    library : bpy.props.StringProperty(
-        name = "ARK_OT_ToogleAssetBrowser_library",
-        default = "",
-    )
+    context : bpy.props.StringProperty()
+    library : bpy.props.StringProperty()
+    is_open : bpy.props.BoolProperty()
 
 @addon.property
 class ARK_Preferences_Interface_QuickAssetBrowser(bpy.types.PropertyGroup):
