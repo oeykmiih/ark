@@ -523,28 +523,25 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
             col.operator(ARK_OT_DuplicateCamera.bl_idname, text="", icon='DUPLICATE')
 
         blcam = context.scene.camera
-        if not blcam:
-            row = layout.row(align=True)
-            row.alert=True
+        if not cam_list:
+            row = box.row()
+            utils.bpy.ui.alert(row, text=f"No camera in {container_cameras.name}.")
+            return None
+        elif not blcam:
+            row = box.row(align=True)
             utils.bpy.ui.label(row, text="No active camera.")
             return None
-        elif not cam_list:
-            row = layout.row()
-            row.operator(
-                utils.bpy.ops.UTILS_OT_Placeholder.bl_idname,
-                text = "Cameras must be inside {container_cameras.name} to appear.",
-            )
         elif not CameraHierarchy.audit(context, blcam):
             renamed = CameraHierarchy.audit_previous(context, blcam)
             text = "%s" % "Camera was renamed, sync hierarchy?" if renamed else "Missing camera hierarchy, fix it?"
-            row = layout.row()
+            row = box.row()
             row.alert = True
             row.operator(
                 ARK_OT_AddCameraHierarchy.bl_idname,
                 text = text,
             ).renamed = renamed
         else:
-            layout.label(text="")
+            box.row().label(text="")
 
         props_cam = getattr(blcam.data, addon.name)
         box = layout.box()
@@ -610,18 +607,7 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         row = layout.row(align=True)
 
-        if context.scene.camera == item:
-            row.operator(
-                ARK_OT_SetCameraActive.bl_idname,
-                text="",
-                icon='RESTRICT_RENDER_OFF',
-            ).name=item.name
-        else:
-            row.operator(
-                ARK_OT_SetCameraActive.bl_idname,
-                text="",
-                icon='RESTRICT_RENDER_ON',
-            ).name=item.name
+        row.prop(bpy.data.objects[item.name], "name", text="")
 
         op = row.operator(
             utils.bpy.ops.UTILS_OT_Select.bl_idname,
@@ -632,7 +618,12 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
         op.obj_name = item.name
         op.parent_instead = True
 
-        row.prop(bpy.data.objects[item.name], "name", text='')
+        op = row.operator(
+            ARK_OT_SetCameraActive.bl_idname,
+            text="",
+            icon='%s' % 'RESTRICT_RENDER_OFF' if context.scene.camera == item else 'RESTRICT_RENDER_ON' ,
+        )
+        op.name=item.name
         return None
 
     def filter_items(self, context, data, propname):
