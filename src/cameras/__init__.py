@@ -653,6 +653,12 @@ class ARK_Scene_Interface_Cameras(bpy.types.PropertyGroup):
         name="",
         default=999,
     )
+
+@addon.property
+class ARK_WindowManager_Cameras(bpy.types.PropertyGroup):
+    pass
+
+@addon.property
 class ARK_Preferences_Cameras(bpy.types.PropertyGroup):
     default_name : bpy.props.StringProperty(
         name="Camera Name",
@@ -695,9 +701,11 @@ CLASSES = [
     ARK_OT_DuplicateCamera,
     ARK_OT_RemoveCamera,
     ARK_OT_ForceCameraVerticals,
+    ARK_WindowManager_Cameras
     ARK_Preferences_Cameras,
     ARK_Camera_Hierarchy,
     ARK_Camera,
+    ARK_Scene_Interface_Cameras,
     ARK_PT_PROPERTIES_Scene,
     ARK_UL_PROPERTIES_CameraList,
 ]
