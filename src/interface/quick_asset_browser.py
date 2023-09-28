@@ -109,7 +109,7 @@ class ARK_Preferences_Interface_QuickAssetBrowser(bpy.types.PropertyGroup):
 
     split_factor : bpy.props.FloatProperty(
         name = "Split Factor",
-        default = 0.3,
+        default = 0.35,
     )
 
 def Preferences_UI(preferences, layout):

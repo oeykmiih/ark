@@ -160,7 +160,7 @@ class ARK_WindowManager_Interface_QuickEditor(bpy.types.PropertyGroup):
 class ARK_Preferences_Interface_QuickEditor(bpy.types.PropertyGroup):
     split_factor : bpy.props.FloatProperty(
         name = "Split Factor",
-        default = 0.45,
+        default = 0.55,
     )
 
 def Preferences_UI(preferences, layout):
