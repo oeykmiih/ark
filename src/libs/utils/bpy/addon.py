@@ -18,7 +18,8 @@ class _Caller():
             self.path = ".".join(split)
             self.subpath = ".".join(split[1:])
             self.name = split.pop()
-            self.parent = ".".join(split)
+            self.ppath = ".".join(split)
+            self.psubpath = ".".join(split[1:])
         finally:
             del frame
         return None
@@ -31,27 +32,33 @@ class Addon:
         return None
 
     @property
-    def preferences(self, root=False):
+    def root_preferences(self):
         """bpy.context.preferences.addons[demo].preferences"""
-        if root:
-            return bpy.context.preferences.addons[self.name].preferences
-        else:
-            return std.rgetattr(bpy.context.preferences.addons[self.name].preferences, self.caller.subpath)
+        return bpy.context.preferences.addons[self.name].preferences
+
+    @property
+    def parent_preferences(self):
+        return std.rgetattr(bpy.context.preferences.addons[self.name].preferences, self.caller.psubpath)
+
+    @property
+    def preferences(self):
+        return std.rgetattr(bpy.context.preferences.addons[self.name].preferences, self.caller.subpath)
+
+    @property
+    def root_session(self, root=False):
+        """bpy.context.window_manager.demo"""
+        return getattr(bpy.context.window_manager, self.name, None)
 
     @property
     def session(self, root=False):
-        """bpy.context.window_manager.demo"""
-        if root:
-            return getattr(bpy.context.window_manager, self.name, None)
-        else:
-            return std.rgetattr(bpy.context.window_manager, self.caller.path)
+        return std.rgetattr(bpy.context.window_manager, self.caller.path)
 
     # CREDIT: https://github.com/nutti/Screencast-Keys/commit/51925cbe31045eeeb7283c88b6c01d3ef1df2c2d
     def property(self, cls):
         """Generates PropertyGroup from child modules (if any). And adds itself
         to parent key in {properties} dictionary.
         """
-        parent_module = self.caller.parent
+        ppath = self.caller.ppath
         module = self.caller.path
         kind = cls.__name__.split("_")[1]
 
@@ -65,9 +72,9 @@ class Addon:
                 cls.__annotations__[attr] = bpy.props.PointerProperty(type=child)
 
         # Add itself to parent key in dictionary
-        if parent_module not in properties[kind]:
-            properties[kind].update({parent_module : []})
-        properties[kind][parent_module].append(cls)
+        if ppath not in properties[kind]:
+            properties[kind].update({ppath : []})
+        properties[kind][ppath].append(cls)
         return cls
 
     def set_property(self, cls):
