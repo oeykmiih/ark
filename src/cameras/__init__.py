@@ -41,7 +41,7 @@ class ARK_OT_CreateArkHierarchy(bpy.types.Operator, ArkHierarchy):
         return {'FINISHED'}
 
 class ARK_OT_AddCameraHierarchy(bpy.types.Operator, view_combinations.CollectionHierarchy):
-    bl_idname = f"{addon.name}.add_cam_hierarchy"
+    bl_idname = f"{addon.name}.add_camera_hierarchy"
     bl_label = ""
     bl_options = {'UNDO', 'INTERNAL'}
 
@@ -66,7 +66,7 @@ class ARK_OT_SetCameraActive(bpy.types.Operator):
     def execute(self, context):
         preferences = addon.preferences
         cam = context.scene.camera = bpy.data.objects.get(self.name)
-        props_cam = eval(f"context.scene.camera.data.{addon.name}")
+        props_cam = getattr(cam.data, addon.name)
         blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, local=True)
 
         tracker = utils.bpy.obj.obt(preferences.trackers_camera, parent=blcol_cameras, force=True, local=True)
@@ -79,7 +79,7 @@ class ARK_OT_SetCameraActive(bpy.types.Operator):
         return {'FINISHED'}
 
     def update_cam_properties(self, context, props_cam):
-        view_combinations.update_visibilities(self, context)
+        view_combinations.update_visibilities(context, self)
         properties.ARK_Camera.update_exposure(props_cam, context)
         properties.ARK_Camera.update_resolution(props_cam, context)
         return None

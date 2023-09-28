@@ -4,11 +4,11 @@ import bpy
 import utils
 addon = utils.bpy.Addon()
 
-def update_visibilities(blcam, context):
-    update_collection_hierarchy(blcam, context)
+def update_visibilities(context, blcam):
+    update_collection_hierarchy(context, blcam)
     return None
 
-def update_collection_hierarchy(blcam, context):
+def update_collection_hierarchy(context, blcam):
     preferences = addon.parent_preferences
     containers = {}
     containers["props"] = preferences.container_props
