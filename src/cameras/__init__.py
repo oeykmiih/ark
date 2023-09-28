@@ -505,6 +505,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 ARK_OT_CreateArkHierarchy.bl_idname,
                 text = "Missing structure for cameras, fix it?",
             )
+            return None
         else:
             box = layout.box()
             row = box.row()
