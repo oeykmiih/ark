@@ -74,7 +74,6 @@ class ARK_WindowManager(bpy.types.PropertyGroup):
 
 @addon.property
 class ARK_Scene(bpy.types.PropertyGroup):
-    """Define Custom Properties"""
     active_camera_index : bpy.props.IntProperty(
         name="",
         default=0,

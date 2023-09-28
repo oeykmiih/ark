@@ -627,7 +627,7 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
         op = row.operator(
             utils.bpy.ops.UTILS_OT_Select.bl_idname,
             text="",
-            icon="%s" % 'RESTRICT_SELECT_OFF' if item.select_get() or item.parent is not None and item.parent.select_get() else 'RESTRICT_SELECT_ON',
+            icon='%s' % 'RESTRICT_SELECT_OFF' if item.select_get() or item.parent is not None and item.parent.select_get() else 'RESTRICT_SELECT_ON',
             depress= context.active_object == item and item.select_get(),
         )
         op.obj_name = item.name
