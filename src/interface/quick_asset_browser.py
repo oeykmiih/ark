@@ -17,6 +17,7 @@ class ARK_OT_CloseAssetBrowser(bpy.types.Operator):
         session = addon.session
         session.library = bpy.context.space_data.params.asset_library_ref
         bpy.ops.screen.area_close()
+        session.is_open = False
         return {"FINISHED"}
 
 # NOTE: keep name in sync with headers.ARK_OT_QuickEditorType
@@ -32,60 +33,52 @@ class ARK_OT_QuickAssetBrowser(bpy.types.Operator):
         split_direction = 'VERTICAL'
         split_factor = preferences.split_factor
 
-        old = None
-        # Check whether there is an asset browser open somewhere.
-        for window in context.window_manager.windows:
-                for area in window.screen.areas:
-                    if area.ui_type == 'ASSETS':
-                        old = area
-
-        if old is None:
-            areas = []
-            # Load all areas into list
-            for window in context.window_manager.windows:
-                for area in window.screen.areas:
-                    areas.append(area)
-
-            session.context = context.area.ui_type
-
-            # Split current area
+        if not session.is_open:
             bpy.ops.screen.area_split(direction=split_direction,factor=split_factor)
+            area1 = context.area
+            area2 = context.screen.areas[-1]
 
-            # Look for area not in list and override context
-            for window in context.window_manager.windows:
-                for area in window.screen.areas:
-                    if area not in areas:
-                        with context.temp_override(area=area):
-                            context.area.ui_type = 'ASSETS'
-                            context.space_data.show_region_toolbar = False
-
-                            bpy.app.timers.register(self.set_asset_browser_defaults, first_interval=.005)
-                        break
+            _area = area1 if split_factor > 0.5 else area2
+            with context.temp_override(area=_area):
+                context.area.ui_type = 'ASSETS'
+                context.space_data.show_region_toolbar = False
+            session.is_open = True
+            bpy.app.timers.register(self.set_asset_browser_defaults, first_interval=.005)
         else:
-            with context.temp_override(area=old):
+            for area in reversed(context.screen.areas):
+                if area.ui_type == 'ASSETS':
+                    area2 = area
+                    break
+                continue
+            else:
+                session.is_open = False
+                return {'INTERFACE'}
+
+            with context.temp_override(area=area2):
                 bpy.ops.screen.area_close()
+            session.is_open =  False
         return {"INTERFACE"}
 
     @staticmethod
     def set_asset_browser_defaults():
         preferences = addon.preferences
         session = addon.session
-        for area in bpy.context.screen.areas:
-            if area.ui_type == 'ASSETS':
-                with bpy.context.temp_override(area=area):
-                    if session.library:
-                        bpy.context.space_data.params.asset_library_ref = session.library
-                    else:
-                        bpy.context.space_data.params.asset_library_ref = preferences.library
 
-                    match session.context:
-                        case 'VIEW_3D':
-                            for attribute,value in enums.EDITOR_MODE[area.ui_type]['MODELS'].items():
-                                    utils.rsetattr(bpy, attribute, value)
-                        case 'ShaderNodeTree':
-                            for attribute,value in enums.EDITOR_MODE[area.ui_type]['MATERIAL'].items():
-                                    utils.rsetattr(bpy, attribute, value)
-                break
+        area = bpy.context.screen.areas[-1]
+        if area.ui_type == 'ASSETS':
+            with bpy.context.temp_override(area=area):
+                if session.library:
+                    bpy.context.space_data.params.asset_library_ref = session.library
+                else:
+                    bpy.context.space_data.params.asset_library_ref = preferences.library
+
+                match session.context:
+                    case 'VIEW_3D':
+                        for attribute,value in enums.EDITOR_MODE[area.ui_type]['MODELS'].items():
+                                utils.rsetattr(bpy, attribute, value)
+                    case 'ShaderNodeTree':
+                        for attribute,value in enums.EDITOR_MODE[area.ui_type]['MATERIAL'].items():
+                                utils.rsetattr(bpy, attribute, value)
         return None
 
 @addon.property

@@ -29,10 +29,10 @@ def ARK_ASSETS_HT_draw(self, context):
 
     row = layout.row(align=True)
     row.alert = True
+    row.ui_units_x = 1.6
     bt = row.operator(
-        f"{addon.name}.quick_editor_type",
-        text = "",
-        icon = 'PANEL_CLOSE',
+        f"{addon.name}.close_asset_browser",
+        text = "X",
     )
 
     row = layout.row(align=True)

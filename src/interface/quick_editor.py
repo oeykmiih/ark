@@ -108,8 +108,10 @@ class ARK_OT_QuickEditorSplit(bpy.types.Operator):
         preferences = addon.preferences
         session = addon.session
 
-        if not session.open:
-            match context.area.ui_type:
+        if not session.is_open:
+            area1 = context.area
+
+            match area1.ui_type:
                 case 'VIEW_3D':
                     self.ui_type = 'ShaderNodeTree'
                 case 'ShaderNodeTree':
@@ -123,52 +125,34 @@ class ARK_OT_QuickEditorSplit(bpy.types.Operator):
 
             split_direction = 'HORIZONTAL'
             split_factor = preferences.split_factor
+            session.area2 = self.ui_type
 
-            areas = []
-            scheme = []
-            # Load all areas into list
-            for window in context.window_manager.windows:
-                for area in window.screen.areas:
-                    areas.append(area)
-                    scheme.append(area.ui_type)
-
-            session.prev_scheme = json.dumps(scheme)
-
-            # Split current area
             bpy.ops.screen.area_split(direction=split_direction,factor=split_factor)
+            area2 = context.screen.areas[-1]
 
-            # Look for area not in list and override context
-            for window in context.window_manager.windows:
-                for area in window.screen.areas:
-                    if area not in areas:
-                        with context.temp_override(area=area):
-                            context.area.ui_type = self.ui_type
-                        break
-            session.open = True
+            _area = area1 if split_factor > 0.5 else area2
+            with context.temp_override(area=_area):
+                context.area.ui_type = self.ui_type
+            session.is_open = True
+
         else:
-            prev_scheme = json.loads(session.prev_scheme)
-            session.prev_scheme = ""
-            areas = []
-            curr_scheme = []
-            # Load all areas into list
-            for window in context.window_manager.windows:
-                for area in window.screen.areas:
-                    areas.append(area)
-                    curr_scheme.append(area.ui_type)
+            for area in reversed(context.screen.areas):
+                if area.ui_type == session.area2:
+                    area2 = area
+                    break
+                continue
+            else:
+                session.is_open = False
+                return {'INTERFACE'}
 
-            if len(curr_scheme) > len(prev_scheme):
-                currscheme, prev_scheme = utils.std.pad_lists(curr_scheme, prev_scheme)
-                for index, area in enumerate(areas):
-                    if curr_scheme[index] != prev_scheme[index]:
-                        with context.temp_override(area=areas[index]):
-                            bpy.ops.screen.area_close()
-                        break
-            session.open = False
+            with context.temp_override(area=area2):
+                bpy.ops.screen.area_close()
+            session.is_open = False
         return {'INTERFACE'}
 
 @addon.property
 class ARK_WindowManager_Interface_QuickEditor(bpy.types.PropertyGroup):
-    open : bpy.props.BoolProperty()
+    is_open : bpy.props.BoolProperty()
 
     area2 : bpy.props.StringProperty()
 

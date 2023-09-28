@@ -19,6 +19,13 @@ class ARK_OT_ToggleInterface(bpy.types.Operator):
     bl_label = ""
     bl_options = {'INTERNAL'}
 
+    # NOTE: This disables the Operator for everything but the TOPBAR.
+    ## Only needed because the operator appears when searching since it's
+    ## present in a menu (TOPBAR_MT_editor_menus).
+    @classmethod
+    def poll(self, context):
+        return context.area.ui_type == ''
+
     @staticmethod
     def run():
         preferences = addon.preferences
@@ -54,6 +61,10 @@ def ARK_BT_UPPERBAR_ToggleInterface(self, context):
     return None
 
 @addon.property
+class ARK_Scene_Interface(bpy.types.PropertyGroup):
+    pass
+
+@addon.property
 class ARK_WindowManager_Interface(bpy.types.PropertyGroup):
     toggle : bpy.props.BoolProperty(
         name = "Simplfiy",
@@ -82,6 +93,7 @@ def Preferences_UI(preferences, layout):
 
 CLASSES = [
     ARK_OT_ToggleInterface,
+    ARK_Scene_Interface,
     ARK_WindowManager_Interface,
     ARK_Preferences_Interface,
 ]
