@@ -327,6 +327,9 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
         op.name=item.name
         return None
 
+    def draw_filter(self, context, layout):
+        return None
+
     def filter_items(self, context, data, propname):
         """Filter and order items in the list."""
         helper_funcs = bpy.types.UI_UL_list
