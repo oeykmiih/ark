@@ -350,7 +350,7 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
         return filtered, ordered
 
 @addon.property
-class ARK_Scene_Interface_Cameras(bpy.types.PropertyGroup):
+class Scene_Interface_Cameras(bpy.types.PropertyGroup):
     # NOTE: This index is just to fulfill call requirements,
     ## it's not used in the UIList to search for properties.
     uilist_index : bpy.props.IntProperty(
@@ -359,11 +359,11 @@ class ARK_Scene_Interface_Cameras(bpy.types.PropertyGroup):
     )
 
 @addon.property
-class ARK_WindowManager_Cameras(bpy.types.PropertyGroup):
+class WindowManager_Cameras(bpy.types.PropertyGroup):
     pass
 
 @addon.property
-class ARK_Preferences_Cameras(bpy.types.PropertyGroup):
+class Preferences_Cameras(bpy.types.PropertyGroup):
     default_name : bpy.props.StringProperty(
         name="Camera Name",
         default="Cam",
@@ -389,7 +389,7 @@ class ARK_Preferences_Cameras(bpy.types.PropertyGroup):
         default="#CameraTracker",
     )
 
-def Preferences_UI(preferences, layout):
+def UI(preferences, layout):
     box = layout.box()
     box.prop(preferences, "container_cameras")
     box.prop(preferences, "container_props")
@@ -405,11 +405,11 @@ CLASSES = [
     ARK_OT_DuplicateCamera,
     ARK_OT_RemoveCamera,
     ARK_OT_ForceCameraVerticals,
-    ARK_WindowManager_Cameras,
-    ARK_Preferences_Cameras,
-    ARK_Scene_Interface_Cameras,
     ARK_PT_PROPERTIES_Scene,
     ARK_UL_PROPERTIES_CameraList,
+    WindowManager_Cameras,
+    Preferences_Cameras,
+    Scene_Interface_Cameras,
 ]
 
 def register():

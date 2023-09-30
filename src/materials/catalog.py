@@ -151,7 +151,7 @@ class ARK_PT_Materials(bpy.types.Panel):
         return None
 
 @addon.property
-class ARK_WindowManager_Materials_Catalog(bpy.types.PropertyGroup):
+class WindowManager_Materials_Catalog(bpy.types.PropertyGroup):
     show_all : bpy.props.BoolProperty(
         name="Show All",
         default=True,
@@ -178,21 +178,21 @@ class ARK_WindowManager_Materials_Catalog(bpy.types.PropertyGroup):
     )
 
 @addon.property
-class ARK_Preferences_Materials_Catalog(bpy.types.PropertyGroup):
+class Preferences_Materials_Catalog(bpy.types.PropertyGroup):
     trackers_material : bpy.props.StringProperty(
         name="Material Tracker",
         default="#MaterialTracker",
     )
 
-def Preferences_UI(preferences, layout):
+def UI(preferences, layout):
     layout.prop(preferences, "trackers_material")
     return None
 
 CLASSES = [
     ARK_PT_Materials,
     ARK_OT_GoToMaterial,
-    ARK_WindowManager_Materials_Catalog,
-    ARK_Preferences_Materials_Catalog,
+    WindowManager_Materials_Catalog,
+    Preferences_Materials_Catalog,
 ]
 
 def register():

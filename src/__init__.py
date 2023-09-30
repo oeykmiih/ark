@@ -48,11 +48,11 @@ MODULES = utils.import_modules(MODULES)
 import bpy
 
 @addon.property
-class ARK_Preferences(bpy.types.AddonPreferences):
+class Preferences(bpy.types.AddonPreferences):
     """Store options"""
     bl_idname = addon.name
 
-    items = (name for name, module in MODULES.items() if hasattr(module, "Preferences_UI"))
+    items = (name for name, module in MODULES.items() if hasattr(module, "UI"))
 
     ui_prefs_tab: bpy.props.EnumProperty(
         name = "ui_prefs_tab",
@@ -65,21 +65,21 @@ class ARK_Preferences(bpy.types.AddonPreferences):
         col = layout.column()
         col.row().prop(self, "ui_prefs_tab", expand=True)
         properties = getattr(self, self.ui_prefs_tab)
-        MODULES[self.ui_prefs_tab].Preferences_UI(properties, layout)
+        MODULES[self.ui_prefs_tab].UI(properties, layout)
         return None
 
 @addon.property
-class ARK_WindowManager(bpy.types.PropertyGroup):
+class WindowManager(bpy.types.PropertyGroup):
     pass
 
 @addon.property
-class ARK_Scene(bpy.types.PropertyGroup):
+class Scene(bpy.types.PropertyGroup):
     pass
 
 PROPS = [
-    ARK_Preferences,
-    ARK_WindowManager,
-    ARK_Scene,
+    Preferences,
+    WindowManager,
+    Scene,
 ]
 
 def register():

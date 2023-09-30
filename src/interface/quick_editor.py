@@ -150,19 +150,19 @@ class ARK_OT_QuickEditorSplit(bpy.types.Operator):
         return {'INTERFACE'}
 
 @addon.property
-class ARK_WindowManager_Interface_QuickEditor(bpy.types.PropertyGroup):
+class WindowManager_Interface_QuickEditor(bpy.types.PropertyGroup):
     is_open : bpy.props.BoolProperty()
 
     area2 : bpy.props.StringProperty()
 
 @addon.property
-class ARK_Preferences_Interface_QuickEditor(bpy.types.PropertyGroup):
+class Preferences_Interface_QuickEditor(bpy.types.PropertyGroup):
     split_factor : bpy.props.FloatProperty(
         name = "Split Factor",
         default = 0.55,
     )
 
-def Preferences_UI(preferences, layout):
+def UI(preferences, layout):
     split = layout.row(align=True).split(factor=0.245)
     split.label(text="Split Factor")
     split.prop(preferences, "split_factor", text="")
@@ -173,8 +173,8 @@ CLASSES = [
     ARK_OT_SetEditorMode,
     ARK_MT_PIE_SetEditorMode,
     ARK_OT_QuickEditorSplit,
-    ARK_Preferences_Interface_QuickEditor,
-    ARK_WindowManager_Interface_QuickEditor,
+    Preferences_Interface_QuickEditor,
+    WindowManager_Interface_QuickEditor,
 ]
 
 def register():

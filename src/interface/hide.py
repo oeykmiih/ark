@@ -83,7 +83,7 @@ def disable():
     return None
 
 @addon.property
-class ARK_WindowManager_Interface_Hide(bpy.types.PropertyGroup):
+class WindowManager_Interface_Hide(bpy.types.PropertyGroup):
     def update_toggle(self, context):
         if self.toggle:
             enable()
@@ -103,13 +103,13 @@ class ARK_WindowManager_Interface_Hide(bpy.types.PropertyGroup):
     )
 
 @addon.property
-class ARK_Preferences_Interface_Hide(bpy.types.PropertyGroup):
+class Preferences_Interface_Hide(bpy.types.PropertyGroup):
     pass
 
 CLASSES = [
     ARK_PT_Hide,
-    ARK_WindowManager_Interface_Hide,
-    ARK_Preferences_Interface_Hide,
+    WindowManager_Interface_Hide,
+    Preferences_Interface_Hide,
 ]
 
 def register():

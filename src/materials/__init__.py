@@ -10,25 +10,25 @@ MODULES = {
 MODULES = utils.import_modules(MODULES)
 
 @addon.property
-class ARK_WindowManager_Materials(bpy.types.PropertyGroup):
+class WindowManager_Materials(bpy.types.PropertyGroup):
     pass
 
 @addon.property
-class ARK_Preferences_Materials(bpy.types.PropertyGroup):
+class Preferences_Materials(bpy.types.PropertyGroup):
     pass
 
-def Preferences_UI(preferences, layout):
-    items = (name for name, module in MODULES.items() if hasattr(module, "Preferences_UI"))
+def UI(preferences, layout):
+    items = (name for name, module in MODULES.items() if hasattr(module, "UI"))
     for name in items:
         module = MODULES[name]
         properties = getattr(preferences, name)
         layout = layout.box()
-        module.Preferences_UI(properties, layout)
+        module.UI(properties, layout)
     return None
 
 CLASSES = [
-    ARK_WindowManager_Materials,
-    ARK_Preferences_Materials,
+    WindowManager_Materials,
+    Preferences_Materials,
 ]
 
 def register():

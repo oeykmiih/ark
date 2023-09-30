@@ -65,37 +65,37 @@ class ARK_Scene_Interface(bpy.types.PropertyGroup):
     pass
 
 @addon.property
-class ARK_WindowManager_Interface(bpy.types.PropertyGroup):
+class WindowManager_Interface(bpy.types.PropertyGroup):
     toggle : bpy.props.BoolProperty(
         name = "Simplfiy",
         default = False,
     )
 
 @addon.property
-class ARK_Preferences_Interface(bpy.types.PropertyGroup):
+class Preferences_Interface(bpy.types.PropertyGroup):
     enable_on_startup : bpy.props.BoolProperty(
         name = "Enable on startup!",
         default = False,
     )
 
-def Preferences_UI(preferences, layout):
+def UI(preferences, layout):
     box = layout.box()
     box.prop(preferences, "enable_on_startup", toggle=True)
 
-    items = (name for name, module in MODULES.items() if hasattr(module, "Preferences_UI"))
+    items = (name for name, module in MODULES.items() if hasattr(module, "UI"))
     for name in items:
         module = MODULES[name]
         box = layout.box()
         box.label(text=name.replace("_", " ").title())
         properties = getattr(preferences, name)
-        module.Preferences_UI(properties, box)
+        module.UI(properties, box)
     return None
 
 CLASSES = [
     ARK_OT_ToggleInterface,
     ARK_Scene_Interface,
-    ARK_WindowManager_Interface,
-    ARK_Preferences_Interface,
+    WindowManager_Interface,
+    Preferences_Interface,
 ]
 
 @bpy.app.handlers.persistent

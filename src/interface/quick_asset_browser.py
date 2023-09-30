@@ -82,13 +82,13 @@ class ARK_OT_QuickAssetBrowser(bpy.types.Operator):
         return None
 
 @addon.property
-class ARK_WindowManager_Interface_QuickAssetBrowser(bpy.types.PropertyGroup):
+class WindowManager_Interface_QuickAssetBrowser(bpy.types.PropertyGroup):
     context : bpy.props.StringProperty()
     library : bpy.props.StringProperty()
     is_open : bpy.props.BoolProperty()
 
 @addon.property
-class ARK_Preferences_Interface_QuickAssetBrowser(bpy.types.PropertyGroup):
+class Preferences_Interface_QuickAssetBrowser(bpy.types.PropertyGroup):
     def get_libraries(self, context):
         # NOTE: Use Blender built-in libraries aswell.
         items = [
@@ -112,7 +112,7 @@ class ARK_Preferences_Interface_QuickAssetBrowser(bpy.types.PropertyGroup):
         default = 0.35,
     )
 
-def Preferences_UI(preferences, layout):
+def UI(preferences, layout):
     layout.prop(preferences, "library")
     split = layout.row(align=True).split(factor=0.245)
     split.label(text="Split Factor")
@@ -122,8 +122,8 @@ def Preferences_UI(preferences, layout):
 CLASSES = [
     ARK_OT_CloseAssetBrowser,
     ARK_OT_QuickAssetBrowser,
-    ARK_Preferences_Interface_QuickAssetBrowser,
-    ARK_WindowManager_Interface_QuickAssetBrowser,
+    Preferences_Interface_QuickAssetBrowser,
+    WindowManager_Interface_QuickAssetBrowser,
 ]
 
 def register():

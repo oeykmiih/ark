@@ -10,12 +10,12 @@ addon = utils.bpy.Addon()
 from . import defaults
 from . import enums
 
-class ARK_Camera_Hierarchy(bpy.types.PropertyGroup):
+class Camera_Hierarchy(bpy.types.PropertyGroup):
     blockouts : bpy.props.StringProperty()
     props : bpy.props.StringProperty()
 
-class ARK_Camera(bpy.types.PropertyGroup):
-    hierarchy : bpy.props.PointerProperty(type=ARK_Camera_Hierarchy)
+class Camera(bpy.types.PropertyGroup):
+    hierarchy : bpy.props.PointerProperty(type=Camera_Hierarchy)
 
     def set_aperture(self, value):
         self["aperture"] = value
@@ -206,12 +206,12 @@ class ARK_Camera(bpy.types.PropertyGroup):
     )
 
 CLASSES = [
-    ARK_Camera_Hierarchy,
-    ARK_Camera,
+    Camera_Hierarchy,
+    Camera,
 ]
 
 PROPS = [
-    ARK_Camera,
+    Camera,
 ]
 
 def register():

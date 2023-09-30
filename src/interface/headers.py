@@ -276,7 +276,7 @@ def disable():
     return None
 
 @addon.property
-class ARK_WindowManager_Interface_Headers(bpy.types.PropertyGroup):
+class WindowManager_Interface_Headers(bpy.types.PropertyGroup):
     def update_toggle(self, context):
         if self.toggle:
             enable()
@@ -291,13 +291,13 @@ class ARK_WindowManager_Interface_Headers(bpy.types.PropertyGroup):
     )
 
 @addon.property
-class ARK_Preferences_Interface_Headers(bpy.types.PropertyGroup):
+class Preferences_Interface_Headers(bpy.types.PropertyGroup):
     pass
 
 CLASSES = [
     ARK_OT_VIEW3D_ZoomExtents,
-    ARK_WindowManager_Interface_Headers,
-    ARK_Preferences_Interface_Headers,
+    WindowManager_Interface_Headers,
+    Preferences_Interface_Headers,
 ]
 
 def register():
