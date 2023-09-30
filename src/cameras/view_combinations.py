@@ -129,13 +129,13 @@ class ARK_WindowManager_Cameras_ViewCombinations(bpy.types.PropertyGroup):
 class ARK_Preferences_Cameras_ViewCombinations(bpy.types.PropertyGroup):
     pass
 
-def Preferences_UI(preferences, layout):
-    items = (name for name, module in MODULES.items() if hasattr(module, "Preferences_UI"))
+def UI(preferences, layout):
+    items = (name for name, module in MODULES.items() if hasattr(module, "UI"))
     for name in items:
         module = MODULES[name]
         properties = getattr(preferences, name)
         layout = layout.box()
-        module.Preferences_UI(properties, layout)
+        module.UI(properties, layout)
     return None
 
 CLASSES = [
