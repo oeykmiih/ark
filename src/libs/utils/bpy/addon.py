@@ -60,7 +60,7 @@ class Addon:
         """
         ppath = self.caller.ppath
         module = self.caller.path
-        kind = cls.__name__.split("_")[1]
+        kind = cls.__name__.split("_")[0]
 
         if kind not in properties:
             properties.update({kind : {}})
@@ -78,7 +78,7 @@ class Addon:
         return cls
 
     def set_property(self, cls):
-        kind = cls.__name__.split("_")[1]
+        kind = cls.__name__.split("_")[0]
         if kind == "Preferences":
             return None
         object = eval(f"bpy.types.{kind}")
@@ -98,10 +98,9 @@ class Addon:
             return std.rgetattr(object, self.caller.path)
 
     def del_property(self, cls):
-        kind = cls.__name__.split("_")[1]
+        kind = cls.__name__.split("_")[0]
         if kind == "Preferences":
             return None
-        location = cls.__name__.split("_")[1]
         object = eval(f"bpy.types.{kind}")
         delattr(object, self.name)
         return None
@@ -123,10 +122,12 @@ def unregister_classes(classes):
 
 def register_modules(modules):
     for module in modules.values():
-        module.register()
+        if hasattr(module, "register"):
+            module.register()
     return None
 
 def unregister_modules(modules):
     for module in modules.values():
-        module.unregister()
+        if hasattr(module, "unregister"):
+            module.unregister()
     return None

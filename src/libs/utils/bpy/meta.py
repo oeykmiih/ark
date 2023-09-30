@@ -30,6 +30,8 @@ def obt(datablock, id, data=None, scope=None, force=False, overwrite=None):
             case None:
                 bldat = datablock[id]
     elif force:
+        if id in datablock:
+            datablock[id].name = f"{id}.old"
         bldat = _create(datablock, id, data)
     else:
         bldat = None
