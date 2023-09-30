@@ -312,17 +312,17 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
 
         op = row.operator(
             utils.bpy.ops.UTILS_OT_Select.bl_idname,
-            text="",
-            icon='%s' % 'RESTRICT_SELECT_OFF' if item.select_get() or item.parent is not None and item.parent.select_get() else 'RESTRICT_SELECT_ON',
             depress= context.active_object == item and item.select_get(),
+            text = "",
+            icon = '%s' % 'RESTRICT_SELECT_OFF' if item.select_get() or item.parent is not None and item.parent.select_get() else 'RESTRICT_SELECT_ON',
         )
         op.obj_name = item.name
         op.parent_instead = True
 
         op = row.operator(
             ARK_OT_SetCameraActive.bl_idname,
-            text="",
-            icon='%s' % 'RESTRICT_RENDER_OFF' if context.scene.camera == item else 'RESTRICT_RENDER_ON' ,
+            text = "",
+            icon = '%s' % 'RESTRICT_RENDER_OFF' if context.scene.camera == item else 'RESTRICT_RENDER_ON',
         )
         op.name=item.name
         return None
