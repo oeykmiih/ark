@@ -4,45 +4,50 @@ import bpy
 import utils
 addon = utils.bpy.Addon()
 
-def update_visibilities(context, blcam):
-    update_collection_hierarchy(context, blcam)
+def update(blcam, preferences):
+    upt_collection_combination(blcam, preferences)
     return None
 
-def update_collection_hierarchy(context, blcam):
-    preferences = addon.parent_preferences
-    containers = {}
-    containers["props"] = preferences.container_props
-    containers["blockouts"] = preferences.container_blockouts
-    exempt = [
-        f"PR:{blcam.name}",
-        f"BK:{blcam.name}",
-        ]
+def upt_collection_combination(blcam, preferences):
+    upt_collection_combination_props(
+        bpy.context.view_layer.layer_collection.children[preferences.container_props],
+        [f"PR:{blcam.name}",],
+    )
 
-    for bl_layer_collection in context.view_layer.layer_collection.children[containers["props"]].children:
-        if bl_layer_collection.name not in exempt:
-            bl_layer_collection.exclude = True
-        else:
-            bl_layer_collection.exclude = False
-
-    for bl_layer_collection in context.view_layer.layer_collection.children[containers["blockouts"]].children:
-        if bl_layer_collection.name not in exempt:
-            bl_layer_collection.exclude = True
-        else:
-            bl_layer_collection.exclude = False
-
-    if utils.bpy.col.obt(f"BK:{blcam.name}") is not None:
-        for blob in utils.bpy.col.obt(f"BK:{blcam.name}").objects:
-            blob.visible_camera = False
-            blob.visible_diffuse = False
-            blob.visible_glossy = False
-            blob.visible_transmission = False
-            blob.visible_volume_scatter = False
+    upt_collection_combination_blockouts(
+        bpy.context.view_layer.layer_collection.children[preferences.container_blockouts],
+        [f"BK:{blcam.name}",],
+    )
     return None
 
-class CollectionHierarchy():
+def upt_collection_combination_props(container, target):
+    for bllaycol in container.children:
+        if bllaycol.name in target:
+            bllaycol.exclude = False
+        else:
+            bllaycol.exclude = True
+    return None
+
+def upt_collection_combination_blockouts(container, target):
+    for bllaycol in container.children:
+        if bllaycol.name in target:
+            bllaycol.exclude = False
+        else:
+            bllaycol.exclude = True
+
+    for name in target:
+        if utils.bpy.col.obt(name) is not None:
+            for blob in utils.bpy.col.obt(name).objects:
+                blob.visible_camera = False
+                blob.visible_diffuse = False
+                blob.visible_glossy = False
+                blob.visible_transmission = False
+                blob.visible_volume_scatter = False
+    return None
+
+class collection_hierarchy():
     @staticmethod
-    def create(context, blcam=None):
-        preferences = addon.parent_preferences
+    def create(blcam, preferences):
         name = blcam.name
 
         blcol_blockouts = utils.bpy.col.obt(preferences.container_blockouts, force=True)
@@ -52,8 +57,7 @@ class CollectionHierarchy():
         return None
 
     @staticmethod
-    def update(context, blcam=None):
-        preferences = addon.parent_preferences
+    def update(blcam, preferences):
         name = blcam.name
         props_cam = getattr(blcam.data, addon.name)
 
@@ -67,8 +71,7 @@ class CollectionHierarchy():
         return None
 
     @staticmethod
-    def remove(context, blcam=None):
-        preferences = addon.parent_preferences
+    def remove(blcam, preferences):
         name = blcam.name
 
         blcol_blockouts = utils.bpy.col.obt(preferences.container_blockouts, force=True)
@@ -83,8 +86,7 @@ class CollectionHierarchy():
         return None
 
     @staticmethod
-    def audit(context, blcam=None):
-        preferences = addon.parent_preferences
+    def audit(blcam, preferences):
         name = blcam.name
 
         conditions = [
@@ -96,29 +98,30 @@ class CollectionHierarchy():
         return all(conditions)
 
     @staticmethod
-    def audit_previous(context, blcam=None):
-        preferences = addon.parent_preferences
-        props_cam = getattr(blcam.data, addon.name)
+    def audit_previous(blcam, preferences):
+        props = getattr(blcam.data, addon.name)
+
         conditions = [
             utils.bpy.col.obt(preferences.container_blockouts),
-            utils.bpy.col.obt(props_cam.hierarchy.blockouts, local=True),
+            utils.bpy.col.obt(props.hierarchy.blockouts, local=True),
             utils.bpy.col.obt(preferences.container_props),
-            utils.bpy.col.obt(props_cam.hierarchy.props, local=True),
+            utils.bpy.col.obt(props.hierarchy.props, local=True),
         ]
         return all(conditions)
 
     @staticmethod
-    def save_refs(context, blcam=None):
-        props_cam = getattr(blcam.data, addon.name)
-        props_cam.hierarchy.blockouts = f"BK:{context.scene.camera.name}"
-        props_cam.hierarchy.props = f"PR:{context.scene.camera.name}"
+    def save_refs(blcam):
+        props = getattr(blcam.data, addon.name)
+        name = blcam.name
+        props.hierarchy.blockouts = f"BK:{name}"
+        props.hierarchy.props = f"PR:{name}"
         return None
 
     @staticmethod
     def cleanse_refs(blcam):
-        props_cam = getattr(blcam.data, addon.name)
-        props_cam.hierarchy.blockouts = ""
-        props_cam.hierarchy.props = ""
+        props = getattr(blcam.data, addon.name)
+        props.hierarchy.blockouts = ""
+        props.hierarchy.props = ""
         return None
 
 @addon.property
