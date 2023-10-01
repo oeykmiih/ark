@@ -149,7 +149,6 @@ class ARK_OT_ForceCameraVerticals(bpy.types.Operator):
         return self.execute(context)
 
     def execute(self, context):
-
         if self.alt:
             for blcam in context.selected_objects:
                 if blcam.type == 'CAMERA':
