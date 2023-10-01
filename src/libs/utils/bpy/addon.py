@@ -90,10 +90,12 @@ class Addon:
             self.set_property(cls)
         return None
 
-    def get_property(self, kind, root=False):
+    def get_property(self, kind, root=False, parent=False):
         object = getattr(bpy.context, kind)
         if root:
             return getattr(object, self.name, None)
+        if parent:
+            return std.rgetattr(object, self.caller.ppath)
         else:
             return std.rgetattr(object, self.caller.path)
 
