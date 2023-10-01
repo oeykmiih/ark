@@ -76,6 +76,7 @@ class MaterialList():
 class ARK_OT_GoToMaterial(bpy.types.Operator):
     bl_idname = f"{addon.name}.go_to_material"
     bl_label = ""
+    bl_options = {'INTERNAL'}
 
     name : bpy.props.StringProperty()
 
@@ -106,7 +107,7 @@ class ARK_OT_GoToMaterial(bpy.types.Operator):
         context.space_data.pin = True
 
         context.view_layer.objects.active = utils.bpy.obj.obt(session.last_obj)
-        return {'FINISHED'}
+        return {'INTERFACE'}
 
 class ARK_PT_Materials(bpy.types.Panel):
     bl_label = "Catalog"
