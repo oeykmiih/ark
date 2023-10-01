@@ -125,25 +125,16 @@ class collection_hierarchy():
         return None
 
 @addon.property
-class ARK_WindowManager_Cameras_ViewCombinations(bpy.types.PropertyGroup):
+class WindowManager_Cameras_ViewCombinations(bpy.types.PropertyGroup):
     pass
 
 @addon.property
-class ARK_Preferences_Cameras_ViewCombinations(bpy.types.PropertyGroup):
+class Preferences_Cameras_ViewCombinations(bpy.types.PropertyGroup):
     pass
 
-def UI(preferences, layout):
-    items = (name for name, module in MODULES.items() if hasattr(module, "UI"))
-    for name in items:
-        module = MODULES[name]
-        properties = getattr(preferences, name)
-        layout = layout.box()
-        module.UI(properties, layout)
-    return None
-
 CLASSES = [
-    ARK_WindowManager_Cameras_ViewCombinations,
-    ARK_Preferences_Cameras_ViewCombinations,
+    WindowManager_Cameras_ViewCombinations,
+    Preferences_Cameras_ViewCombinations,
 ]
 
 def register():

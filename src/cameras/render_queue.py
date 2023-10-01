@@ -5,16 +5,17 @@ import utils
 addon = utils.bpy.Addon()
 
 @addon.property
-class ARK_WindowManager_Cameras_RenderQueue(bpy.types.PropertyGroup):
+class WindowManager_Cameras_RenderQueue(bpy.types.PropertyGroup):
     pass
 
 @addon.property
-class ARK_Preferences_Cameras_RenderQueue(bpy.types.PropertyGroup):
+class Preferences_Cameras_RenderQueue(bpy.types.PropertyGroup):
     pass
 
 CLASSES = [
-    ARK_WindowManager_Cameras_RenderQueue,
-    ARK_Preferences_Cameras_RenderQueue,
+    Scene_Cameras_RenderQueue,
+    WindowManager_Cameras_RenderQueue,
+    Preferences_Cameras_RenderQueue,
 ]
 
 def register():

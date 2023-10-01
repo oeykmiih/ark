@@ -122,8 +122,8 @@ def UI(preferences, layout):
 CLASSES = [
     ARK_OT_CloseAssetBrowser,
     ARK_OT_QuickAssetBrowser,
-    Preferences_Interface_QuickAssetBrowser,
     WindowManager_Interface_QuickAssetBrowser,
+    Preferences_Interface_QuickAssetBrowser,
 ]
 
 def register():

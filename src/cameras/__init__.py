@@ -334,7 +334,7 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
         return filtered, ordered
 
 @addon.property
-class Scene_Interface_Cameras(bpy.types.PropertyGroup):
+class Scene_Cameras(bpy.types.PropertyGroup):
     # NOTE: This patches uilist_index to never be changed, meaning it will
     ## never highlight a row, since we don't use the index in the first place.
     def set_uilist_index(self, value):
@@ -390,6 +390,13 @@ def UI(preferences, layout):
     box.prop(preferences, "container_props")
     box.prop(preferences, "container_blockouts")
     box.prop(preferences, "trackers_camera")
+
+    items = (name for name, module in MODULES.items() if hasattr(module, "UI"))
+    for name in items:
+        module = MODULES[name]
+        properties = getattr(preferences, name)
+        layout = layout.box()
+        module.UI(properties, layout)
     return None
 
 CLASSES = [
@@ -404,7 +411,7 @@ CLASSES = [
     ARK_PT_PROPERTIES_Scene,
     WindowManager_Cameras,
     Preferences_Cameras,
-    Scene_Interface_Cameras,
+    Scene_Cameras,
 ]
 
 def register():
