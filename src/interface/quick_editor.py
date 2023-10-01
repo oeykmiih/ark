@@ -159,7 +159,7 @@ class WindowManager_Interface_QuickEditor(bpy.types.PropertyGroup):
 class Preferences_Interface_QuickEditor(bpy.types.PropertyGroup):
     split_factor : bpy.props.FloatProperty(
         name = "Split Factor",
-        default = 0.55,
+        default = 0.60,
     )
 
 def UI(preferences, layout):
