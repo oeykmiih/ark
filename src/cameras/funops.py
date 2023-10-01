@@ -34,8 +34,10 @@ def obt_camera_tracker(tracker_name, blcam, blcol):
     return None
 
 def upt_camera_properties(blcam, preferences):
-    # properties.Camera.update_exposure()
-    # properties.Camera.update_resolution(props_cam, context)
+    context = bpy.context
+    props_cam = getattr(blcam.data, addon.name)
+    properties.Camera.update_exposure(props_cam, context)
+    properties.Camera.update_resolution(props_cam, context)
     view_combinations.update(blcam, preferences)
     return None
 
