@@ -73,8 +73,8 @@ def duplicate_camera(blcam, preferences):
 
     blcol_cameras.objects.link(new_cam)
 
-    set_camera_active(blcam, preferences)
-    add_camera_hierarchy(blcam, preferences)
+    set_camera_active(new_cam, preferences)
+    add_camera_hierarchy(new_cam, preferences)
     return None
 
 def remove_camera(blcam, preferences):
