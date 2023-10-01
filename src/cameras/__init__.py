@@ -166,6 +166,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "scene"
+    bl_options = {'HIDE_HEADER'}
 
     def draw(self, context):
         layout = self.layout
