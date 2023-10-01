@@ -167,12 +167,6 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
     bl_region_type = 'WINDOW'
     bl_context = "scene"
 
-    @staticmethod
-    def get_cam_list(container):
-        if container is None:
-            return None
-        return [obj for obj in container.all_objects if obj.type == 'CAMERA']
-
     def draw(self, context):
         layout = self.layout
 
@@ -193,7 +187,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
             return None
         else:
             blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, local=True)
-            cam_list = self.get_cam_list(blcol_cameras)
+            cam_list = funops.get_camera_list(blcol_cameras)
             blcam = context.scene.camera
 
             box = layout.box()
