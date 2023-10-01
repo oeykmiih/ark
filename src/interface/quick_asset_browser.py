@@ -43,6 +43,7 @@ class ARK_OT_QuickAssetBrowser(bpy.types.Operator):
                 context.area.ui_type = 'ASSETS'
                 context.space_data.show_region_toolbar = False
             session.is_open = True
+            session.context = context.area.ui_type
             bpy.app.timers.register(self.set_asset_browser_defaults, first_interval=.005)
         else:
             for area in reversed(context.screen.areas):
