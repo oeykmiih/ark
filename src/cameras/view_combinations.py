@@ -15,7 +15,7 @@ def upt_collection_combination(blcam, preferences):
     )
 
     upt_collection_combination_blockouts(
-        bpy.context.view_layer.layer_collection.children[preferences.container_blockouts],
+        bpy.context.view_layer.layer_collection.children[preferences.container_cameras].children[preferences.container_blockouts],
         [f"BK:{blcam.name}",],
     )
     return None

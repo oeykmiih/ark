@@ -15,7 +15,7 @@ class ark_hierarchy():
     @staticmethod
     def create(preferences, context):
         blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, force=True, parent=context.scene.collection)
-        blcol_blockouts = utils.bpy.col.obt(preferences.container_blockouts, force=True, parent=context.scene.collection)
+        blcol_blockouts = utils.bpy.col.obt(preferences.container_blockouts, force=True, parent=blcol_cameras)
         blcol_props = utils.bpy.col.obt(preferences.container_props, force=True, parent=context.scene.collection)
         return None
 
