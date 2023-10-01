@@ -158,9 +158,10 @@ class Camera(bpy.types.PropertyGroup):
         update = update_resolution,
     )
 
-    queue : bpy.props.BoolProperty(
+    render : bpy.props.BoolProperty(
         name = "",
         description = "Include in RenderQueue",
+        default = False,
     )
 
     resolution_mode : bpy.props.BoolProperty(

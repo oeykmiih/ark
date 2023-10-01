@@ -7,6 +7,7 @@ from . import funops
 
 MODULES = {
     "properties" : None,
+    "render_queue" : None,
     "view_combinations" : None,
 }
 MODULES = utils.import_modules(MODULES)
@@ -172,6 +173,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
         layout = self.layout
 
         preferences = addon.preferences
+        session = addon.session
         props_scene = addon.get_property("scene")
         blcol_cameras = None
         cam_list = None
@@ -284,11 +286,33 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 col.prop(props_cam, "aperture")
                 col.prop(props_cam, "shutter_speed")
                 col.prop(props_cam, "iso")
+
+        box = layout.box()
+        col = box.column(align=False)
+        col.prop(context.scene.render, "filepath", text="")
+        col.prop(props_scene.render_queue, "fname", text="")
+
+        col = box.column(align=True)
+        sub = col.row()
+        sub.prop(props_scene.render_queue, "mode", expand=True)
+        col.prop(props_scene.render_queue, "slots", toggle=True)
+        col.prop(props_scene.render_queue, "export", toggle=True)
+
+        col = box.column(align=True)
+        op = col.operator(
+            render_queue.ARK_OT_RenderQueue.bl_idname,
+            text="Render!",
+        )
+        op.mode = props_scene.render_queue.mode
+        op.slots = props_scene.render_queue.slots
+        op.export = props_scene.render_queue.export
+        op.fname = props_scene.render_queue.fname
         return None
 
 class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         row = layout.row(align=True)
+        props_cam = getattr(item.data, addon.name)
 
         row.prop(props_cam, "render", text="")
 

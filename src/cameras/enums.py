@@ -54,6 +54,13 @@ RESOLUTION_ORIENTATION = [
     ('PORTRAIT', "Portrait", ""),
 ]
 
+RENDER_MODE = [
+    ('ACTIVE', "Active", "Render Active", 'RESTRICT_RENDER_OFF', 0),
+    ('ALL', "All", "Render All", 'VIEW_CAMERA', 1),
+    ('MARKED', "Marked", "Render Marked", 'CHECKBOX_HLT', 2),
+    ('SELECTED', "Selected", "Render Selected", 'RESTRICT_SELECT_OFF', 3),
+]
+
 SHUTTER_SPEED = [
     ('8000', "1/8000 s", ""),
     ('6400', "1/6400 s", ""),

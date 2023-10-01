@@ -5,6 +5,7 @@ import bpy
 import utils
 addon = utils.bpy.Addon()
 
+from . import properties
 from . import view_combinations
 
 def add_camera_hierarchy(blcam, preferences, renamed=False):
@@ -100,3 +101,19 @@ def audit_camera_verticals(blcam):
         math.isclose(blcam.rotation_euler[1], math.radians(0), rel_tol=0.1),
     ]
     return all(conditions)
+
+def get_camera_list(container, mode=None):
+    if container is None:
+        return None
+    mode = 'ALL' if mode is None else mode
+    match mode:
+        case 'ACTIVE':
+            return [bpy.context.scene.camera]
+        case 'ALL':
+            return [obj for obj in container.all_objects if obj.type == 'CAMERA']
+        case 'MARKED':
+            return [obj for obj in container.all_objects if obj.type == 'CAMERA' and utils.rgetattr(obj.data, f"{addon.name}.render")]
+        case 'SELECTED':
+            return [obj for obj in container.all_objects if obj.type == 'CAMERA' and obj.select_get()]
+        case _:
+            return []
