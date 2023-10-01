@@ -49,7 +49,6 @@ import bpy
 
 @addon.property
 class Preferences(bpy.types.AddonPreferences):
-    """Store options"""
     bl_idname = addon.name
 
     items = (name for name, module in MODULES.items() if hasattr(module, "UI"))
