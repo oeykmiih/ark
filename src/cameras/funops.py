@@ -11,6 +11,7 @@ from . import view_combinations
 def add_camera_hierarchy(blcam, preferences, renamed=False):
     if renamed:
         view_combinations.collection_hierarchy.update(blcam, preferences)
+        view_combinations.update(blcam, preferences)
     else:
         view_combinations.collection_hierarchy.create(blcam, preferences)
     view_combinations.collection_hierarchy.save_refs(blcam)
