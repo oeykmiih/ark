@@ -253,6 +253,29 @@ def ARK_VIEW3D_HT_draw(self, context):
         icon_only = True,
     )
 
+
+    snap_items = bpy.types.ToolSettings.bl_rna.properties["snap_elements"].enum_items
+    snap_elements = context.tool_settings.snap_elements
+    if len(snap_elements) == 1:
+        text = ""
+        for elem in snap_elements:
+            icon = snap_items[elem].icon
+            break
+    else:
+        text = "Mix"
+        icon = 'NONE'
+    del snap_items, snap_elements
+
+    row = layout.row(align=True)
+    row.prop(context.tool_settings, "use_snap", text="")
+
+    sub = row.row(align=True)
+    sub.popover(
+        panel="VIEW3D_PT_snapping",
+        icon=icon,
+        text=text,
+    )
+
     layout.separator()
     return None
 
