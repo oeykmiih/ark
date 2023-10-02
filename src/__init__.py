@@ -5,13 +5,13 @@ bl_info = {
     "description" : "",
     "wiki_url": "",
     "blender" : (3, 3, 0),
-    "version" : (0, 1, 0),
+    "version" : (0, 1, 1),
     "category" : "",
     "location" : "",
     "warning" : "",
 }
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __prefix__ = "ARK"
 
 def import_libraries(libraries):
