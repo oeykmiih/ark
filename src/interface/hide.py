@@ -69,7 +69,7 @@ def enable():
 
 def disable():
     session = addon.session
-    if not hasattr(session, "adresses"):
+    if not hasattr(session, "addresses"):
         return None
     addresses = json.loads(session.addresses)
     session.addresses = ""
