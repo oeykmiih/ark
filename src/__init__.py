@@ -11,7 +11,7 @@ bl_info = {
     "warning" : "",
 }
 
-__version__ = "0.1.1"
+__version__ = "0.1.1_dev"
 __prefix__ = "ARK"
 
 def import_libraries(libraries):
