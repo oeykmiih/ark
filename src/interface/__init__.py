@@ -97,16 +97,13 @@ CLASSES = [
 def load_post(self):
     preferences = addon.preferences
     session = addon.session
-    if not preferences.enable_on_startup:
-        session.toggle = True
-    ARK_OT_ToggleInterface.run()
+    if preferences.enable_on_startup:
+        ARK_OT_ToggleInterface.run()
     return None
 
 @bpy.app.handlers.persistent
 def load_pre(self):
     session = addon.session
-
-    session.toggle = False
     return None
 
     # NOTE: bpy.app.load_pre handler doesn't seem to work with app templates,
