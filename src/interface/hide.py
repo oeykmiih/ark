@@ -79,7 +79,6 @@ def disable():
         cls = getattr(module, id)
         if not cls.is_registered:
             bpy.utils.register_class(cls)
-
     return None
 
 @addon.property
