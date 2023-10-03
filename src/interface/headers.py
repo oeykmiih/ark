@@ -25,6 +25,9 @@ class ARK_OT_VIEW3D_ZoomExtents(bpy.types.Operator):
         return {"INTERFACE"}
 
 def ARK_ASSETS_HT_draw(self, context):
+    if context.area.ui_type != 'ASSETS':
+        return None
+
     layout = self.layout
 
     row = layout.row(align=True)
