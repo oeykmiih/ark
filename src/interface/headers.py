@@ -92,7 +92,18 @@ def ARK_NODE_HT_draw(self, context):
     if context.space_data.id_from and context.active_object is not None and context.active_object.type != 'LIGHT':
         panel = row.template_ID(context.space_data.id_from, "active_material")
 
-    layout.separator()
+    layout.separator_spacer()
+
+    row = layout.row(align=True)
+    box = row.box()
+    box.ui_units_x = 1.6
+    box.prop(
+        context.space_data,
+        "show_region_ui",
+        text = "",
+        icon = 'RIGHTARROW',
+        emboss = False,
+    )
     return None
 
 def ARK_OUTLINER_HT_draw(self, context):
@@ -279,7 +290,18 @@ def ARK_VIEW3D_HT_draw(self, context):
         text=text,
     )
 
-    layout.separator()
+    layout.separator_spacer()
+
+    row = layout.row(align=True)
+    box = row.box()
+    box.ui_units_x = 1.6
+    box.prop(
+        context.space_data,
+        "show_region_ui",
+        text = "",
+        icon = 'RIGHTARROW',
+        emboss = False,
+    )
     return None
 
 def enable():
