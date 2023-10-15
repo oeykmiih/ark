@@ -40,8 +40,8 @@ addon = utils.bpy.Addon()
 
 MODULES = {
     "cameras" : None,
-    "materials" : None,
     "interface" : None,
+    "materials" : None,
 }
 MODULES = utils.import_modules(MODULES)
 import bpy
