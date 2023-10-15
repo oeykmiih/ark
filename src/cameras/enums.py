@@ -29,7 +29,8 @@ APERTURE = [
 
 EXPOSURE_MODE = [
     ('EV',"EV", "Exposure Value"),
-    ('MANUAL',"Manual Exposure","Manual Settings using Shutter Speed, Aperture and ISO"),
+    # TODO: refactor manual exposure UX, hide it for now.
+    # ('MANUAL',"Manual Exposure","Manual Settings using Shutter Speed, Aperture and ISO"),
 ]
 
 ISO = [
