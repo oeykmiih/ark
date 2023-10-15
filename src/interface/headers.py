@@ -280,9 +280,7 @@ def ARK_VIEW3D_HT_draw(self, context):
         icon = 'NONE'
     del snap_items, snap_elements
 
-    row = layout.row(align=True)
     row.prop(context.tool_settings, "use_snap", text="")
-
     sub = row.row(align=True)
     sub.popover(
         panel="VIEW3D_PT_snapping",
