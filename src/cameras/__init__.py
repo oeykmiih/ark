@@ -249,16 +249,16 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
 
         col = box.column(align=True)
         row = col.row(align=True)
-        row.prop(blcam.data, "clip_start", slider=True)
-        row.prop(blcam.data, "clip_end", slider=True)
+        row.prop(blcam.data, "clip_start")
+        row.prop(blcam.data, "clip_end")
         row = col.row(align=True)
         row.prop(blcam.data, "shift_x", slider=True)
         row.prop(blcam.data, "shift_y", slider=True)
 
         col = box.column(align=True)
-        row = col.row()
-        row.prop(props_cam, "projection")
-        row = col.row()
+        row = col.row(align=True)
+        row.prop(props_cam, "projection", expand=True)
+        row = col.row(align=True)
         match props_cam.projection:
             case 'PERSP':
                 col.prop(blcam.data, "lens")
@@ -266,7 +266,8 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 col.prop(blcam.data, "ortho_scale")
             case _:
                 pass
-        row = col.row()
+
+        row = box.row()
         if funops.audit_camera_verticals(blcam):
             utils.bpy.ui.label(row, text="Camera is vertical.", depress=True)
         else:
