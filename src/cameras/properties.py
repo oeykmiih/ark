@@ -1,7 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-import importlib
 import math
-import enum
 
 import bpy
 import utils
