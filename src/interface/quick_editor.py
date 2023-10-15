@@ -44,7 +44,7 @@ class ARK_MT_PIE_SetEditorMode(bpy.types.Menu):
 
         for ui_type in enums.EDITOR_TYPE:
             pie_count += 1
-            while pie_count in [4, 7, 8]:
+            while pie_count in [4,]:
                 layout.separator()
                 pie_count += 1
 
