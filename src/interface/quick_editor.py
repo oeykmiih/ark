@@ -14,10 +14,9 @@ class ARK_OT_SetEditorMode(bpy.types.Operator):
     bl_label = ""
     bl_options = {'INTERNAL'}
 
-    ui_type : bpy.props.EnumProperty(
+    ui_type : bpy.props.StringProperty(
         name = "",
         description = "",
-        items = enums.EDITOR_TYPE,
         default = 'VIEW_3D',
     )
 
@@ -43,7 +42,7 @@ class ARK_MT_PIE_SetEditorMode(bpy.types.Menu):
         session = addon.session
         pie_count = 0
 
-        for ui_type, children in enums.EDITOR_MODE.items():
+        for ui_type in enums.EDITOR_TYPE:
             pie_count += 1
             while pie_count in [4, 7, 8]:
                 layout.separator()
@@ -65,10 +64,9 @@ class ARK_OT_QuickEditorType(bpy.types.Operator):
     shift : bpy.props.BoolProperty()
     ctrl : bpy.props.BoolProperty()
 
-    ui_type : bpy.props.EnumProperty(
+    ui_type : bpy.props.StringProperty(
         name = "",
         description = "",
-        items = enums.EDITOR_TYPE,
         default = 'VIEW_3D',
     )
 

@@ -1,28 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 EDITOR_TYPE = [
-    ('VIEW_3D', "VIEW_3D", ""),
-    ('IMAGE_EDITOR', "IMAGE_EDITOR", ""),
-    ('UV', "UV", ""),
-    ('CompositorNodeTree', "CompositorNodeTree", ""),
-    ('TextureNodeTree', "TextureNodeTree", ""),
-    ('GeometryNodeTree', "GeometryNodeTree", ""),
-    ('ShaderNodeTree', "ShaderNodeTree", ""),
-    ('SEQUENCE_EDITOR', "SEQUENCE_EDITOR", ""),
-    ('CLIP_EDITOR', "CLIP_EDITOR", ""),
-    ('DOPESHEET', "DOPESHEET", ""),
-    ('TIMELINE', "TIMELINE", ""),
-    ('FCURVES', "FCURVES", ""),
-    ('DRIVERS', "DRIVERS", ""),
-    ('NLA_EDITOR', "NLA_EDITOR", ""),
-    ('TEXT_EDITOR', "TEXT_EDITOR", ""),
-    ('CONSOLE', "CONSOLE", ""),
-    ('INFO', "INFO", ""),
-    ('OUTLINER', "OUTLINER", ""),
-    ('PROPERTIES', "PROPERTIES", ""),
-    ('FILES', "FILES", ""),
-    ('ASSETS', "ASSETS", ""),
-    ('SPREADSHEET', "SPREADSHEET", ""),
-    ('PREFERENCES', "PREFERENCES", ""),
+    'OUTLINER',
+    'PROPERTIES',
+    'ASSETS',
+    'ShaderNodeTree',
+    'VIEW_3D',
+    'IMAGE_EDITOR',
+    'TEXT_EDITOR',
 ]
 
 EDITOR_TYPE_ICONS = {
@@ -30,6 +14,8 @@ EDITOR_TYPE_ICONS = {
     'OUTLINER' : 'OUTLINER',
     'PROPERTIES' : 'PROPERTIES',
     'ShaderNodeTree' : 'MATERIAL',
+    'IMAGE_EDITOR' : 'IMAGE',
+    'TEXT_EDITOR' : 'TEXT',
     'VIEW_3D' : 'VIEW3D',
 }
 
