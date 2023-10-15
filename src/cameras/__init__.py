@@ -291,7 +291,9 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
         box = layout.box()
         col = box.column(align=False)
         col.prop(context.scene.render, "filepath", text="")
-        col.prop(props_scene.render_queue, "fname", text="")
+        # TODO: improve handling of camera names and tokens
+        ## hide it for now, default is '$camera'.
+        # col.prop(props_scene.render_queue, "fname", text="")
 
         col = box.column(align=True)
         sub = col.row()
