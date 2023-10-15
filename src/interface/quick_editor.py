@@ -36,6 +36,12 @@ class ARK_OT_SetEditorMode(bpy.types.Operator):
 class ARK_MT_PIE_SetEditorMode(bpy.types.Menu):
     bl_label = ""
 
+    #         4
+    #     5       6
+    # 1              2
+    #     7       8
+    #         3
+
     def draw(self, context):
         layout = self.layout.menu_pie()
 
