@@ -100,10 +100,9 @@ class ARK_OT_QuickEditorSplit(bpy.types.Operator):
     bl_label = ""
     bl_options = {'INTERNAL'}
 
-    ui_type : bpy.props.EnumProperty(
+    ui_type : bpy.props.StringProperty(
         name = "",
         description = "",
-        items = enums.EDITOR_TYPE,
         default = 'VIEW_3D',
     )
 
