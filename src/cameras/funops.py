@@ -23,7 +23,7 @@ def set_camera_active(blcam, preferences):
     blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, local=True)
 
     obt_camera_tracker(preferences.trackers_camera, blcam, blcol_cameras)
-    upt_camera_properties(blcam, preferences)
+    update_camera_properties(blcam, preferences)
     return None
 
 def obt_camera_tracker(tracker_name, blcam, blcol):
@@ -35,11 +35,11 @@ def obt_camera_tracker(tracker_name, blcam, blcol):
     tracker.hide_viewport = True
     return None
 
-def upt_camera_properties(blcam, preferences):
+def update_camera_properties(blcam, preferences):
     context = bpy.context
-    props_cam = getattr(blcam.data, addon.name)
-    properties.Camera.update_exposure(props_cam, context)
-    properties.Camera.update_resolution(props_cam, context)
+    pr_cam = getattr(blcam.data, addon.name)
+    properties.Camera.update_exposure(pr_cam, context)
+    properties.Camera.update_resolution(pr_cam, context)
     view_combinations.update(blcam, preferences)
     return None
 

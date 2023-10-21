@@ -45,5 +45,5 @@ def _create(datablock, id, data):
             bldat = datablock.new(id)
     return bldat
 
-def validate_props(dictionary):
+def validate_properties(dictionary):
     return all([std.rgetattr(bpy, attribute) == value for attribute, value in dictionary.items()])

@@ -35,7 +35,7 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
     fname : bpy.props.StringProperty()
 
     def set_filepath(self, context, blcam):
-        props_cam = getattr(blcam.data, addon.name)
+        pr_cam = getattr(blcam.data, addon.name)
         def replace_tokens(filepath):
             for token, value in TOKENS.items():
                 if token in filepath:

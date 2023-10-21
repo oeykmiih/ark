@@ -174,10 +174,10 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
 
         preferences = addon.preferences
         session = addon.session
-        props_scene = addon.get_property("scene")
+        pr_scene = addon.get_property("scene")
         blcol_cameras = None
         cam_list = None
-        props_cam = None
+        pr_cam = None
 
         if not ark_hierarchy.audit(preferences):
             box = layout.box()
@@ -200,7 +200,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                     "Camera List",
                     blcol_cameras,
                     "all_objects",
-                    props_scene,
+                    pr_scene,
                     "uilist_index",
                 )
             col = row.column(align=True)
@@ -228,20 +228,20 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
         else:
             box.row().label(text="")
 
-        props_cam = getattr(blcam.data, addon.name)
+        pr_cam = getattr(blcam.data, addon.name)
         box = layout.box()
         col = box.column(align=True)
         row = col.row(align=True)
-        row.prop(props_cam, "resolution_orientation", expand=True)
+        row.prop(pr_cam, "resolution_orientation", expand=True)
         row = col.row(align=True)
-        row.prop(props_cam, "ratio_x")
-        row.prop(props_cam, "ratio_y")
-        col.prop(props_cam, "resolution_value")
+        row.prop(pr_cam, "ratio_x")
+        row.prop(pr_cam, "ratio_y")
+        col.prop(pr_cam, "resolution_value")
         col.prop(
-            props_cam,
+            pr_cam,
             "resolution_mode",
             toggle = True,
-            text = "%s" % "Long Edge Resolution" if props_cam.resolution_mode else "Short Edge Resolution",
+            text = "%s" % "Long Edge Resolution" if pr_cam.resolution_mode else "Short Edge Resolution",
         )
         row = col.row()
         row.enabled = False
@@ -257,9 +257,9 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
 
         col = box.column(align=True)
         row = col.row(align=True)
-        row.prop(props_cam, "projection", expand=True)
+        row.prop(pr_cam, "projection", expand=True)
         row = col.row(align=True)
-        match props_cam.projection:
+        match pr_cam.projection:
             case 'PERSP':
                 col.prop(blcam.data, "lens")
             case 'ORTHO':
@@ -279,45 +279,45 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
 
         col = box.column(align=True)
         row = col.row()
-        row.prop(props_cam, "exposure_mode", expand=True)
-        match props_cam.exposure_mode:
+        row.prop(pr_cam, "exposure_mode", expand=True)
+        match pr_cam.exposure_mode:
             case 'EV':
-                col.prop(props_cam, "ev", slider=True)
+                col.prop(pr_cam, "ev", slider=True)
             case 'MANUAL':
-                col.prop(props_cam, "aperture")
-                col.prop(props_cam, "shutter_speed")
-                col.prop(props_cam, "iso")
+                col.prop(pr_cam, "aperture")
+                col.prop(pr_cam, "shutter_speed")
+                col.prop(pr_cam, "iso")
 
         box = layout.box()
         col = box.column(align=False)
         col.prop(context.scene.render, "filepath", text="")
         # TODO: improve handling of camera names and tokens
         ## hide it for now, default is '$camera'.
-        # col.prop(props_scene.render_queue, "fname", text="")
+        # col.prop(pr_scene.render_queue, "fname", text="")
 
         col = box.column(align=True)
         sub = col.row()
-        sub.prop(props_scene.render_queue, "mode", expand=True)
-        col.prop(props_scene.render_queue, "slots", toggle=True)
-        col.prop(props_scene.render_queue, "export", toggle=True)
+        sub.prop(pr_scene.render_queue, "mode", expand=True)
+        col.prop(pr_scene.render_queue, "slots", toggle=True)
+        col.prop(pr_scene.render_queue, "export", toggle=True)
 
         col = box.column(align=True)
         op = col.operator(
             render_queue.ARK_OT_RenderQueue.bl_idname,
             text="Render!",
         )
-        op.mode = props_scene.render_queue.mode
-        op.slots = props_scene.render_queue.slots
-        op.export = props_scene.render_queue.export
-        op.fname = props_scene.render_queue.fname
+        op.mode = pr_scene.render_queue.mode
+        op.slots = pr_scene.render_queue.slots
+        op.export = pr_scene.render_queue.export
+        op.fname = pr_scene.render_queue.fname
         return None
 
 class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         row = layout.row(align=True)
-        props_cam = getattr(item.data, addon.name)
+        pr_cam = getattr(item.data, addon.name)
 
-        row.prop(props_cam, "render", text="")
+        row.prop(pr_cam, "render", text="")
 
         row.prop(bpy.data.objects[item.name], "name", text="")
 

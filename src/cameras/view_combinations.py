@@ -5,22 +5,22 @@ import utils
 addon = utils.bpy.Addon()
 
 def update(blcam, preferences):
-    upt_collection_combination(blcam, preferences)
+    update_collection_combination(blcam, preferences)
     return None
 
-def upt_collection_combination(blcam, preferences):
-    upt_collection_combination_props(
+def update_collection_combination(blcam, preferences):
+    update_collection_combination_props(
         bpy.context.view_layer.layer_collection.children[preferences.container_props],
         [f"PR:{blcam.name}",],
     )
 
-    upt_collection_combination_blockouts(
+    update_collection_combination_blockouts(
         bpy.context.view_layer.layer_collection.children[preferences.container_cameras].children[preferences.container_blockouts],
         [f"BK:{blcam.name}",],
     )
     return None
 
-def upt_collection_combination_props(container, target):
+def update_collection_combination_props(container, target):
     for bllaycol in container.children:
         if bllaycol.name in target:
             bllaycol.exclude = False
@@ -28,7 +28,7 @@ def upt_collection_combination_props(container, target):
             bllaycol.exclude = True
     return None
 
-def upt_collection_combination_blockouts(container, target):
+def update_collection_combination_blockouts(container, target):
     for bllaycol in container.children:
         if bllaycol.name in target:
             bllaycol.exclude = False
@@ -59,12 +59,12 @@ class collection_hierarchy():
     @staticmethod
     def update(blcam, preferences):
         name = blcam.name
-        props_cam = getattr(blcam.data, addon.name)
+        pr_cam = getattr(blcam.data, addon.name)
 
         blcol_blockouts = utils.bpy.col.obt(preferences.container_blockouts, force=True)
-        cam_blockouts = utils.bpy.col.obt(props_cam.hierarchy.blockouts, parent=blcol_blockouts)
+        cam_blockouts = utils.bpy.col.obt(pr_cam.hierarchy.blockouts, parent=blcol_blockouts)
         blcol_props = utils.bpy.col.obt(preferences.container_props, force=True)
-        cam_props = utils.bpy.col.obt(props_cam.hierarchy.props, parent=blcol_props)
+        cam_props = utils.bpy.col.obt(pr_cam.hierarchy.props, parent=blcol_props)
 
         cam_blockouts.name = f"BK:{name}"
         cam_props.name = f"PR:{name}"
