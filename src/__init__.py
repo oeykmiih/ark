@@ -42,6 +42,7 @@ MODULES = {
     "cameras" : None,
     "interface" : None,
     "materials" : None,
+    "worlds" : None,
 }
 MODULES = utils.import_modules(MODULES)
 import bpy
