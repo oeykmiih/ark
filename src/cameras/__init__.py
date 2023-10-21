@@ -88,7 +88,7 @@ class ARK_OT_DuplicateCamera(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         ao = context.active_object
-        return ao is not None and ao.type == 'CAMERA' and ao.select_get()
+        return ao is not None and ao.type == 'CAMERA' and ao.select_get() or context.scene.camera is not None
 
     def invoke(self, context, event):
         self.alt = event.alt
@@ -96,14 +96,19 @@ class ARK_OT_DuplicateCamera(bpy.types.Operator):
 
     def execute(self, context):
         preferences = addon.preferences
+        ao = context.active_object
 
         if self.alt:
             for blcam in context.selected_objects:
                 if blcam.type == 'CAMERA':
                     funops.duplicate_camera(blcam, preferences)
-        else:
-            blcam = context.active_object
+        elif ao is not None and ao.type == 'CAMERA':
+            blcam = ao
             funops.duplicate_camera(blcam, preferences)
+        elif context.scene.camera is not None:
+            blcam = context.scene.camera
+            funops.duplicate_camera(blcam, preferences)
+
         return {'FINISHED'}
 
 class ARK_OT_RemoveCamera(bpy.types.Operator):
@@ -116,7 +121,7 @@ class ARK_OT_RemoveCamera(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         ao = context.active_object
-        return ao is not None and ao.type == 'CAMERA' and ao.select_get()
+        return ao is not None and ao.type == 'CAMERA' and ao.select_get() or context.scene.camera is not None
 
     def invoke(self, context, event):
         self.alt = event.alt
@@ -124,14 +129,19 @@ class ARK_OT_RemoveCamera(bpy.types.Operator):
 
     def execute(self, context):
         preferences = addon.preferences
+        ao = context.active_object
 
         if self.alt:
             for blcam in context.selected_objects:
                 if blcam.type == 'CAMERA':
                     funops.remove_camera(blcam, preferences)
-        else:
-            blcam = context.active_object
+        elif ao is not None and ao.type == 'CAMERA':
+            blcam = ao
             funops.remove_camera(blcam, preferences)
+        elif context.scene.camera is not None:
+            blcam = context.scene.camera
+            funops.remove_camera(blcam, preferences)
+
         return {'FINISHED'}
 
 class ARK_OT_ForceCameraVerticals(bpy.types.Operator):
