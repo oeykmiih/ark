@@ -78,8 +78,7 @@ def UI(preferences, layout):
     box = layout.box()
     box.prop(preferences, "enable_on_startup", toggle=True)
 
-    items = (name for name, module in MODULES.items() if hasattr(module, "UI"))
-    for name in items:
+    for name in (name for name, module in MODULES.items() if hasattr(module, "UI")):
         module = MODULES[name]
         box = layout.box()
         box.label(text=name.replace("_", " ").title())

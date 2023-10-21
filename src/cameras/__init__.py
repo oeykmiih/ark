@@ -425,12 +425,12 @@ def UI(preferences, layout):
     box.prop(preferences, "container_blockouts")
     box.prop(preferences, "trackers_camera")
 
-    items = (name for name, module in MODULES.items() if hasattr(module, "UI"))
-    for name in items:
+    for name in (name for name, module in MODULES.items() if hasattr(module, "UI")):
         module = MODULES[name]
+        box = layout.box()
+        box.label(text=name.replace("_", " ").title())
         properties = getattr(preferences, name)
-        layout = layout.box()
-        module.UI(properties, layout)
+        module.UI(properties, box)
     return None
 
 CLASSES = [
