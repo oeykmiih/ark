@@ -31,7 +31,7 @@ def import_modules(modules):
     return modules
 
 # CREDIT: https://devtalk.blender.org/t/20040
-def cleanse_globals(libraries):
+def cleanse_globals(libraries=[]):
     import inspect
     import sys
 
@@ -40,15 +40,17 @@ def cleanse_globals(libraries):
         frame = _frame.f_back
         package = inspect.getmodule(frame)
 
-        libraries.update({package.__name__ : None})
-
         modules = sys.modules
         modules = dict(sorted(modules.items(),key= lambda x:x[0])) #sort them
 
         for key in modules.keys():
-            for lib in libraries:
-                if key.startswith(lib):
-                    del sys.modules[key]
+            if key.startswith(package.__name__):
+                del sys.modules[key]
+            else:
+                for lib in libraries:
+                    if key.startswith(lib):
+                        del sys.modules[key]
+                        break
     finally:
         del _frame
     return None

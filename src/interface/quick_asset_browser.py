@@ -2,7 +2,7 @@
 import bpy
 import bl_ui
 
-import utils
+from ark import utils
 addon = utils.bpy.Addon()
 
 from . import enums

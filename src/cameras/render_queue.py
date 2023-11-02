@@ -5,7 +5,7 @@ import time
 import io
 import os
 
-import utils
+from ark import utils
 addon = utils.bpy.Addon()
 
 from . import funops

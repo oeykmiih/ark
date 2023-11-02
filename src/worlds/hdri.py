@@ -3,7 +3,7 @@ import os
 import glob
 
 import bpy
-import utils
+from ark import utils
 addon = utils.bpy.Addon()
 
 global bl_previews

@@ -39,13 +39,14 @@ def join(target, source, remove_doubles=False):
     new.from_mesh(target.data)
     temp = bpy.data.meshes.new("temp")
     for blob in source:
-        _bmesh = bmesh.new()
-        _bmesh.from_mesh(blob.data)
-        _bmesh.transform(blob.matrix_world)
-        _bmesh.to_mesh(temp)
-        _bmesh.free()
-        mimic_materials(blob, target, temp)
-        new.from_mesh(temp)
+        if blob.type == 'MESH':
+            _bmesh = bmesh.new()
+            _bmesh.from_mesh(blob.data)
+            _bmesh.transform(blob.matrix_world)
+            _bmesh.to_mesh(temp)
+            _bmesh.free()
+            mimic_materials(blob, target, temp)
+            new.from_mesh(temp)
     bpy.data.meshes.remove(temp)
     if remove_doubles:
         bmesh.ops.remove_doubles(new, verts=new.verts, dist=0.001)

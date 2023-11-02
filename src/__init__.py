@@ -14,28 +14,7 @@ bl_info = {
 __version__ = "0.1.3-231021"
 __prefix__ = "ARK"
 
-def import_libraries(libraries):
-    import os
-    import site
-    import sys
-    import importlib
-
-    LIB_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "libs"))
-    try:
-        if os.path.isdir(LIB_DIR) and LIB_DIR not in sys.path:
-            sys.path.insert(0, LIB_DIR)
-        for name, module in libraries.items():
-            libraries[name] = importlib.import_module(name)
-        globals().update(libraries)
-    finally:
-        if LIB_DIR in sys.path:
-            sys.path.remove(LIB_DIR)
-    return None
-
-LIBRARIES = {
-    "utils" : None,
-}
-import_libraries(LIBRARIES)
+from ark import utils
 addon = utils.bpy.Addon()
 
 MODULES = {
@@ -90,5 +69,5 @@ def register():
 def unregister():
     utils.bpy.unregister_classes(PROPS)
     utils.bpy.unregister_modules(MODULES)
-    utils.cleanse_globals(LIBRARIES)
+    utils.cleanse_globals()
     return None

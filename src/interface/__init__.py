@@ -3,7 +3,7 @@ import bpy
 import contextlib
 import io
 
-import utils
+from ark import utils
 addon = utils.bpy.Addon()
 
 MODULES = {

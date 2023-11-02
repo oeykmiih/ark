@@ -5,7 +5,6 @@ import subprocess
 import bpy
 
 def generate_thumbnail(filepath, outpath):
-    print(filepath)
     subprocess.run(
         [
             bpy.app.binary_path,
