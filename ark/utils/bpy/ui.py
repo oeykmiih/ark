@@ -20,3 +20,13 @@ def alert(layout, text="", align=True):
         text=text,
     )
     return widget
+
+def split(layout, text="", align=True, enabled=True):
+    row = layout.row(align=True).split(factor=0.4, align=True)
+    row.enabled = enabled
+    label = row.row()
+    label.alignment = 'RIGHT'
+    label.label(text=text)
+
+    sub = row.row(align=True)
+    return sub
