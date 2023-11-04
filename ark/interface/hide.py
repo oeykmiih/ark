@@ -50,8 +50,7 @@ def build_tree():
 
 def enable():
     session = addon.session
-    tree = build_tree()
-    ids = rsearch(enums.UI_TO_HIDE, tree)
+    ids = rsearch(enums.UI_TO_HIDE, build_tree())
     restore = {}
     addresses = {}
 
