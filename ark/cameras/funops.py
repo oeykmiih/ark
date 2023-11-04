@@ -118,3 +118,11 @@ def get_camera_list(container, mode=None):
             return [obj for obj in container.all_objects if obj.type == 'CAMERA' and obj.select_get()]
         case _:
             return []
+
+def set_camera_list(collection_prop, container):
+    collection_prop.clear()
+    for obj in container.all_objects:
+                if obj.type == 'CAMERA':
+                    _ = collection_prop.add()
+                    _.object = obj
+    return

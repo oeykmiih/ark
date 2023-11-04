@@ -358,26 +358,18 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
         op.name=item.name
         return None
 
-    def draw_filter(self, context, layout):
-        return None
-
     def filter_items(self, context, data, propname):
         """Filter and order items in the list."""
         helper_funcs = bpy.types.UI_UL_list
 
         filtered = []
         ordered = []
-        items = getattr(data, propname)
+        items = [item.object for item in getattr(data, propname)]
 
-        ordered = helper_funcs.sort_items_by_name(items, 'name')
+        filtered = helper_funcs.filter_items_by_name(self.filter_name, self.bitflag_filter_item, items, "name", reverse=False)
 
-        # Initialize with all items visible
-        filtered = [self.bitflag_filter_item] * len(items)
-        # Filtering out the first item
-        for i, item in enumerate(items):
-            if item.type != 'CAMERA':
-                filtered[i] &= ~self.bitflag_filter_item
-
+        if self.use_filter_sort_alpha:
+            ordered = helper_funcs.sort_items_by_name(items, 'name')
         return filtered, ordered
 
 @addon.property
@@ -396,8 +388,12 @@ class Scene_Cameras(bpy.types.PropertyGroup):
         update = update_uilist_index,
     )
 
+class WindowManager_Cameras_Cameras(bpy.types.PropertyGroup):
+    object :  bpy.props.PointerProperty(type=bpy.types.Object)
+
 @addon.property
 class WindowManager_Cameras(bpy.types.PropertyGroup):
+    cameras : bpy.props.CollectionProperty(type=WindowManager_Cameras_Cameras)
     pass
 
 @addon.property
@@ -452,6 +448,7 @@ CLASSES = [
     ARK_OT_ForceCameraVerticals,
     ARK_UL_PROPERTIES_CameraList,
     ARK_PT_PROPERTIES_Scene,
+    WindowManager_Cameras_Cameras,
     WindowManager_Cameras,
     Preferences_Cameras,
     Scene_Cameras,
