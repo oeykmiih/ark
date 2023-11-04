@@ -167,6 +167,7 @@ class ARK_OT_CreateWorldHDRI(bpy.types.Operator):
             hdri = audit_hdri()
             if hdri:
                 apply_world_hdri(world, get_tex(context, hdri))
+        pr_world.created = True
         return {'FINISHED'}
 
 @addon.property

@@ -4,15 +4,15 @@ from ark import utils
 addon = utils.bpy.Addon()
 
 class World(bpy.types.PropertyGroup):
+    created : bpy.props.BoolProperty()
     kind : bpy.props.EnumProperty(
         name = "kind",
         description = "kind",
         items = [
-            ('NONE', "NONE", ""),
-            ('SKY', "SKY", ""),
+            ('SKY', "Sky", ""),
             ('HDRI', "HDRI", ""),
         ],
-        default = 'NONE',
+        default = 'SKY',
     )
 
 CLASSES = [

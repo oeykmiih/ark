@@ -27,22 +27,35 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
         if world is not None:
             pr_world = getattr(world, addon.name)
 
-            box = layout.box()
-            col = box.column(align=True)
-            match pr_world.kind:
-                case 'NONE':
-                    col.scale_y = 1.5
-                    col.operator(hdri.ARK_OT_CreateWorldHDRI.bl_idname, text="Add HDRI")
-                case 'HDRI':
-                    row = col.row()
-                    if hdri.audit_library():
-                        row.template_icon_view(session.hdri, "previews", scale=10)
-                        side = row.column()
-                        side.operator(hdri.ARK_OT_ReloadHDRIPreviews.bl_idname, icon='FILE_REFRESH')
-                    else:
-                        row.prop(addon.preferences.hdri, "library", text="")
-                case 'SKY':
-                    col.label(text="SKY is selected.")
+            # box = layout.box()
+            col = layout.column(align=True)
+            header = col.box().row()
+            info = header.row(align=True)
+            buttons = header.row(align=True)
+            buttons.alignment = 'RIGHT'
+            body = col.box()
+
+            if not pr_world.created:
+                utils.bpy.ui.alert(info, text="Missing ARK World")
+                buttons.label(text="")
+                body.scale_y = 1.5
+                body.operator(hdri.ARK_OT_CreateWorldHDRI.bl_idname, text="Add HDRI")
+            else:
+                info.prop(pr_world, "kind", expand=True)
+
+                match pr_world.kind:
+                    case 'HDRI':
+                        if not hdri.audit_library():
+                            buttons.label(text="")
+                            utils.bpy.ui.alert(body, text="Missing HDRI Library")
+                            row = utils.bpy.ui.split(body, text="HDRI Library")
+                            row.prop(addon.preferences.hdri, "library", text="")
+                        else:
+                            buttons.operator(hdri.ARK_OT_ReloadHDRIPreviews.bl_idname, icon='FILE_REFRESH')
+                            body.template_icon_view(session.hdri, "previews", scale=10)
+                    case 'SKY':
+                        buttons.label(text="")
+                        body.label(text="SKY is selected.")
         return None
 
 @addon.property
