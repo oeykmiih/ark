@@ -184,6 +184,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
 
         preferences = addon.preferences
         session = addon.session
+        scene = context.scene
         pr_scene = addon.get_property("scene")
         blcol_cameras = None
         cam_list = None
@@ -200,8 +201,8 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
             return None
         else:
             blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, local=True)
-            cam_list = funops.get_camera_list(blcol_cameras)
-            blcam = context.scene.camera
+            funops.set_camera_list(session.cameras, blcol_cameras)
+            blcam = scene.camera
 
             box = layout.box()
             row = box.row()
