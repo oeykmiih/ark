@@ -66,24 +66,10 @@ class Camera(bpy.types.PropertyGroup):
     )
 
     def update_exposure(self, context):
-        match self.exposure_mode:
-            case 'EV':
-                ev = self.ev
-            case 'MANUAL':
-                ev = self.calculate_ev(context)
-            case _:
-                pass
+        ev = self.ev
         bl_exposure = (ev * -1) + 11.5
         context.scene.view_settings.exposure = bl_exposure
         return None
-
-    exposure_mode : bpy.props.EnumProperty(
-        name = "Exposure Mode",
-        description = "",
-        items = enums.EXPOSURE_MODE,
-        options = {'HIDDEN'},
-        update = update_exposure,
-    )
 
     def set_iso(self, value):
         self["iso"] = value
