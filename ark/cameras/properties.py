@@ -164,7 +164,7 @@ class Camera(bpy.types.PropertyGroup):
     )
 
     resolution_value : bpy.props.IntProperty(
-        name = "Resolution Value",
+        name = "Resolution",
         description = "",
         default = defaults.RESOLUTION_VALUE,
         min = 0,

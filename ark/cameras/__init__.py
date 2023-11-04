@@ -204,134 +204,142 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
             funops.set_camera_list(session.cameras, blcol_cameras)
             blcam = scene.camera
 
-            box = layout.box()
-            row = box.row()
-            row.template_list(
+            col = layout.column(align=True)
+            header = col.box().row()
+            col.template_list(
                     "ARK_UL_PROPERTIES_CameraList",
                     "Camera List",
-                    blcol_cameras,
-                    "all_objects",
+                    session,
+                    "cameras",
                     pr_scene,
                     "uilist_index",
                 )
-            col = row.column(align=True)
-            col.operator(ARK_OT_AddCamera.bl_idname, text="", icon='ADD')
-            col.operator(ARK_OT_RemoveCamera.bl_idname, text="", icon='REMOVE')
-            col.operator(ARK_OT_DuplicateCamera.bl_idname, text="", icon='DUPLICATE')
 
-        if not cam_list:
-            row = box.row()
-            utils.bpy.ui.alert(row, text=f"No camera in {blcol_cameras.name}.")
-            return None
-        elif not blcam:
-            row = box.row(align=True)
-            utils.bpy.ui.label(row, text="No active camera.")
-            return None
-        elif not view_combinations.collection_hierarchy.audit(blcam, preferences):
-            renamed = view_combinations.collection_hierarchy.audit_previous(blcam, preferences)
-            text = "%s" % "Camera was renamed, sync hierarchy?" if renamed else "Missing camera hierarchy, fix it?"
-            row = box.row()
-            row.alert = True
-            row.operator(
-                ARK_OT_AddCameraHierarchy.bl_idname,
-                text = text,
-            ).renamed = renamed
-        else:
-            box.row().label(text="")
+            info = header.row(align=True)
+            buttons = header.row(align=True)
 
-        pr_cam = getattr(blcam.data, addon.name)
-        box = layout.box()
-        col = box.column(align=True)
-        row = col.row(align=True)
-        row.prop(pr_cam, "resolution_orientation", expand=True)
-        row = col.row(align=True)
-        row.prop(pr_cam, "ratio_x")
-        row.prop(pr_cam, "ratio_y")
-        col.prop(pr_cam, "resolution_value")
-        col.prop(
-            pr_cam,
-            "resolution_mode",
-            toggle = True,
-            text = "%s" % "Long Edge Resolution" if pr_cam.resolution_mode else "Short Edge Resolution",
-        )
-        row = col.row()
-        row.enabled = False
-        row.label(text=f"Final Resolution: {context.scene.render.resolution_x}x{context.scene.render.resolution_y}")
+            buttons.alignment = 'RIGHT'
+            buttons.operator(ARK_OT_AddCamera.bl_idname, text="", icon='ADD')
+            buttons.operator(ARK_OT_RemoveCamera.bl_idname, text="", icon='REMOVE')
+            buttons.operator(ARK_OT_DuplicateCamera.bl_idname, text="", icon='DUPLICATE')
 
-        col = box.column(align=True)
-        row = col.row(align=True)
-        row.prop(blcam.data, "clip_start")
-        row.prop(blcam.data, "clip_end")
-        row = col.row(align=True)
-        row.prop(blcam.data, "shift_x", slider=True)
-        row.prop(blcam.data, "shift_y", slider=True)
+            if len(session.cameras) == 0:
+                utils.bpy.ui.alert(info, text=f"No camera in {blcol_cameras.name}.")
+                # info.template_ID(scene, "camera", new=ARK_OT_AddCamera.bl_idname)
+                return
+            elif not blcam:
+                utils.bpy.ui.label(info, text="No active camera.")
+                return None
+            else:
+                if not view_combinations.collection_hierarchy.audit(blcam, preferences):
+                    renamed = view_combinations.collection_hierarchy.audit_previous(blcam, preferences)
+                    text = "%s" % "Camera was renamed, sync hierarchy?" if renamed else "Missing camera hierarchy, fix it?"
+                    info.alert = True
+                    info.operator(
+                        ARK_OT_AddCameraHierarchy.bl_idname,
+                        text = text,
+                    ).renamed = renamed
+                else:
+                    info.label(text="")
 
-        col = box.column(align=True)
-        row = col.row(align=True)
-        row.prop(pr_cam, "projection", expand=True)
-        row = col.row(align=True)
-        match pr_cam.projection:
-            case 'PERSP':
-                col.prop(blcam.data, "lens")
-            case 'ORTHO':
-                col.prop(blcam.data, "ortho_scale")
-            case _:
-                pass
+                pr_cam = getattr(blcam.data, addon.name)
 
-        row = box.row()
-        if funops.audit_camera_verticals(blcam):
-            utils.bpy.ui.label(row, text="Camera is vertical.", depress=True)
-        else:
-            row.alert = True
-            row.operator(
-                ARK_OT_ForceCameraVerticals.bl_idname,
-                text = "Camera is not vertical.",
-            )
+                box = layout.box()
+                box.use_property_split = True
+                box.use_property_decorate = False
 
-        col = box.column(align=True)
-        row = col.row()
-        row.prop(pr_cam, "exposure_mode", expand=True)
-        match pr_cam.exposure_mode:
-            case 'EV':
+                col = box.column(align=True)
+
+                row = col.row(align=True)
+                row.prop(pr_cam, "resolution_orientation", expand=True)
+
+                row = utils.bpy.ui.split(col, text="Ratio")
+                row.prop(pr_cam, "ratio_x", text="")
+                row.prop(pr_cam, "ratio_y", text="")
+
+                col.prop(pr_cam, "resolution_value")
+                col.prop(
+                    pr_cam,
+                    "resolution_mode",
+                    toggle = True,
+                    text = "%s" % "Long Edge Resolution" if pr_cam.resolution_mode else "Short Edge Resolution",
+                )
+
+                row = utils.bpy.ui.split(col, text="Final Resolution", enabled=False)
+                row.label(text=f"{scene.render.resolution_x}  x  {scene.render.resolution_y}")
+
+                col = box.column(align=True)
+
+                row = utils.bpy.ui.split(col, text="Clip")
+                row.prop(blcam.data, "clip_start", text="")
+                row.prop(blcam.data, "clip_end", text="")
+
+                row = utils.bpy.ui.split(col, text="Shift")
+                row.prop(blcam.data, "shift_x", text="", slider=True)
+                row.prop(blcam.data, "shift_y", text="", slider=True)
+
+                col = box.column(align=True)
+                row = col.row(align=True)
+                row.prop(pr_cam, "projection", expand=True)
+                match pr_cam.projection:
+                    case 'PERSP':
+                        col.prop(blcam.data, "lens")
+                    case 'ORTHO':
+                        col.prop(blcam.data, "ortho_scale")
+                    case _:
+                        pass
+
+                row = utils.bpy.ui.split(box, text="Perspective Correction")
+                if funops.audit_camera_verticals(blcam):
+                    utils.bpy.ui.label(row, text="Camera is vertical.")
+                else:
+                    row.alert = True
+                    row.operator(
+                        ARK_OT_ForceCameraVerticals.bl_idname,
+                        text = "Camera is not vertical.",
+                    )
+
+                col = box.column(align=True)
                 col.prop(pr_cam, "ev", slider=True)
-            case 'MANUAL':
-                col.prop(pr_cam, "aperture")
-                col.prop(pr_cam, "shutter_speed")
-                col.prop(pr_cam, "iso")
 
-        box = layout.box()
-        col = box.column(align=False)
-        col.prop(context.scene.render, "filepath", text="")
-        # TODO: improve handling of camera names and tokens
-        ## hide it for now, default is '$camera'.
-        # col.prop(pr_scene.render_queue, "fname", text="")
+                box = layout.box()
+                box.use_property_split = True
+                box.use_property_decorate = False
 
-        col = box.column(align=True)
-        sub = col.row()
-        sub.prop(pr_scene.render_queue, "mode", expand=True)
-        col.prop(pr_scene.render_queue, "slots", toggle=True)
-        col.prop(pr_scene.render_queue, "export", toggle=True)
+                col = box.column(align=False)
 
-        col = box.column(align=True)
-        op = col.operator(
-            render_queue.ARK_OT_RenderQueue.bl_idname,
-            text="Render!",
-        )
-        op.mode = pr_scene.render_queue.mode
-        op.slots = pr_scene.render_queue.slots
-        op.export = pr_scene.render_queue.export
-        op.fname = pr_scene.render_queue.fname
+                row = utils.bpy.ui.split(col, text="Output")
+                row.prop(scene.render, "filepath", text="")
+                # TODO: improve handling of camera names and tokens
+                ## hide it for now, default is '$camera'.
+                # col.prop(pr_scene.render_queue, "fname", text="")
+
+                col = box.column(align=True)
+                col.row(align=True).prop(pr_scene.render_queue, "mode", expand=True)
+                col.prop(pr_scene.render_queue, "slots", toggle=True)
+                col.prop(pr_scene.render_queue, "export", toggle=True)
+
+                col = box.column(align=True)
+                op = col.operator(
+                    render_queue.ARK_OT_RenderQueue.bl_idname,
+                    text="Render!",
+                )
+                op.mode = pr_scene.render_queue.mode
+                op.slots = pr_scene.render_queue.slots
+                op.export = pr_scene.render_queue.export
+                op.fname = pr_scene.render_queue.fname
         return None
 
 class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
-        row = layout.row(align=True)
+        item = item.object
         pr_cam = getattr(item.data, addon.name)
 
+        row = layout.row(align=True)
         row.prop(pr_cam, "render", text="")
-
         row.prop(bpy.data.objects[item.name], "name", text="")
 
+        row = layout.row(align=True)
         op = row.operator(
             utils.bpy.ops.UTILS_OT_Select.bl_idname,
             text = "",
