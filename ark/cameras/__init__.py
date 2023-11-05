@@ -132,15 +132,25 @@ class ARK_OT_RemoveCamera(bpy.types.Operator):
         ao = context.active_object
 
         if self.alt:
-            for blcam in context.selected_objects:
-                if blcam.type == 'CAMERA':
-                    funops.remove_camera(blcam, preferences)
+            selected_cameras = [blob for blob in context.selected_objects if blob.type == 'CAMERA']
+            if len(selected_cameras) > 0:
+                funops.remove_cameras(
+                    [blob for blob in context.selected_objects if blob.type == 'CAMERA'],
+                    context,
+                    preferences,
+                )
+                funops.set_next_camera_active(preferences)
+            else:
+                return {'CANCELLED'}
         elif ao is not None and ao.type == 'CAMERA':
             blcam = ao
-            funops.remove_camera(blcam, preferences)
+            funops.remove_camera(blcam, context, preferences)
+            funops.set_next_camera_active(preferences)
         elif context.scene.camera is not None:
             blcam = context.scene.camera
-            funops.remove_camera(blcam, preferences)
+            funops.remove_camera(blcam, context, preferences)
+            funops.set_next_camera_active(preferences)
+        return {'FINISHED'}
 
         return {'FINISHED'}
 

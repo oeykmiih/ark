@@ -26,6 +26,21 @@ def set_camera_active(blcam, preferences):
     update_camera_properties(blcam, preferences)
     return None
 
+def get_next_camera(container):
+    if container is None:
+        return None
+    blcam = None
+    for obj in container.all_objects:
+        if obj.type == 'CAMERA':
+            blcam = obj
+    return blcam
+
+def set_next_camera_active(preferences):
+    next_cam = get_next_camera(utils.bpy.col.obt(preferences.container_cameras))
+    if next_cam:
+        set_camera_active(next_cam, preferences)
+    return None
+
 def obt_camera_tracker(tracker_name, blcam, blcol):
     tracker = utils.bpy.obj.obt(tracker_name, parent=blcol, force=True, local=True)
     tracker.matrix_world = blcam.matrix_world
@@ -77,15 +92,20 @@ def duplicate_camera(blcam, preferences):
 
     blcol_cameras.objects.link(new_cam)
 
-    set_camera_active(new_cam, preferences)
     add_camera_hierarchy(new_cam, preferences)
+    set_camera_active(new_cam, preferences)
     return None
 
-def remove_camera(blcam, preferences):
+def remove_camera(blcam, context, preferences):
     if view_combinations.collection_hierarchy.audit(blcam, preferences):
         view_combinations.collection_hierarchy.remove(blcam, preferences)
 
     utils.bpy.obj.remove(blcam, purge_data=True)
+    return None
+
+def remove_cameras(blcams, context, preferences):
+    for blcam in blcams:
+        remove_camera(blcam, context, preferences)
     return None
 
 def force_camera_verticals(blcam):
