@@ -384,18 +384,22 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
 
 @addon.property
 class Scene_Cameras(bpy.types.PropertyGroup):
-    # NOTE: This patches uilist_index to never be changed, meaning it will
+    # NOTE: This patches uilist_index to never change, meaning it will
     ## never highlight a row, since we don't use the index in the first place.
-    def update_uilist_index(self, context):
-        self.uilist_index = 9999
+    def set_uilist_index(self, value):
+        self["uilist_index"] = -1
         return None
+
+    def get_uilist_index(self):
+        return self.get("uilist_index", -1)
 
     # NOTE: This index is just to fulfill call requirements,
     ## it's not used in the UIList to search for properties.
     uilist_index : bpy.props.IntProperty(
         name = "",
-        default = 9999,
-        update = update_uilist_index,
+        default = -1,
+        set = set_uilist_index,
+        get = get_uilist_index,
     )
 
 class WindowManager_Cameras_Cameras(bpy.types.PropertyGroup):
