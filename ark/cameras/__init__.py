@@ -4,6 +4,7 @@ from ark import utils
 addon = utils.bpy.Addon()
 
 from . import funops
+from . import view_combinations
 
 MODULES = {
     "properties" : None,
@@ -16,16 +17,14 @@ class ark_hierarchy():
     @staticmethod
     def create(preferences, context):
         blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, force=True, parent=context.scene.collection)
-        blcol_blockouts = utils.bpy.col.obt(preferences.container_blockouts, force=True, parent=blcol_cameras)
-        blcol_props = utils.bpy.col.obt(preferences.container_props, force=True, parent=context.scene.collection)
+        blcol_viewcombinations = utils.bpy.col.obt(preferences.container_viewcombinations, force=True, parent=context.scene.collection)
         return None
 
     @staticmethod
     def audit(preferences):
         conditions = [
             utils.bpy.col.obt(preferences.container_cameras, local=True),
-            utils.bpy.col.obt(preferences.container_blockouts, local=True),
-            utils.bpy.col.obt(preferences.container_props, local=True),
+            utils.bpy.col.obt(preferences.container_viewcombinations, local=True),
         ]
         return all(conditions)
 
@@ -108,7 +107,6 @@ class ARK_OT_DuplicateCamera(bpy.types.Operator):
         elif context.scene.camera is not None:
             blcam = context.scene.camera
             funops.duplicate_camera(blcam, preferences)
-
         return {'FINISHED'}
 
 class ARK_OT_RemoveCamera(bpy.types.Operator):
@@ -152,6 +150,84 @@ class ARK_OT_RemoveCamera(bpy.types.Operator):
             funops.set_next_camera_active(preferences)
         return {'FINISHED'}
 
+class ARK_OT_AddActiveToViewCombination(bpy.types.Operator):
+    bl_idname = f"{addon.name}.add_active_to_view_combination"
+    bl_label = ""
+    bl_options = {'UNDO', 'INTERNAL'}
+
+    name : bpy.props.StringProperty()
+
+    def execute(self, context):
+        blcam = bpy.data.objects[self.name]
+        ao = context.active_object
+
+        view_combinations.collection_hierarchy.get_viewcombination(blcam).objects.link(ao)
+        return {'FINISHED'}
+
+class ARK_OT_RemoveActiveFromViewCombination(bpy.types.Operator):
+    bl_idname = f"{addon.name}.remove_active_from_view_combination"
+    bl_label = ""
+    bl_options = {'UNDO', 'INTERNAL'}
+
+    name : bpy.props.StringProperty()
+
+    def execute(self, context):
+        blcam = bpy.data.objects[self.name]
+        ao = context.active_object
+
+        view_combinations.collection_hierarchy.get_viewcombination(blcam).objects.unlink(ao)
+        return {'FINISHED'}
+
+class ARK_OT_SetActiveAsBlockout(bpy.types.Operator):
+    bl_idname = f"{addon.name}.set_active_as_blockout"
+    bl_label = ""
+    bl_options = {'UNDO', 'INTERNAL'}
+
+    @staticmethod
+    def conditions(context):
+        ao = context.active_object
+        conditions = [
+            ao.visible_camera == True,
+            ao.visible_diffuse == True,
+            ao.visible_glossy == True,
+            ao.visible_transmission == True,
+            ao.visible_volume_scatter == True,
+        ]
+        return all(conditions)
+
+    def execute(self, context):
+        ao = context.active_object
+        ao.visible_camera = False
+        ao.visible_diffuse = False
+        ao.visible_glossy = False
+        ao.visible_transmission = False
+        ao.visible_volume_scatter = False
+        return {'FINISHED'}
+
+class ARK_OT_UnsetActiveAsBlockout(bpy.types.Operator):
+    bl_idname = f"{addon.name}.unset_active_as_blockout"
+    bl_label = ""
+    bl_options = {'UNDO', 'INTERNAL'}
+
+    @staticmethod
+    def conditions(context):
+        ao = context.active_object
+        conditions = [
+            ao.visible_camera == False,
+            ao.visible_diffuse == False,
+            ao.visible_glossy == False,
+            ao.visible_transmission == False,
+            ao.visible_volume_scatter == False,
+        ]
+        return all(conditions)
+
+    def execute(self, context):
+        ao = context.active_object
+        ao.visible_camera = True
+        ao.visible_diffuse = True
+        ao.visible_glossy = True
+        ao.visible_transmission = True
+        ao.visible_volume_scatter = True
         return {'FINISHED'}
 
 class ARK_OT_ForceCameraVerticals(bpy.types.Operator):
@@ -226,8 +302,8 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 )
 
             info = header.row(align=True)
-            buttons = header.row(align=True)
 
+            buttons = header.row(align=True)
             buttons.alignment = 'RIGHT'
             buttons.operator(ARK_OT_AddCamera.bl_idname, text="", icon='ADD')
             buttons.operator(ARK_OT_RemoveCamera.bl_idname, text="", icon='REMOVE')
@@ -341,16 +417,46 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
         return None
 
 class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
+    def _viewcombinations(self, context, layout, item):
+        ao = context.active_object
+        blcol_cam_viewcombination = view_combinations.collection_hierarchy.get_viewcombination(item)
+
+        layout = layout.row(align=True)
+        if ao is None or not ao.select_get() or blcol_cam_viewcombination is None:
+            layout.enabled = False
+            layout.operator(utils.bpy.ops.UTILS_OT_Placeholder.bl_idname, icon='BLANK1', emboss=False)
+            layout.operator(utils.bpy.ops.UTILS_OT_Placeholder.bl_idname, icon='BLANK1', emboss=False)
+        else:
+            _ = True
+            if ao.name not in blcol_cam_viewcombination.objects:
+                layout.operator(ARK_OT_AddActiveToViewCombination.bl_idname, icon='RESTRICT_VIEW_ON', emboss=False).name = item.name
+                _ = False
+            else:
+                layout.operator(ARK_OT_RemoveActiveFromViewCombination.bl_idname, icon='RESTRICT_VIEW_OFF', depress=True).name = item.name
+
+            sub = layout.row()
+            sub.enabled = _
+            if ARK_OT_SetActiveAsBlockout.conditions(context):
+                sub.operator(ARK_OT_SetActiveAsBlockout.bl_idname, icon='SNAP_VOLUME', emboss=False)
+            else:
+                sub.operator(ARK_OT_UnsetActiveAsBlockout.bl_idname, icon='META_CUBE', emboss=False)
+        return None
+
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         item = item.object
         pr_cam = getattr(item.data, addon.name)
 
         row = layout.row(align=True)
         row.prop(pr_cam, "render", text="")
-        row.prop(bpy.data.objects[item.name], "name", text="")
+        row.prop(item, "name", text="")
 
-        row = layout.row(align=True)
-        op = row.operator(
+        row = layout.row()
+        row.alignment = 'RIGHT'
+
+        self._viewcombinations(context, row, item)
+
+        sub = row.row(align=True)
+        op = sub.operator(
             utils.bpy.ops.UTILS_OT_Select.bl_idname,
             text = "",
             icon = '%s' % 'RESTRICT_SELECT_OFF' if item.select_get() or item.parent is not None and item.parent.select_get() else 'RESTRICT_SELECT_ON',
@@ -359,7 +465,7 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
         op.obj_name = item.name
         op.parent_instead = True
 
-        op = row.operator(
+        op = sub.operator(
             ARK_OT_SetCameraActive.bl_idname,
             text = "",
             icon = '%s' % 'RESTRICT_RENDER_OFF' if context.scene.camera == item else 'RESTRICT_RENDER_ON',
@@ -408,28 +514,29 @@ class WindowManager_Cameras_Cameras(bpy.types.PropertyGroup):
 @addon.property
 class WindowManager_Cameras(bpy.types.PropertyGroup):
     cameras : bpy.props.CollectionProperty(type=WindowManager_Cameras_Cameras)
-    pass
 
 @addon.property
 class Preferences_Cameras(bpy.types.PropertyGroup):
     default_name : bpy.props.StringProperty(
-        name="Camera Name",
-        default="Cam",
-    )
-
-    container_blockouts : bpy.props.StringProperty(
-        name="Blockouts",
-        default="#Blockouts",
+        name = "Default Camera Name",
+        default = "Cam",
     )
 
     container_cameras : bpy.props.StringProperty(
-        name="Cameras",
-        default="#Cameras",
+        name = "Cameras",
+        default = "#Cameras",
     )
 
     container_props : bpy.props.StringProperty(
-        name="Props",
-        default="#Props",
+        name = "Collection Props",
+        description = "Collection name where to store all Props",
+        default = "#Props",
+    )
+
+    container_viewcombinations : bpy.props.StringProperty(
+        name = "View Combinations",
+        description = "Collection name where to store all View Combinations",
+        default = "#ViewCombinations",
     )
 
     trackers_camera : bpy.props.StringProperty(
@@ -441,7 +548,7 @@ def UI(preferences, layout):
     box = layout.box()
     box.prop(preferences, "container_cameras")
     box.prop(preferences, "container_props")
-    box.prop(preferences, "container_blockouts")
+    box.prop(preferences, "container_viewcombinations")
     box.prop(preferences, "trackers_camera")
 
     for name in (name for name, module in MODULES.items() if hasattr(module, "UI")):
@@ -460,6 +567,10 @@ CLASSES = [
     ARK_OT_DuplicateCamera,
     ARK_OT_RemoveCamera,
     ARK_OT_ForceCameraVerticals,
+    ARK_OT_AddActiveToViewCombination,
+    ARK_OT_RemoveActiveFromViewCombination,
+    ARK_OT_SetActiveAsBlockout,
+    ARK_OT_UnsetActiveAsBlockout,
     ARK_UL_PROPERTIES_CameraList,
     ARK_PT_PROPERTIES_Scene,
     WindowManager_Cameras_Cameras,

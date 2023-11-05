@@ -9,7 +9,6 @@ from . import defaults
 from . import enums
 
 class Camera_Hierarchy(bpy.types.PropertyGroup):
-    blockouts : bpy.props.StringProperty()
     props : bpy.props.StringProperty()
 
 class Camera(bpy.types.PropertyGroup):
