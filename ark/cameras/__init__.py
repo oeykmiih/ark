@@ -277,14 +277,18 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
         pr_cam = None
 
         if not ark_hierarchy.audit(preferences):
-            box = layout.box()
-            row = box.row()
-            row.alert = True
-            row.operator(
+            col = layout.column(align=True)
+            header = col.box().row()
+            info = header.row(align=True)
+            buttons = header.row(align=True)
+            buttons.alignment = 'RIGHT'
+            buttons.label(text="")
+
+            info.alert = True
+            info.operator(
                 ARK_OT_CreateArkHierarchy.bl_idname,
                 text = "Missing structure for cameras, fix it?",
             )
-            return None
         else:
             blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, local=True)
             funops.set_camera_list(session.cameras, blcol_cameras)
@@ -429,10 +433,10 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
         else:
             _ = True
             if ao.name not in blcol_cam_viewcombination.objects:
-                layout.operator(ARK_OT_AddActiveToViewCombination.bl_idname, icon='RESTRICT_VIEW_ON', emboss=False).name = item.name
+                layout.operator(ARK_OT_AddActiveToViewCombination.bl_idname, icon='HIDE_ON', emboss=False).name = item.name
                 _ = False
             else:
-                layout.operator(ARK_OT_RemoveActiveFromViewCombination.bl_idname, icon='RESTRICT_VIEW_OFF', depress=True).name = item.name
+                layout.operator(ARK_OT_RemoveActiveFromViewCombination.bl_idname, icon='HIDE_OFF', depress=True).name = item.name
 
             sub = layout.row()
             sub.enabled = _
