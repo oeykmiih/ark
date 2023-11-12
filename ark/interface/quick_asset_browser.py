@@ -44,13 +44,13 @@ class ARK_OT_QuickAssetBrowser(bpy.types.Operator):
                 context.space_data.show_region_toolbar = False
             session.is_open = True
             session.context = context.area.ui_type
+            session.area2 = str(_area)
             bpy.app.timers.register(self.set_asset_browser_defaults, first_interval=.005)
         else:
             for area in reversed(context.screen.areas):
-                if area.ui_type == 'ASSETS':
+                if str(area) == session.area2:
                     area2 = area
                     break
-                continue
             else:
                 session.is_open = False
                 return {'INTERFACE'}
@@ -87,6 +87,7 @@ class WindowManager_Interface_QuickAssetBrowser(bpy.types.PropertyGroup):
     context : bpy.props.StringProperty()
     library : bpy.props.StringProperty()
     is_open : bpy.props.BoolProperty()
+    area2 : bpy.props.StringProperty()
 
 @addon.property
 class Preferences_Interface_QuickAssetBrowser(bpy.types.PropertyGroup):

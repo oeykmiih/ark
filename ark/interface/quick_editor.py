@@ -127,7 +127,6 @@ class ARK_OT_QuickEditorSplit(bpy.types.Operator):
 
             split_direction = 'HORIZONTAL'
             split_factor = preferences.split_factor
-            session.area2 = self.ui_type
 
             bpy.ops.screen.area_split(direction=split_direction,factor=split_factor)
             area2 = context.screen.areas[-1]
@@ -136,10 +135,10 @@ class ARK_OT_QuickEditorSplit(bpy.types.Operator):
             with context.temp_override(area=_area):
                 context.area.ui_type = self.ui_type
             session.is_open = True
-
+            session.area2 = str(_area)
         else:
             for area in reversed(context.screen.areas):
-                if area.ui_type == session.area2:
+                if str(area) == session.area2:
                     area2 = area
                     break
                 continue
@@ -155,7 +154,6 @@ class ARK_OT_QuickEditorSplit(bpy.types.Operator):
 @addon.property
 class WindowManager_Interface_QuickEditor(bpy.types.PropertyGroup):
     is_open : bpy.props.BoolProperty()
-
     area2 : bpy.props.StringProperty()
 
 @addon.property

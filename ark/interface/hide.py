@@ -48,7 +48,7 @@ def build_tree():
             tree[parent].append(id)
     return tree
 
-def enable():
+def unregister_panels():
     session = addon.session
     ids = rsearch(enums.UI_TO_HIDE, build_tree())
     restore = {}
@@ -66,18 +66,26 @@ def enable():
     session.addresses = json.dumps(addresses)
     return None
 
-def disable():
+def reregister_panels():
     session = addon.session
-    if not hasattr(session, "addresses"):
-        return None
-    addresses = json.loads(session.addresses)
-    session.addresses = ""
+    if hasattr(session, "addresses"):
+        addresses = json.loads(session.addresses)
+        session.addresses = ""
 
-    for id, module in reversed(addresses.items()):
-        module = importlib.import_module(module)
-        cls = getattr(module, id)
-        if not cls.is_registered:
-            bpy.utils.register_class(cls)
+        for id, module in reversed(addresses.items()):
+            module = importlib.import_module(module)
+            cls = getattr(module, id)
+            if not cls.is_registered:
+                bpy.utils.register_class(cls)
+    return None
+
+        return None
+def enable():
+    unregister_panels()
+    return None
+
+def disable():
+    reregister_panels()
     return None
 
 @addon.property
