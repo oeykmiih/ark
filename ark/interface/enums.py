@@ -160,11 +160,13 @@ UI_TO_HIDE = [
     "CYCLES_RENDER_PT_override",
 # Properties Scene
     "SCENE_PT_scene",
+    "SCENE_PT_scene",
     "SCENE_PT_unit",
     "SCENE_PT_physics",
     "SCENE_PT_keying_sets",
     "SCENE_PT_audio",
     "SCENE_PT_rigid_body_world",
+    "SCENE_PT_simulation",
     "SCENE_PT_custom_props",
 # Properties World
     "CYCLES_WORLD_PT_preview",
