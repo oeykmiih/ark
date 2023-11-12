@@ -127,24 +127,34 @@ class ARK_PT_Materials(bpy.types.Panel):
         preferences = addon.preferences
         materials = MaterialList(session, preferences).get()
 
-        column = layout.column(align=True)
-        row = column.row(align=True)
-        row.prop(session, "show_all", toggle=True)
 
-        row = column.row(align=True)
+        col = layout.column(align=True)
+        header = col.box().row()
+        left = header.row(align=True)
+        right = header.row(align=True)
+        right.alignment = 'RIGHT'
+        body = col.box()
+
+        right.prop(context.space_data, "pin", text="")
+        left.prop(session, "show_all", text="", icon='FILE_BACKUP')
+
+        row = left.row(align=True)
         if not session.show_all:
             row.enabled = False
-        row.prop(session, "show_orphan", toggle=True)
+        row.prop(session, "show_orphan", text="", icon='ORPHAN_DATA')
 
-        column = self.layout.column(align=True)
+        column = body.column()
         if materials:
-
             for material in materials:
-                opr = column.operator(
-                ARK_OT_GoToMaterial.bl_idname,
-                text=material.name,
-                emboss=True,
-                depress=(material.name == session.current_blmat)
+                is_current = (material.name == session.current_blmat)
+
+                row = column.row(align=True)
+                row.alert = (material.users == 0)
+                opr = row.operator(
+                    ARK_OT_GoToMaterial.bl_idname,
+                    text = material.name,
+                    emboss = is_current,
+                    depress = is_current,
                 )
                 opr.name = material.name
         else:
