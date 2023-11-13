@@ -119,7 +119,8 @@ class ARK_PT_Materials(bpy.types.Panel):
     @classmethod
     def poll(cls, context):
         return (context.space_data.type == 'NODE_EDITOR' and
-            context.space_data.tree_type == 'ShaderNodeTree')
+            context.space_data.tree_type == 'ShaderNodeTree' and
+            context.space_data.shader_type == 'OBJECT',)
 
     def draw(self, context):
         layout = self.layout
