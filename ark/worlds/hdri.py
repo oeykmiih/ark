@@ -1,8 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 import os
 import glob
+import json
 
 import bpy
+import bpy.utils.previews
 from ark import utils
 addon = utils.bpy.Addon()
 
@@ -13,36 +15,37 @@ SUPPORTED_FORMATS = {".hdr", ".exr"}
 def audit_library():
     return os.path.exists(bpy.path.abspath(addon.preferences.library))
 
-def reload_thumbnails(force=False):
+def reload_thumbnails(generate=False, force=False):
     library = bpy.path.abspath(addon.preferences.library)
-    library_thumbnails = os.path.join(library, "_thumbnails")
-    thumbnails = {os.path.splitext(fn)[0] for fn in os.listdir(library_thumbnails) if fn.lower().endswith(".jpg")}
-    _hdris = {os.path.splitext(fn)[0] : os.path.join(library, fn) for fn in os.listdir(library) if os.path.splitext(fn)[1] in SUPPORTED_FORMATS}
+    lib_thumbnails = bpy.path.abspath(addon.preferences.lib_thumbnails)
 
-    hdris = set(_hdris.keys())
-    to_remove = thumbnails.difference(hdris)
-    to_generate = hdris.difference(thumbnails) if force == False else hdris
-    thumbnails = []
+    hdris = {os.path.basename(p) : p for p in glob.glob(os.path.join(library, "**"), recursive=True) if os.path.splitext(p)[1] in SUPPORTED_FORMATS}
+    _thumbnails = {os.path.splitext(os.path.basename(p))[0] for p in glob.glob(os.path.join(lib_thumbnails, "*.jpg"))}
+    _hdris = set(hdris.keys())
 
+    to_remove = _thumbnails.difference(_hdris)
     for name in to_remove:
-        os.remove(os.path.join(library_thumbnails, name + ".jpg"))
         print("DELETING: ", name)
+        os.remove(os.path.join(lib_thumbnails, name + ".jpg"))
 
-    for name in to_generate:
-        print("GENERATING: ", name)
-        thumbnails.append(
-            utils.bpy.img.generate_thumbnail(_hdris[name], os.path.join(library_thumbnails, name + ".jpg"))
-        )
+    thumbnails = list(_thumbnails.difference(to_remove))
+    if generate:
+        to_generate = _hdris.difference(_thumbnails) if force == False else hdris
 
+        for name in to_generate:
+            print("GENERATING: ", name)
+            thumbnails.append(
+                utils.bpy.img.generate_thumbnail(hdris[name], os.path.join(lib_thumbnails, name + ".jpg"))
+            )
+
+    addon.session.hdris = json.dumps(hdris)
     return thumbnails
 
 def enum_previews(self, context):
-    library_thumbnails = os.path.join(bpy.path.abspath(addon.preferences.library), "_thumbnails")
-    items = [os.path.join(library_thumbnails, fn) for fn in os.listdir(library_thumbnails) if fn.lower().endswith(".jpg")]
-    return load_previews(items)
+    lib_thumbnails = bpy.path.abspath(addon.preferences.lib_thumbnails)
+    return load_previews({p for p in glob.glob(os.path.join(lib_thumbnails, "*.jpg"))})
 
 def load_previews(thumbnails):
-    library = os.path.join(bpy.path.abspath(addon.preferences.library), "_thumbnails")
     global bl_previews
 
     enum_items = []
@@ -65,21 +68,25 @@ def load_previews(thumbnails):
         pass
     return enum_items
 
-def reload_previews(force=False):
-    load_previews(reload_thumbnails(force=force))
+def reload_previews(generate=False, force=False):
+    load_previews(reload_thumbnails(generate=generate, force=force))
     return None
 
 def audit_hdri():
     return get_hdri(addon.preferences, addon.session)
 
 def get_hdri(preferences, session):
-    for path in glob.glob(os.path.join(bpy.path.abspath(preferences.library), session.previews + ".*")):
-            if os.path.splitext(path)[1] in SUPPORTED_FORMATS:
-                result = (os.path.basename(path), path)
-                break
+    hdris = json.loads(session.hdris)
+    if session.preview in hdris:
+        path = hdris[session.preview]
+        if os.path.exists(path):
+            return (os.path.basename(path), path)
+        else:
+            # reload_previews(force=True)
+            return False
     else:
-        result = False
-    return result
+        # reload_previews(force=True)
+        return False
 
 def get_tex(context,  file):
     if file[0] in context.blend_data.images:
@@ -87,6 +94,16 @@ def get_tex(context,  file):
     else:
         tex = context.blend_data.images.load(file[1])
     return tex
+
+def handle_existing_world_hdri(world):
+    session = addon.session
+    w_nodes =  world.node_tree.nodes
+    if "HDRI" in w_nodes:
+        existing =  w_nodes["HDRI"].image.name
+        if existing != session.preview:
+            if existing in reload_thumbnails():
+                session.preview = existing
+    return None
 
 def apply_world_hdri(world, tex):
     world.node_tree.nodes["HDRI"].image = tex
@@ -96,14 +113,19 @@ def update_world_hdri(self, context):
     world = context.scene.world
     pr_world = getattr(world, addon.name)
 
+    setup_world_hdri(world)
+    reload_thumbnails()
+
     if pr_world.kind == 'HDRI':
         preferences = addon.preferences
         session = addon.session
 
-        paths = get_hdri(preferences, session)
-        if paths:
-            tex = get_tex(context, paths)
+        file = get_hdri(preferences, session)
+        if file:
+            tex = get_tex(context, file)
             apply_world_hdri(world, tex)
+        else:
+            pass
 
         reload_previews()
     return None
@@ -121,7 +143,7 @@ def setup_world_hdri(world):
     w_links.new(n_coord.outputs[0], n_mapping.inputs['Vector'])
 
     n_tex = w_nodes["HDRI"] if "HDRI" in w_nodes else w_nodes.new('ShaderNodeTexEnvironment')
-    n_tex.name = "HDRI"
+    n_tex.label = n_tex.name = "HDRI"
     n_tex.location = (-300, -200)
     w_links.new(n_mapping.outputs[0], n_tex.inputs[0])
 
@@ -150,7 +172,7 @@ class ARK_OT_ReloadHDRIPreviews(bpy.types.Operator):
         return self.execute(context)
 
     def execute(self, context):
-        reload_previews(force=self.shift)
+        reload_previews(generate=True, force=self.shift)
         return {'INTERFACE'}
 
 class ARK_OT_CreateWorldHDRI(bpy.types.Operator):
@@ -158,7 +180,6 @@ class ARK_OT_CreateWorldHDRI(bpy.types.Operator):
     bl_label = ""
 
     def execute(self, context):
-        session = addon.session
         world = context.scene.world
         pr_world = getattr(world, addon.name)
         setup_world_hdri(world)
@@ -170,20 +191,41 @@ class ARK_OT_CreateWorldHDRI(bpy.types.Operator):
         pr_world.created = True
         return {'FINISHED'}
 
+class ARK_OT_Warning_UpdateWorldHDRI(bpy.types.Operator):
+    bl_idname = f"{addon.name}.warning_update_world_hdir"
+    bl_label = ""
+    bl_options = {'INTERNAL'}
+
+    def execute(self, context):
+        return {'INTERFACE'}
+
 @addon.property
 class WindowManager_Worlds_HDRI(bpy.types.PropertyGroup):
-    previews : bpy.props.EnumProperty(
+    preview : bpy.props.EnumProperty(
         items = enum_previews,
         update = update_world_hdri,
     )
+    
+    hdris : bpy.props.StringProperty()
 
 @addon.property
 class Preferences_Worlds_HDRI(bpy.types.PropertyGroup):
-    library: bpy.props.StringProperty(
+    def update_library(self, context):
+        self.lib_thumbnails = os.path.join(self.library, "_thumbnails")
+        return None
+
+    library : bpy.props.StringProperty(
         name = "Library Path",
         default = "",
         description = "Folder where you store your HDRI images for the World Environment",
-        subtype = "DIR_PATH",
+        subtype = 'DIR_PATH',
+        update = update_library,
+    )
+
+    lib_thumbnails : bpy.props.StringProperty(
+        name = "Path for Library Thumbnails",
+        default = "",
+        subtype = 'DIR_PATH',
     )
 
 def UI(preferences, layout):
@@ -193,6 +235,7 @@ def UI(preferences, layout):
 CLASSES = [
     ARK_OT_ReloadHDRIPreviews,
     ARK_OT_CreateWorldHDRI,
+    ARK_OT_Warning_UpdateWorldHDRI,
     WindowManager_Worlds_HDRI,
     Preferences_Worlds_HDRI,
 ]
@@ -200,7 +243,6 @@ CLASSES = [
 def register():
     utils.bpy.register_classes(CLASSES)
 
-    import bpy.utils.previews
     global bl_previews
     bl_previews = bpy.utils.previews.new()
     return None

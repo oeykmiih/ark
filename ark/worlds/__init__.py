@@ -45,8 +45,10 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
                             row = utils.bpy.ui.split(body, text="HDRI Library")
                             row.prop(addon.preferences.hdri, "library", text="")
                         else:
+                            hdri.handle_existing_world_hdri(world)
+
                             buttons.operator(hdri.ARK_OT_ReloadHDRIPreviews.bl_idname, icon='FILE_REFRESH')
-                            body.template_icon_view(session.hdri, "previews", scale=10)
+                            body.template_icon_view(session.hdri, "preview", scale=10)
                     case 'SKY':
                         buttons.label(text="")
                         body.label(text="SKY is selected.")
