@@ -27,7 +27,6 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
         if world is not None:
             pr_world = getattr(world, addon.name)
 
-            # box = layout.box()
             col = layout.column(align=True)
             header = col.box().row()
             info = header.row(align=True)
@@ -35,12 +34,7 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
             buttons.alignment = 'RIGHT'
             body = col.box()
 
-            if not pr_world.created:
-                utils.bpy.ui.alert(info, text="Missing ARK World")
-                buttons.label(text="")
-                body.scale_y = 1.5
-                body.operator(hdri.ARK_OT_CreateWorldHDRI.bl_idname, text="Add HDRI")
-            else:
+            if pr_world.created:
                 info.prop(pr_world, "kind", expand=True)
 
                 match pr_world.kind:
@@ -56,6 +50,11 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
                     case 'SKY':
                         buttons.label(text="")
                         body.label(text="SKY is selected.")
+            else:
+                utils.bpy.ui.alert(info, text="Missing ARK World")
+                buttons.label(text="")
+                body.scale_y = 1.5
+                body.operator(hdri.ARK_OT_CreateWorldHDRI.bl_idname, text="Add HDRI")
         return None
 
 @addon.property
