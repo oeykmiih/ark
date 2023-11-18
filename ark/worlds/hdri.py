@@ -81,11 +81,11 @@ def get_hdri(preferences, session):
         result = False
     return result
 
-def get_tex(context,  paths):
-    if paths[0] in context.blend_data.images:
-        tex = context.blend_data.images[paths[0]]
+def get_tex(context,  file):
+    if file[0] in context.blend_data.images:
+        tex = context.blend_data.images[file[0]]
     else:
-        tex = context.blend_data.images.load(paths[1])
+        tex = context.blend_data.images.load(file[1])
     return tex
 
 def apply_world_hdri(world, tex):
