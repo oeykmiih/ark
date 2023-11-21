@@ -79,7 +79,6 @@ def reregister_panels():
                 bpy.utils.register_class(cls)
     return None
 
-        return None
 def enable():
     unregister_panels()
     return None

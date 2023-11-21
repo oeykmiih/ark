@@ -5,6 +5,7 @@ import json
 
 import bpy
 import bpy.utils.previews
+
 from ark import utils
 addon = utils.bpy.Addon()
 
