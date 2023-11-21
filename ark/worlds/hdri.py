@@ -76,16 +76,15 @@ def audit_hdri():
     return get_hdri(addon.preferences, addon.session)
 
 def get_hdri(preferences, session):
+    reload_previews(force=True)
     hdris = json.loads(session.hdris)
     if session.preview in hdris:
         path = hdris[session.preview]
         if os.path.exists(path):
             return (os.path.basename(path), path)
         else:
-            # reload_previews(force=True)
             return False
     else:
-        # reload_previews(force=True)
         return False
 
 def get_tex(context,  file):
@@ -98,7 +97,7 @@ def get_tex(context,  file):
 def handle_existing_world_hdri(world):
     session = addon.session
     w_nodes =  world.node_tree.nodes
-    if "HDRI" in w_nodes:
+    if "HDRI" in w_nodes and w_nodes["HDRI"].image is not None:
         existing =  w_nodes["HDRI"].image.name
         if existing != session.preview:
             if existing in reload_thumbnails():
