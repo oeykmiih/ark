@@ -49,7 +49,7 @@ class MaterialList():
             if material.is_grease_pencil is False:
                 if material.users > 0 or self.session.show_orphan:
                     if material not in self.materials:
-                        if not material.name.startswith("."):
+                        if not material.name.startswith(".") or self.session.show_hidden:
                             self.materials.append(material)
         return None
 
@@ -69,7 +69,7 @@ class MaterialList():
         if blob.type == "MESH":
             for material in (slot.material for slot in blob.material_slots if slot.material is not None):
                 if material not in self.materials:
-                    if not material.name.startswith("."):
+                    if not material.name.startswith(".") or self.session.show_hidden:
                         self.materials.append(material)
         return None
 
@@ -131,18 +131,21 @@ class ARK_PT_Materials(bpy.types.Panel):
 
         col = layout.column(align=True)
         header = col.box().row()
-        left = header.row(align=True)
+        left = header.row()
         right = header.row(align=True)
         right.alignment = 'RIGHT'
         body = col.box()
 
-        right.prop(context.space_data, "pin", text="")
-        left.prop(session, "show_all", text="", icon='FILE_BACKUP')
-
-        row = left.row(align=True)
+        sub = left.row(align=True)
+        sub.prop(session, "show_all", text="", icon='FILE_BACKUP')
+        _ = sub.row(align=True)
         if not session.show_all:
-            row.enabled = False
-        row.prop(session, "show_orphan", text="", icon='ORPHAN_DATA')
+            _.enabled = False
+        _.prop(session, "show_orphan", text="", icon='ORPHAN_DATA')
+
+        left.row().prop(session, "show_hidden", text="", icon='GHOST_ENABLED')
+
+        right.prop(context.space_data, "pin", text="")
 
         column = body.column()
         if materials:
