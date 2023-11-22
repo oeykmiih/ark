@@ -7,71 +7,51 @@ import bpy
 from ark import utils
 addon = utils.bpy.Addon()
 
-class MaterialList():
-    def __init__(self, session, preferences):
-        self.session = session
-        self.preferences = preferences
-        self.blob = None
-        self.materials = []
-        self.checked_groups = []
-
-    def get(self):
-        if self.session.show_all:
-            self.find_materials_in_file()
+def find_materials_in_file(session):
+    materials = bpy.data.materials
+    if session.show_hidden:
+        if session.show_orphan:
+            return [blmat for blmat in materials if not blmat.is_grease_pencil]
         else:
-            self.active_object()
-            self.find_materials_in_active()
-
-        return self.materials
-
-    def active_object(self):
-        if not bpy.context.active_object:
-            return None
-        if bpy.context.active_object.name == self.preferences.trackers_material:
-            self.blob = utils.bpy.obj.obt(self.session.last_obj, local=True)
+            return [blmat for blmat in materials if not blmat.is_grease_pencil and blmat.users > 0]
+    else:
+        if session.show_orphan:
+            return [blmat for blmat in materials if not blmat.is_grease_pencil and not blmat.name.startswith(".")]
         else:
-            self.blob = bpy.context.active_object
-            self.session.last_obj = self.blob.name
-        return None
+            return [blmat for blmat in materials if not blmat.is_grease_pencil and not blmat.name.startswith(".") and blmat.users > 0]
 
-    def find_materials_in_active(self):
-        if not self.blob:
-            return None
+def find_materials_in_instance(blcol):
+    materials = []
+    for blob in bpy.data.collections[blcol.instance_collection.name].objects:
+        materials += find_materials_in_blob(blob)
+    return materials
 
-        if self.blob.instance_type == 'COLLECTION' and self.blob.instance_collection is not None and self.blob.type == 'EMPTY':
-            self.find_materials_in_instances(self.blob)
-        else:
-            self.find_materials_in_object(self.blob)
-        return None
+def find_materials_in_blob(blob):
+    materials = []
+    match blob.type:
+        case 'EMPTY':
+            if blob.instance_type == 'COLLECTION' and blob.instance_collection is not None:
+                materials += find_materials_in_instance(blob)
+        case 'MESH':
+            materials += blob.data.materials
+        case _:
+            pass
+    return materials
 
-    def find_materials_in_file(self):
-        for material in bpy.data.materials:
-            if material.is_grease_pencil is False:
-                if material.users > 0 or self.session.show_orphan:
-                    if material not in self.materials:
-                        if not material.name.startswith(".") or self.session.show_hidden:
-                            self.materials.append(material)
-        return None
+def find_materials_in_active(session, tracker):
+    ao = bpy.context.active_object
+    if ao is None:
+        materials = []
+    else:
+        materials = find_materials_in_blob(ao)
+    return set(materials)
 
-    def find_materials_in_instances(self, empty):
-        if empty.instance_collection.name in self.checked_groups:
-            return None
-        for blob in bpy.data.collections[empty.instance_collection.name].objects:
-            if 'COLLECTION' and blob.instance_collection is not None and blob.type == 'EMPTY':
-                self.find_materials_in_instances(blob)
-            else:
-                self.find_materials_in_object(blob)
-
-        self.checked_groups.append(empty.instance_collection.name)
-        return None
-
-    def find_materials_in_object(self, blob):
-        if blob.type == "MESH":
-            for material in (slot.material for slot in blob.material_slots if slot.material is not None):
-                if material not in self.materials:
-                    if not material.name.startswith(".") or self.session.show_hidden:
-                        self.materials.append(material)
-        return None
+def find_materials(session, preferences):
+    if session.show_all:
+        materials = find_materials_in_file(session)
+    else:
+        materials = find_materials_in_active(session, preferences.trackers_material)
+    return materials
 
 class ARK_OT_GoToMaterial(bpy.types.Operator):
     bl_idname = f"{addon.name}.go_to_material"
@@ -126,7 +106,7 @@ class ARK_PT_Materials(bpy.types.Panel):
         layout = self.layout
         session = addon.session
         preferences = addon.preferences
-        materials = MaterialList(session, preferences).get()
+        materials = find_materials(session, preferences)
 
 
         col = layout.column(align=True)
@@ -142,8 +122,7 @@ class ARK_PT_Materials(bpy.types.Panel):
         if not session.show_all:
             _.enabled = False
         _.prop(session, "show_orphan", text="", icon='ORPHAN_DATA')
-
-        left.row().prop(session, "show_hidden", text="", icon='GHOST_ENABLED')
+        _.prop(session, "show_hidden", text="", icon='GHOST_ENABLED')
 
         right.prop(context.space_data, "pin", text="")
 
