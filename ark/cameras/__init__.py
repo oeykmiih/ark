@@ -276,27 +276,25 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
         cam_list = None
         pr_cam = None
 
-        if not ark_hierarchy.audit(preferences):
-            col = layout.column(align=True)
-            header = col.box().row()
-            info = header.row(align=True)
-            buttons = header.row(align=True)
-            buttons.alignment = 'RIGHT'
-            buttons.label(text="")
+        col = layout.column(align=True)
+        header = col.box().row()
+        info = header.row(align=True)
+        buttons = header.row(align=True)
+        buttons.alignment = 'RIGHT'
+        body = col.box()
 
-            info.alert = True
-            info.operator(
-                ARK_OT_CreateArkHierarchy.bl_idname,
-                text = "Missing structure for cameras, fix it?",
-            )
+
+        if not ark_hierarchy.audit(preferences):
+            utils.bpy.ui.alert(info, text="Missing ARK collections")
+            buttons.label(text="")
+            body.scale_y = 1.5
+            body.operator(ARK_OT_CreateArkHierarchy.bl_idname, text = "Add collections")
         else:
             blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, local=True)
             funops.set_camera_list(session.cameras, blcol_cameras)
             blcam = scene.camera
 
-            col = layout.column(align=True)
-            header = col.box().row()
-            col.template_list(
+            body.template_list(
                     "ARK_UL_PROPERTIES_CameraList",
                     "Camera List",
                     session,
@@ -305,21 +303,14 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                     "uilist_index",
                 )
 
-            info = header.row(align=True)
-
-            buttons = header.row(align=True)
-            buttons.alignment = 'RIGHT'
             buttons.operator(ARK_OT_AddCamera.bl_idname, text="", icon='ADD')
             buttons.operator(ARK_OT_RemoveCamera.bl_idname, text="", icon='REMOVE')
             buttons.operator(ARK_OT_DuplicateCamera.bl_idname, text="", icon='DUPLICATE')
 
             if len(session.cameras) == 0:
                 utils.bpy.ui.alert(info, text=f"No camera in {blcol_cameras.name}.")
-                # info.template_ID(scene, "camera", new=ARK_OT_AddCamera.bl_idname)
-                return
             elif not blcam:
                 utils.bpy.ui.label(info, text="No active camera.")
-                return None
             else:
                 if not view_combinations.collection_hierarchy.audit(blcam, preferences):
                     renamed = view_combinations.collection_hierarchy.audit_previous(blcam, preferences)

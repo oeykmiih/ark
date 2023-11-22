@@ -53,7 +53,7 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
                         buttons.label(text="")
                         body.label(text="SKY is selected.")
             else:
-                utils.bpy.ui.alert(info, text="Missing ARK World")
+                utils.bpy.ui.alert(info, text="No ARK World")
                 buttons.label(text="")
                 body.scale_y = 1.5
                 body.operator(hdri.ARK_OT_CreateWorldHDRI.bl_idname, text="Add HDRI")
