@@ -52,7 +52,7 @@ def ARK_ASSETS_HT_draw(self, context):
 
     row = layout.row(align=True)
     row.ui_units_x = 1
-    row.prop(bpy.context.space_data.params, "asset_library_ref", text="")
+    row.prop(bpy.context.space_data.params, "asset_library_reference", text="")
 
     row = layout.row(align=True)
     row.prop(bpy.context.space_data.params, "filter_search", text="", icon='VIEWZOOM')

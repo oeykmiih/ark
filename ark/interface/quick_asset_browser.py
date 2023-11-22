@@ -15,7 +15,7 @@ class ARK_OT_CloseAssetBrowser(bpy.types.Operator):
 
     def execute(self, context):
         session = addon.session
-        session.library = bpy.context.space_data.params.asset_library_ref
+        session.library = bpy.context.space_data.params.asset_library_reference
         bpy.ops.screen.area_close()
         session.is_open = False
         return {"FINISHED"}
@@ -69,9 +69,9 @@ class ARK_OT_QuickAssetBrowser(bpy.types.Operator):
         if area.ui_type == 'ASSETS':
             with bpy.context.temp_override(area=area):
                 if session.library:
-                    bpy.context.space_data.params.asset_library_ref = session.library
+                    bpy.context.space_data.params.asset_library_reference = session.library
                 else:
-                    bpy.context.space_data.params.asset_library_ref = preferences.library
+                    bpy.context.space_data.params.asset_library_reference = preferences.library
 
                 match session.context:
                     case 'VIEW_3D':
