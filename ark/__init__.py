@@ -5,13 +5,13 @@ bl_info = {
     "description" : "",
     "wiki_url": "",
     "blender" : (3, 3, 0),
-    "version" : (0, 1, 4),
+    "version" : (0, 2, 0),
     "category" : "",
     "location" : "",
     "warning" : "",
 }
 
-__version__ = "0.1.4-231121"
+__version__ = "0.2.0"
 __prefix__ = "ARK"
 
 from ark import utils
