@@ -6,6 +6,7 @@ from ark import utils
 addon = utils.bpy.Addon()
 
 from . import enums
+from . import quick_editor
 
 # NOTE: keep name in sync with headers.ARK_OT_QuickEditorType
 class ARK_OT_CloseAssetBrowser(bpy.types.Operator):
@@ -13,11 +14,22 @@ class ARK_OT_CloseAssetBrowser(bpy.types.Operator):
     bl_label = ""
     bl_description = "Closes the current Asset Browser"
 
+    shift : bpy.props.BoolProperty()
+    ctrl : bpy.props.BoolProperty()
+
+    def invoke(self, context, event):
+        self.shift = event.shift
+        self.ctrl = event.ctrl
+        return self.execute(context)
+
     def execute(self, context):
-        session = addon.session
-        session.library = bpy.context.space_data.params.asset_library_reference
-        bpy.ops.screen.area_close()
-        session.is_open = False
+        if self.shift and self.ctrl:
+            bpy.ops.wm.call_menu_pie(name=quick_editor.ARK_MT_PIE_SetEditorMode.__name__)
+        else:
+            session = addon.session
+            session.library = bpy.context.space_data.params.asset_library_reference
+            bpy.ops.screen.area_close()
+            session.is_open = False
         return {"FINISHED"}
 
 # NOTE: keep name in sync with headers.ARK_OT_QuickEditorType
