@@ -3,3 +3,4 @@ __version__ = '231104'
 
 from . import bpy
 from .std import *
+from .print import *
