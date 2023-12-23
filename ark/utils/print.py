@@ -4,7 +4,7 @@
 class formatter(object):
   def __init__(self):
     self.types = {}
-    self.htchar = '\t'
+    self.htchar = '  '
     self.lfchar = '\n'
     self.indent = 0
     self.set_formater(object, self.__class__.format_object)
