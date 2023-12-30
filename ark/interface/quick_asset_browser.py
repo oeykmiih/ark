@@ -57,7 +57,7 @@ class ARK_OT_QuickAssetBrowser(bpy.types.Operator):
 
             with context.temp_override(area=area2):
                 bpy.ops.screen.area_close()
-            session.is_open =  False
+            session.is_open = False
         return {"INTERFACE"}
 
     @staticmethod

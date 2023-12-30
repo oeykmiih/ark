@@ -504,7 +504,7 @@ class Scene_Cameras(bpy.types.PropertyGroup):
     )
 
 class WindowManager_Cameras_Cameras(bpy.types.PropertyGroup):
-    object :  bpy.props.PointerProperty(type=bpy.types.Object)
+    object : bpy.props.PointerProperty(type=bpy.types.Object)
 
 @addon.property
 class WindowManager_Cameras(bpy.types.PropertyGroup):

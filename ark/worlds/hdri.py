@@ -88,7 +88,7 @@ def get_hdri(preferences, session):
     else:
         return False
 
-def get_tex(context,  file):
+def get_tex(context, file):
     if file[0] in context.blend_data.images:
         tex = context.blend_data.images[file[0]]
     else:
@@ -97,9 +97,9 @@ def get_tex(context,  file):
 
 def handle_existing_world_hdri(world):
     session = addon.session
-    w_nodes =  world.node_tree.nodes
+    w_nodes = world.node_tree.nodes
     if "HDRI" in w_nodes and w_nodes["HDRI"].image is not None:
-        existing =  w_nodes["HDRI"].image.name
+        existing = w_nodes["HDRI"].image.name
         if existing != session.preview:
             if existing in reload_thumbnails():
                 session.preview = existing
@@ -205,7 +205,7 @@ class WindowManager_Worlds_HDRI(bpy.types.PropertyGroup):
         items = enum_previews,
         update = update_world_hdri,
     )
-    
+
     hdris : bpy.props.StringProperty()
 
 @addon.property

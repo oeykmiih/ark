@@ -69,7 +69,7 @@ def add_camera(preferences):
         overwrite='NEW',
     )
 
-    blcam =  utils.bpy.obj.obt(
+    blcam = utils.bpy.obj.obt(
         name,
         data=bldata,
         force=True,
