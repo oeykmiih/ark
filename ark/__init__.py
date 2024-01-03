@@ -20,6 +20,7 @@ addon = utils.bpy.Addon()
 MODULES = {
     "cameras" : None,
     "interface" : None,
+    "io_json" : None,
     "materials" : None,
     "worlds" : None,
 }
