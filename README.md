@@ -24,7 +24,10 @@ This addon works with Blender 4.0 (might work in earlier versions).
 > his amazing addon served as reference for some features [Photographer Addon](https://blenderartists.org/t/1101721/1938)
 
 [gregzaal @github](https://github.com/gregzaal)
-> used this as a basis for the Material List [Matalogue](https://github.com/gregzaal/Matalogue)
+> used as a base for the Material List [Matalogue](https://github.com/gregzaal/Matalogue)
+
+[wildiness @github](https://github.com/wildiness)
+> used as a inspiration for the JsonExporter [NodeSharer](https://github.com/wildiness/NodeSharer)[](https://blenderartists.org/t/1256755)
 
 [batFinger @stackexchange](https://blender.stackexchange.com/users/15543)
 > his answers to blender's python api on [Blender Stackexchange](https://blender.stackexchange.com) made starting out a million times easier.
