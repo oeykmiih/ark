@@ -190,6 +190,17 @@ BL_DEFAULTS = {
     bpy.types.Material : {
         'name' : 'Shader Nodetree',
     },
+    bpy.types.Node: {
+        'show_options' : 1,
+        'show_texture' : 0,
+        'show_preview' : 0,
+        'hide' : 0,
+        'mute' : 0,
+    },
+    bpy.types.NodeSocket : {
+        'hide' : 0,
+        'hide_value' : 0,
+    },
 }
 for key in BL_MAP:
     if key not in BL_DEFAULTS:
