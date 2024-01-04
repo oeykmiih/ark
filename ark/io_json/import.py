@@ -74,20 +74,19 @@ def import_collection_property(bl_prop, bl_parent, key, py_parent):
             raise ValueError(bl_prop, key, t_fixed)
     return None
 
-def import_py_rna(bl_prop, bl_parent, key, py_prop):
+def import_py_rna(bl_prop, bl_parent, id, py_prop):
     match type(bl_prop):
         case bpy.types.CollectionProperty | bpy.types.PointerProperty:
             t = type_from_bl_prop(bl_prop.fixed_type)
         case _:
             t = type_from_bl_prop(bl_prop)
 
-    if isinstance(key, int):
-        attr = bl_parent[key]
-    elif isinstance(key, str):
-        attr = getattr(bl_parent, key)
+    if isinstance(id, int):
+        attr = bl_parent[id]
+    elif isinstance(id, str):
+        attr = getattr(bl_parent, id)
     else:
-        raise ValueError(bl_parent, key, type(key))
-
+        raise ValueError(bl_parent, id, type(id))
 
     if hasattr(attr, 'bl_rna'):
         for key in py_prop:
