@@ -149,7 +149,7 @@ def import_node(bl_ntree, py_node):
         case _:
             pass
     import_py_props(bl_node, py_node)
-    return bl_node
+    return None
 
 def import_nodetree(_, bl_parent, __, py_prop):
     bl_ntree = bl_parent.node_tree
