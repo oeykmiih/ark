@@ -17,6 +17,18 @@ BL_MAP = {
         'node_groups' : 'C_DICT',
         'version' : 'P_VALUE',
     },
+    bpy.types.ColorRamp : {
+        'color_mode' : None,
+        'hue_interpolation' : None,
+        'interpolation' : None,
+        'elements' : 'C_LIST',
+    },
+    bpy.types.CurveMap : {
+        'points' : 'C_LIST',
+    },
+    bpy.types.CurveMapping : {
+        'curves' : 'C_LIST',
+    },
     bpy.types.Material : {
         'name' : None,
         'cycles' : 'P_VALUE',
@@ -42,8 +54,8 @@ BL_MAP = {
         'clamp_result' : None,
         'clamp_type' : None,
         'clamp' : None,
-        'color_mapping' : None,
-        'color_ramp' : None,
+        # 'color_mapping' : None,
+        'color_ramp' : 'P_VALUE',
         'component' : None,
         'convert_from' : None,
         'convert_to' : None,
@@ -75,7 +87,7 @@ BL_MAP = {
         'label' : None,
         'layer_name' : None,
         'location' : None,
-        'mapping' : None,
+        'mapping' : 'P_VALUE',
         'mode' : None,
         'model' : None,
         'musgrave_dimensions' : None,

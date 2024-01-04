@@ -190,6 +190,19 @@ def import_nodegroup(_, __, py_prop):
         bl_ntree.links.new(bl_from, bl_to)
     return bl_ntree
 
+def import_curve_map(_, bl_parent, key, py_prop):
+    bl_points = getattr(bl_parent[key], "points")
+    _len = len(bl_points)
+    for id, py_point in enumerate(py_prop["points"]):
+        if id < _len:
+            bl_point = bl_points[id]
+            import_float(None, bl_point, "location", py_point["location"])
+            import_str(None, bl_point, "handle_type", py_point["handle_type"])
+        else:
+            bl_point = bl_points.new(py_point["location"][0], py_point["location"][1])
+            import_str(None, bl_point, "handle_type", py_point["handle_type"])
+    return None
+
 BLEND_ID_DATA = {
     bpy.types.NodeTree : 'node_groups',
 }
@@ -206,6 +219,7 @@ ATOMIC = {
 COMPOSED = {
     bpy.types.Material : import_material,
     bpy.types.NodeTree : import_nodetree,
+    bpy.types.CurveMap : import_curve_map,
 }
 
 def import_py_blend(py_blend):
