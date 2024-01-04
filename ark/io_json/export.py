@@ -19,7 +19,7 @@ global BLEND_ID_DATA
 BLEND_ID_DATA = {}
 
 DESTRUCTORS = {
-    bpy.types.NodeSocket : lambda attr: [attr.node.name, int(re.findall(r"(\d+)\]$", attr.__repr__())[0])]
+    bpy.types.NodeSocket : lambda attr: [attr.node.name, int(re.findall(r"(\d+)\]$", attr.__repr__())[0])],
 }
 
 def parse_int(bl_prop, attr):
@@ -91,6 +91,8 @@ def parse_bl_rna(bl_parent, *args):
                             py_parent[key] = parse_pointer(bl_prop, attr)
                         case 'P_INDEX':
                             py_parent[key] = attr.index
+                        case 'P_NAME':
+                            py_parent[key] = attr.name
                         case 'P_DATA':
                             t = type_from_bl_prop(attr)
                             queue_bl_id_data(attr, BLEND_ID_DATA[t])
