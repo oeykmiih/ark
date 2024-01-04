@@ -178,6 +178,7 @@ def import_nodetree(_, bl_parent, __, py_prop):
 def import_nodegroup(_, __, py_prop):
     global py_blend
     bl_ntree = utils.bpy.obt(bpy.data.node_groups, py_prop["node_tree"], type='ShaderNodeTree', force=True, overwrite='NEW')
+    bl_nodes = bl_ntree.nodes
     py_ntree = py_blend["node_groups"][py_prop["node_tree"]]
 
     bl_interface = bl_ntree.interface
@@ -206,10 +207,10 @@ def import_nodegroup(_, __, py_prop):
 
     for py_link in py_ntree["links"]:
         py_from = py_link["from_socket"]
-        bl_from = bl_ntree.nodes[py_from[0]].outputs[py_from[1]]
+        bl_from = bl_nodes[py_from[0]].outputs[py_from[1]]
 
         py_to = py_link["to_socket"]
-        bl_to = bl_ntree.nodes[py_to[0]].inputs[py_to[1]]
+        bl_to = bl_nodes[py_to[0]].inputs[py_to[1]]
 
         bl_ntree.links.new(bl_from, bl_to)
     return bl_ntree
