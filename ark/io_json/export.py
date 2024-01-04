@@ -66,7 +66,7 @@ def parse_collection_property(bl_prop, attr, mode='C_LIST'):
             else:
                 return {item.name : ATOMIC[item] for item in attr}
         case _:
-            raise ValueError(bl_prop, attr, mode)
+            raise ValueError(bl_prop, attr, mode, t_fixed)
 
 def parse_pointer(bl_prop, attr):
     t = type_from_bl_prop(bl_prop.fixed_type)
@@ -101,7 +101,7 @@ def parse_bl_rna(bl_parent, *args):
                             t = type_from_bl_prop(attr)
                             py_parent[key] = DESTRUCTORS[t](attr)
                         case _:
-                            raise ValueError(key, bl_parent, attr)
+                            raise ValueError(key, bl_parent, mode, attr)
                 case bpy.types.CollectionProperty:
                     mode = filter[key]
                     py_parent[key] = ATOMIC[t](bl_prop, attr, mode=mode)
