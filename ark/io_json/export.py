@@ -182,9 +182,11 @@ class ARK_OT_IOJSON_ExportClipboard(bpy.types.Operator):
 def register():
     bpy.utils.register_class(ARK_OT_IOJSON_ExportClipboard)
     bpy.types.CONSOLE_HT_header.append(ARK_OT_IOJSON_ExportClipboard.button)
+    bpy.types.NODE_MT_context_menu.append(ARK_OT_IOJSON_ExportClipboard.button)
     return None
 
 def unregister():
     bpy.types.NODE_MT_context_menu.remove(ARK_OT_IOJSON_ExportClipboard.button)
+    bpy.types.CONSOLE_HT_header.remove(ARK_OT_IOJSON_ExportClipboard.button)
     bpy.utils.unregister_class(ARK_OT_IOJSON_ExportClipboard)
     return None
