@@ -141,8 +141,6 @@ def import_node(bl_ntree, py_node):
     #TODO: figure why name is not being applied by import_py_props()
     import_str(None, bl_node, "name", py_node["name"])
     match py_node["bl_idname"]:
-        case 'NodeFrame':
-            return None
         case 'NodeReroute':
             import_float(None, bl_node, "location", py_node["location"])
             return bl_node
