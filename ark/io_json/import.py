@@ -139,8 +139,14 @@ def import_material(_, __, key, py_prop):
 
 def import_node(bl_ntree, py_node):
     bl_node = bl_ntree.nodes.new(py_node["bl_idname"])
-    if py_node["bl_idname"] == 'ShaderNodeGroup':
-        bl_node.node_tree = import_nodegroup(bl_ntree.nodes, _, py_node)
+    match py_node["bl_idname"]:
+        case 'NodeReroute':
+            import_float(None, bl_node, "location", py_node["location"])
+            return bl_node
+        case 'ShaderNodeGroup':
+            bl_node.node_tree = import_nodegroup(bl_ntree.nodes, None, py_node)
+        case _:
+            pass
     import_py_props(bl_node, py_node)
     return bl_node
 
