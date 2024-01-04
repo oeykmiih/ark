@@ -104,6 +104,7 @@ BL_MAP = {
         'outputs' : 'C_LIST',
         'ozone_density' : None,
         'parametrization' : None,
+        'parent' : 'P_NAME',
         'particle_color_source' : None,
         'particle_system' : None,
         'point_source' : None,
