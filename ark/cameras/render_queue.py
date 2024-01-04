@@ -15,6 +15,25 @@ TOKENS = {
     "$foo" : "BAR",
 }
 
+def preview_path(context):
+    tokens = {}
+    tokens["$camera"] = context.scene.camera.name
+    tokens["$date"] = time.strftime("%y%m%d")
+    tokens["$time"] = time.strftime("%H%M%S")
+
+    filepath = context.scene.render.filepath
+    # NOTE: Make fileoutput blender folder if file output is empty
+    dirpath = "//" if filepath == "" else filepath
+    dirpath = replace_tokens(dirpath, tokens=tokens)
+    # dirpath = bpy.path.abspath(dirpath)
+    return bpy.path.native_pathsep(dirpath)
+
+def replace_tokens(filepath, tokens):
+    for token, value in tokens.items():
+        if token in filepath:
+            filepath = filepath.replace(token, value)
+    return filepath
+
 class ARK_OT_RenderQueue(bpy.types.Operator):
     bl_idname = f"{addon.name}.render_queue"
     bl_label = ""
@@ -36,19 +55,12 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
 
     def set_filepath(self, context, blcam):
         pr_cam = getattr(blcam.data, addon.name)
-        def replace_tokens(filepath):
-            for token, value in TOKENS.items():
-                if token in filepath:
-                    filepath = filepath.replace(token, value)
-            return filepath
 
         # NOTE: Make fileoutput blender folder if file output is empty
         dirpath = "//" if self._fpath == "" else self._fpath
         # NOTE: Make fileoutput absolute to easier handling
         dirpath = bpy.path.abspath(dirpath)
-        dirpath = replace_tokens(dirpath)
-
-        fname = replace_tokens(self.fname)
+        dirpath = replace_tokens(dirpath, TOKENS)
 
         if not os.path.isdir(dirpath):
             try:

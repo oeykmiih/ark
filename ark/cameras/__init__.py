@@ -5,6 +5,7 @@ addon = utils.bpy.Addon()
 
 from . import funops
 from . import view_combinations
+from . import render_queue
 
 MODULES = {
     "properties" : None,
@@ -389,8 +390,13 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
 
                 col = box.column(align=False)
 
-                row = utils.bpy.ui.split(col, text="Output")
+                row = utils.bpy.ui.split(col, text="Output Path")
                 row.prop(scene.render, "filepath", text="")
+                row = utils.bpy.ui.split(col, text="Final Path", enabled=False)
+                sub = row.box()
+                sub.ui_units_y = 1.0
+                sub.scale_y = 1 / 2.0
+                sub.label(text=render_queue.preview_path(context))
                 # TODO: improve handling of camera names and tokens
                 ## hide it for now, default is '$camera'.
                 # col.prop(pr_scene.render_queue, "fname", text="")
