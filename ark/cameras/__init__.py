@@ -348,7 +348,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 )
 
                 row = utils.bpy.ui.split(col, text="Final Resolution", enabled=False)
-                row.label(text=f"{scene.render.resolution_x}  x  {scene.render.resolution_y}")
+                utils.bpy.ui.label(row, text=f"{scene.render.resolution_x}  x  {scene.render.resolution_y}")
 
                 col = box.column(align=True)
 
