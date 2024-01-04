@@ -95,7 +95,7 @@ def import_py_rna(bl_prop, bl_parent, key, py_prop):
                 attr_prop = attr.bl_rna.properties[key]
                 t = type(attr_prop)
                 if t in ATOMIC:
-                    if not attr_prop.is_readonly:
+                    if not attr_prop.is_readonly or type(bl_prop) == bpy.types.PointerProperty:
                         ATOMIC[t](attr_prop, attr, key, py_prop[key])
                 elif t == bpy.types.PointerProperty:
                     import_py_rna(attr_prop, attr, key, py_prop[key])
