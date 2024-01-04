@@ -284,5 +284,6 @@ def register():
     return None
 
 def unregister():
+    bpy.types.CONSOLE_HT_header.remove(ARK_OT_IOJSON_ImportClipboard.button)
     bpy.utils.unregister_class(ARK_OT_IOJSON_ImportClipboard)
     return None

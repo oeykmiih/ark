@@ -185,5 +185,6 @@ def register():
     return None
 
 def unregister():
+    bpy.types.NODE_MT_context_menu.remove(ARK_OT_IOJSON_ExportClipboard.button)
     bpy.utils.unregister_class(ARK_OT_IOJSON_ExportClipboard)
     return None
