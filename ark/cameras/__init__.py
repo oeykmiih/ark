@@ -398,8 +398,6 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 sub.scale_y = 1 / 2.0
                 sub.label(text=render_queue.preview_path(context))
                 # TODO: improve handling of camera names and tokens
-                ## hide it for now, default is '$camera'.
-                # col.prop(pr_scene.render_queue, "fname", text="")
 
                 col = box.column(align=True)
                 col.row(align=True).prop(pr_scene.render_queue, "mode", expand=True)
@@ -414,7 +412,6 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 op.mode = pr_scene.render_queue.mode
                 op.slots = pr_scene.render_queue.slots
                 op.export = pr_scene.render_queue.export
-                op.fname = pr_scene.render_queue.fname
         return None
 
 class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):

@@ -51,7 +51,6 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
     )
     slots : bpy.props.BoolProperty()
     export : bpy.props.BoolProperty()
-    fname : bpy.props.StringProperty()
 
     def set_filepath(self, context, blcam):
         pr_cam = getattr(blcam.data, addon.name)
@@ -68,8 +67,7 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
             except:
                 raise
 
-        context.scene.render.filepath = os.path.join(dirpath, fname)
-        print(context.scene.render.filepath)
+        context.scene.render.filepath = dirpath
         return None
 
     @staticmethod
@@ -190,11 +188,6 @@ class Scene_Cameras_RenderQueue(bpy.types.PropertyGroup):
         name = "Export Renders",
         description = "Save finished renders to specificed path",
         default = True,
-    )
-
-    fname : bpy.props.StringProperty(
-        name = "Export File Name",
-        default = "$camera",
     )
 
 @addon.property
