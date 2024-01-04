@@ -138,6 +138,8 @@ def import_material(_, __, key, py_prop):
 
 def import_node(bl_ntree, py_node):
     bl_node = bl_ntree.nodes.new(py_node["bl_idname"])
+    #TODO: figure why name is not being applied by import_py_props()
+    import_str(None, bl_node, "name", py_node["name"])
     match py_node["bl_idname"]:
         case 'NodeReroute':
             import_float(None, bl_node, "location", py_node["location"])
