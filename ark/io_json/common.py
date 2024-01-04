@@ -150,8 +150,6 @@ BL_MAP = {
     },
     bpy.types.NodeSocket : {
         'name' : None,
-        'bl_idname' : None,
-        'bl_subtype_label' : None,
         'default_value' : None,
         'hide' : None,
         'hide_value' : None,
