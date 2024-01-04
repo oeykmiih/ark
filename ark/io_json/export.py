@@ -170,6 +170,7 @@ class ARK_OT_IOJSON_ExportClipboard(bpy.types.Operator):
         py_blend = init_py_blend()
         py_blend = parse_bl_rna(bpy.data)
 
+            file.write(json.dumps(py_blend))
         bpy.context.window_manager.clipboard = compress(py_blend)
         return {'FINISHED'}
 

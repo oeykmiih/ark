@@ -151,9 +151,17 @@ def import_node(bl_ntree, py_node):
 
 def import_nodetree(_, bl_parent, __, py_prop):
     bl_ntree = bl_parent.node_tree
+    bl_nodes = bl_ntree.nodes
 
+    #TODO: figure how node location works with frames
+    # in_frame = []
     for py_node in py_prop["nodes"].values():
         import_node(bl_ntree, py_node)
+    #     if "parent" in py_node:
+    #         in_frame.append(py_node)
+
+    # for py_node in in_frame:
+    #     bl_nodes[py_node["name"]].parent = bl_nodes[py_node["parent"]]
 
     for py_link in py_prop["links"]:
         py_from = py_link["from_socket"]
@@ -184,8 +192,15 @@ def import_nodegroup(_, __, py_prop):
             case _:
                 pass
 
+    #TODO: figure how node location works with frames
+    # in_frame = []
     for py_node in py_ntree["nodes"].values():
         import_node(bl_ntree, py_node)
+    #     if "parent" in py_node:
+    #         in_frame.append(py_node)
+
+    # for py_node in in_frame:
+    #     bl_nodes[py_node["name"]].parent = bl_nodes[py_node["parent"]]
 
     for py_link in py_ntree["links"]:
         py_from = py_link["from_socket"]
