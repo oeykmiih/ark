@@ -176,7 +176,9 @@ def import_nodegroup(_, __, py_prop):
         match py_socket["item_type"]:
             case 'SOCKET':
                 in_out = py_socket["in_out"] if "in_out" in py_socket else 'INPUT'
-                bl_interface.new_socket(name=py_socket["name"], in_out=in_out, socket_type=py_socket["socket_type"])
+                socket_type = py_socket["socket_type"] if "socket_type" in py_socket else 'NodeSocketFloat'
+                # ^^ This is caused by 3.0 to 4.0 bad conversion ^^
+                bl_interface.new_socket(name=py_socket["name"], in_out=in_out, socket_type=socket_type)
             case 'PANEL':
                 pass
             case _:
