@@ -3,10 +3,8 @@ import bpy
 from ark import utils
 addon = utils.bpy.Addon()
 
-from . import funops
-from . import view_combinations
-
 MODULES = {
+    "common" : None,
     "properties" : None,
     "render_queue" : None,
     "view_combinations" : None,
@@ -47,9 +45,9 @@ class ARK_OT_AddCameraHierarchy(bpy.types.Operator):
 
     def execute(self, context):
         preferences = addon.preferences
-        blcam = context.scene.camera
+        bl_cam = context.scene.camera
 
-        funops.add_camera_hierarchy(blcam, preferences, renamed=self.renamed)
+        common.add_camera_hierarchy(bl_cam, preferences, renamed=self.renamed)
         return {'FINISHED'}
 
 class ARK_OT_SetCameraActive(bpy.types.Operator):
@@ -61,9 +59,9 @@ class ARK_OT_SetCameraActive(bpy.types.Operator):
 
     def execute(self, context):
         preferences = addon.preferences
-        blcam = context.scene.camera = bpy.data.objects.get(self.name)
+        bl_cam = context.scene.camera = bpy.data.objects.get(self.name)
 
-        funops.set_camera_active(blcam, preferences)
+        common.set_camera_active(bl_cam, preferences)
         return {'FINISHED'}
 
 class ARK_OT_AddCamera(bpy.types.Operator):
@@ -74,7 +72,7 @@ class ARK_OT_AddCamera(bpy.types.Operator):
     def execute(self, context):
         preferences = addon.preferences
 
-        funops.add_camera(preferences)
+        common.add_camera(preferences)
         return {'FINISHED'}
 
 class ARK_OT_DuplicateCamera(bpy.types.Operator):
@@ -98,15 +96,15 @@ class ARK_OT_DuplicateCamera(bpy.types.Operator):
         ao = context.active_object
 
         if self.alt:
-            for blcam in context.selected_objects:
-                if blcam.type == 'CAMERA':
-                    funops.duplicate_camera(blcam, preferences)
+            for bl_cam in context.selected_objects:
+                if bl_cam.type == 'CAMERA':
+                    common.duplicate_camera(bl_cam, preferences)
         elif ao is not None and ao.type == 'CAMERA':
-            blcam = ao
-            funops.duplicate_camera(blcam, preferences)
+            bl_cam = ao
+            common.duplicate_camera(bl_cam, preferences)
         elif context.scene.camera is not None:
-            blcam = context.scene.camera
-            funops.duplicate_camera(blcam, preferences)
+            bl_cam = context.scene.camera
+            common.duplicate_camera(bl_cam, preferences)
         return {'FINISHED'}
 
 class ARK_OT_RemoveCamera(bpy.types.Operator):
@@ -132,22 +130,22 @@ class ARK_OT_RemoveCamera(bpy.types.Operator):
         if self.alt:
             selected_cameras = [blob for blob in context.selected_objects if blob.type == 'CAMERA']
             if len(selected_cameras) > 0:
-                funops.remove_cameras(
+                common.remove_cameras(
                     [blob for blob in context.selected_objects if blob.type == 'CAMERA'],
                     context,
                     preferences,
                 )
-                funops.set_next_camera_active(preferences)
+                common.set_next_camera_active(preferences)
             else:
                 return {'CANCELLED'}
         elif ao is not None and ao.type == 'CAMERA':
-            blcam = ao
-            funops.remove_camera(blcam, context, preferences)
-            funops.set_next_camera_active(preferences)
+            bl_cam = ao
+            common.remove_camera(bl_cam, context, preferences)
+            common.set_next_camera_active(preferences)
         elif context.scene.camera is not None:
-            blcam = context.scene.camera
-            funops.remove_camera(blcam, context, preferences)
-            funops.set_next_camera_active(preferences)
+            bl_cam = context.scene.camera
+            common.remove_camera(bl_cam, context, preferences)
+            common.set_next_camera_active(preferences)
         return {'FINISHED'}
 
 class ARK_OT_AddActiveToViewCombination(bpy.types.Operator):
@@ -158,10 +156,10 @@ class ARK_OT_AddActiveToViewCombination(bpy.types.Operator):
     name : bpy.props.StringProperty()
 
     def execute(self, context):
-        blcam = bpy.data.objects[self.name]
+        bl_cam = bpy.data.objects[self.name]
         ao = context.active_object
 
-        view_combinations.collection_hierarchy.get_viewcombination(blcam).objects.link(ao)
+        view_combinations.collection_hierarchy.get_viewcombination(bl_cam).objects.link(ao)
         return {'FINISHED'}
 
 class ARK_OT_RemoveActiveFromViewCombination(bpy.types.Operator):
@@ -172,10 +170,10 @@ class ARK_OT_RemoveActiveFromViewCombination(bpy.types.Operator):
     name : bpy.props.StringProperty()
 
     def execute(self, context):
-        blcam = bpy.data.objects[self.name]
+        bl_cam = bpy.data.objects[self.name]
         ao = context.active_object
 
-        view_combinations.collection_hierarchy.get_viewcombination(blcam).objects.unlink(ao)
+        view_combinations.collection_hierarchy.get_viewcombination(bl_cam).objects.unlink(ao)
         return {'FINISHED'}
 
 class ARK_OT_SetActiveAsBlockout(bpy.types.Operator):
@@ -247,14 +245,14 @@ class ARK_OT_ForceCameraVerticals(bpy.types.Operator):
 
     def execute(self, context):
         if self.alt:
-            for blcam in context.selected_objects:
-                if blcam.type == 'CAMERA':
-                    funops.force_camera_verticals(blcam)
+            for bl_cam in context.selected_objects:
+                if bl_cam.type == 'CAMERA':
+                    common.force_camera_verticals(bl_cam)
             if context.scene.camera not in context.selected_objects:
-                funops.force_camera_verticals(context.scene.camera)
+                common.force_camera_verticals(context.scene.camera)
         else:
-            blcam = context.scene.camera
-            funops.force_camera_verticals(blcam)
+            bl_cam = context.scene.camera
+            common.force_camera_verticals(bl_cam)
         return {'FINISHED'}
 
 class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
@@ -291,8 +289,8 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
             body.operator(ARK_OT_CreateArkHierarchy.bl_idname, text = "Add collections")
         else:
             blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, local=True)
-            funops.set_camera_list(session.cameras, blcol_cameras)
-            blcam = scene.camera
+            common.set_camera_list(session.cameras, blcol_cameras)
+            bl_cam = scene.camera
 
             body.template_list(
                     "ARK_UL_PROPERTIES_CameraList",
@@ -309,11 +307,11 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
 
             if len(session.cameras) == 0:
                 utils.bpy.ui.alert(info, text=f"No camera in {blcol_cameras.name}.")
-            elif not blcam:
+            elif not bl_cam:
                 utils.bpy.ui.label(info, text="No active camera.")
             else:
-                if not view_combinations.collection_hierarchy.audit(blcam, preferences):
-                    renamed = view_combinations.collection_hierarchy.audit_previous(blcam, preferences)
+                if not view_combinations.collection_hierarchy.audit(bl_cam, preferences):
+                    renamed = view_combinations.collection_hierarchy.audit_previous(bl_cam, preferences)
                     text = "%s" % "Camera was renamed, sync hierarchy?" if renamed else "Missing camera hierarchy, fix it?"
                     info.alert = True
                     info.operator(
@@ -323,13 +321,13 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 else:
                     info.label(text="")
 
-                pr_cam = getattr(blcam.data, addon.name)
+                pr_cam = getattr(bl_cam.data, addon.name)
 
-                box = layout.box()
-                box.use_property_split = True
-                box.use_property_decorate = False
+                section = layout.box()
+                section.use_property_split = True
+                section.use_property_decorate = False
 
-                col = box.column(align=True)
+                col = section.column(align=True)
 
                 row = col.row(align=True)
                 row.prop(pr_cam, "resolution_orientation", expand=True)
@@ -347,31 +345,31 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 )
 
                 row = utils.bpy.ui.split(col, text="Final Resolution", enabled=False)
-                row.label(text=f"{scene.render.resolution_x}  x  {scene.render.resolution_y}")
+                utils.bpy.ui.label(row, text=f"{scene.render.resolution_x}  x  {scene.render.resolution_y}")
 
-                col = box.column(align=True)
+                col = section.column(align=True)
 
                 row = utils.bpy.ui.split(col, text="Clip")
-                row.prop(blcam.data, "clip_start", text="")
-                row.prop(blcam.data, "clip_end", text="")
+                row.prop(bl_cam.data, "clip_start", text="")
+                row.prop(bl_cam.data, "clip_end", text="")
 
                 row = utils.bpy.ui.split(col, text="Shift")
-                row.prop(blcam.data, "shift_x", text="", slider=True)
-                row.prop(blcam.data, "shift_y", text="", slider=True)
+                row.prop(bl_cam.data, "shift_x", text="", slider=True)
+                row.prop(bl_cam.data, "shift_y", text="", slider=True)
 
-                col = box.column(align=True)
+                col = section.column(align=True)
                 row = col.row(align=True)
                 row.prop(pr_cam, "projection", expand=True)
                 match pr_cam.projection:
                     case 'PERSP':
-                        col.prop(blcam.data, "lens")
+                        col.prop(bl_cam.data, "lens")
                     case 'ORTHO':
-                        col.prop(blcam.data, "ortho_scale")
+                        col.prop(bl_cam.data, "ortho_scale")
                     case _:
                         pass
 
-                row = utils.bpy.ui.split(box, text="Perspective Correction")
-                if funops.audit_camera_verticals(blcam):
+                row = utils.bpy.ui.split(section, text="Perspective Correction")
+                if common.audit_camera_verticals(bl_cam):
                     utils.bpy.ui.label(row, text="Camera is vertical.")
                 else:
                     row.alert = True
@@ -380,27 +378,30 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                         text = "Camera is not vertical.",
                     )
 
-                col = box.column(align=True)
+                col = section.column(align=True)
                 col.prop(pr_cam, "ev", slider=True)
 
-                box = layout.box()
-                box.use_property_split = True
-                box.use_property_decorate = False
+                section = layout.box()
+                section.use_property_split = True
+                section.use_property_decorate = False
 
-                col = box.column(align=False)
+                col = section.column(align=False)
 
-                row = utils.bpy.ui.split(col, text="Output")
+                row = utils.bpy.ui.split(col, text="Output Path")
                 row.prop(scene.render, "filepath", text="")
+                row = utils.bpy.ui.split(col, text="Final Path", enabled=False)
+                sub = row.box()
+                sub.ui_units_y = 1.0
+                sub.scale_y = 1 / 2.0
+                sub.label(text=render_queue.preview_path(context))
                 # TODO: improve handling of camera names and tokens
-                ## hide it for now, default is '$camera'.
-                # col.prop(pr_scene.render_queue, "fname", text="")
 
-                col = box.column(align=True)
+                col = section.column(align=True)
                 col.row(align=True).prop(pr_scene.render_queue, "mode", expand=True)
                 col.prop(pr_scene.render_queue, "slots", toggle=True)
                 col.prop(pr_scene.render_queue, "export", toggle=True)
 
-                col = box.column(align=True)
+                col = section.column(align=True)
                 op = col.operator(
                     render_queue.ARK_OT_RenderQueue.bl_idname,
                     text="Render!",
@@ -408,7 +409,6 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 op.mode = pr_scene.render_queue.mode
                 op.slots = pr_scene.render_queue.slots
                 op.export = pr_scene.render_queue.export
-                op.fname = pr_scene.render_queue.fname
         return None
 
 class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):

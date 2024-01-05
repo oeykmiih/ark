@@ -135,7 +135,7 @@ def setup_world_hdri(world):
     w_nodes = world.node_tree.nodes
     w_links = world.node_tree.links
 
-    n_coord = w_nodes["Texture Coordinates"] if "Texture Coordinates" in w_nodes else w_nodes.new('ShaderNodeTexCoord')
+    n_coord = w_nodes["Texture Coordinate"] if "Texture Coordinate" in w_nodes else w_nodes.new('ShaderNodeTexCoord')
     n_coord.location = (-700,-200)
 
     n_mapping = w_nodes["Mapping"] if "Mapping" in w_nodes else w_nodes.new('ShaderNodeMapping')

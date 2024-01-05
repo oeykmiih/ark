@@ -8,12 +8,31 @@ import os
 from ark import utils
 addon = utils.bpy.Addon()
 
-from . import funops
+from . import common
 from . import enums
 
 TOKENS = {
     "$foo" : "BAR",
 }
+
+def preview_path(context):
+    tokens = {}
+    tokens["$camera"] = context.scene.camera.name
+    tokens["$date"] = time.strftime("%y%m%d")
+    tokens["$time"] = time.strftime("%H%M%S")
+
+    filepath = context.scene.render.filepath
+    # NOTE: Make fileoutput blender folder if file output is empty
+    dirpath = "//" if filepath == "" else filepath
+    dirpath = replace_tokens(dirpath, tokens=tokens)
+    # dirpath = bpy.path.abspath(dirpath)
+    return bpy.path.native_pathsep(dirpath)
+
+def replace_tokens(filepath, tokens):
+    for token, value in tokens.items():
+        if token in filepath:
+            filepath = filepath.replace(token, value)
+    return filepath
 
 class ARK_OT_RenderQueue(bpy.types.Operator):
     bl_idname = f"{addon.name}.render_queue"
@@ -32,23 +51,15 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
     )
     slots : bpy.props.BoolProperty()
     export : bpy.props.BoolProperty()
-    fname : bpy.props.StringProperty()
 
     def set_filepath(self, context, blcam):
         pr_cam = getattr(blcam.data, addon.name)
-        def replace_tokens(filepath):
-            for token, value in TOKENS.items():
-                if token in filepath:
-                    filepath = filepath.replace(token, value)
-            return filepath
 
         # NOTE: Make fileoutput blender folder if file output is empty
         dirpath = "//" if self._fpath == "" else self._fpath
         # NOTE: Make fileoutput absolute to easier handling
         dirpath = bpy.path.abspath(dirpath)
-        dirpath = replace_tokens(dirpath)
-
-        fname = replace_tokens(self.fname)
+        dirpath = replace_tokens(dirpath, TOKENS)
 
         if not os.path.isdir(dirpath):
             try:
@@ -56,8 +67,7 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
             except:
                 raise
 
-        context.scene.render.filepath = os.path.join(dirpath, fname)
-        print(context.scene.render.filepath)
+        context.scene.render.filepath = dirpath
         return None
 
     @staticmethod
@@ -112,7 +122,7 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
             return {'CANCELLED'}
 
         blcol_cameras = utils.bpy.col.obt(self.preferences.container_cameras, local=True)
-        self.shots = funops.get_camera_list(blcol_cameras, mode=self.mode)
+        self.shots = common.get_camera_list(blcol_cameras, mode=self.mode)
 
         if not self.shots:
             self.report({'INFO'}, "No cameras to render")
@@ -141,7 +151,7 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
                 return {'FINISHED'}
 
             if not self.rendering:
-                funops.set_camera_active(self.shots[0], self.preferences)
+                common.set_camera_active(self.shots[0], self.preferences)
                 TOKENS["$camera"] = self.shots[0].name
 
                 if self.export:
@@ -178,11 +188,6 @@ class Scene_Cameras_RenderQueue(bpy.types.PropertyGroup):
         name = "Export Renders",
         description = "Save finished renders to specificed path",
         default = True,
-    )
-
-    fname : bpy.props.StringProperty(
-        name = "Export File Name",
-        default = "$camera",
     )
 
 @addon.property
