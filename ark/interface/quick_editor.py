@@ -36,12 +36,6 @@ class ARK_OT_SetEditorMode(bpy.types.Operator):
 class ARK_MT_PIE_SetEditorMode(bpy.types.Menu):
     bl_label = ""
 
-    #         4
-    #     5       6
-    # 1              2
-    #     7       8
-    #         3
-
     def draw(self, context):
         layout = self.layout.menu_pie()
 
@@ -50,9 +44,15 @@ class ARK_MT_PIE_SetEditorMode(bpy.types.Menu):
 
         for ui_type in enums.EDITOR_TYPE:
             pie_count += 1
-            while pie_count in [4,]:
-                layout.separator()
-                pie_count += 1
+            #NOTE: This is legacy code to handle proper layout, keeping it if pie menu count goes down again
+            ##         4
+            ##     5       6
+            ## 1              2
+            ##     7       8
+            ##         3
+            # while pie_count in [4,]:
+            #     layout.separator()
+            #     pie_count += 1
 
             operator = layout.operator(
                 f"{addon.name}.set_editor_mode",

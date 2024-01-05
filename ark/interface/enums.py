@@ -3,6 +3,7 @@ EDITOR_TYPE = [
     'OUTLINER',
     'PROPERTIES',
     'ASSETS',
+    'CONSOLE',
     'ShaderNodeTree',
     'VIEW_3D',
     'IMAGE_EDITOR',
@@ -10,13 +11,14 @@ EDITOR_TYPE = [
 ]
 
 EDITOR_TYPE_ICONS = {
-    'ASSETS' : 'ASSET_MANAGER',
     'OUTLINER' : 'OUTLINER',
     'PROPERTIES' : 'PROPERTIES',
+    'ASSETS' : 'ASSET_MANAGER',
     'ShaderNodeTree' : 'MATERIAL',
+    'CONSOLE' : 'CONSOLE',
+    'VIEW_3D' : 'VIEW3D',
     'IMAGE_EDITOR' : 'IMAGE',
     'TEXT_EDITOR' : 'TEXT',
-    'VIEW_3D' : 'VIEW3D',
 }
 
 EDITOR_MODE_ICONS = {
