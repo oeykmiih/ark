@@ -323,11 +323,11 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
 
                 pr_cam = getattr(bl_cam.data, addon.name)
 
-                box = layout.box()
-                box.use_property_split = True
-                box.use_property_decorate = False
+                section = layout.box()
+                section.use_property_split = True
+                section.use_property_decorate = False
 
-                col = box.column(align=True)
+                col = section.column(align=True)
 
                 row = col.row(align=True)
                 row.prop(pr_cam, "resolution_orientation", expand=True)
@@ -347,7 +347,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 row = utils.bpy.ui.split(col, text="Final Resolution", enabled=False)
                 utils.bpy.ui.label(row, text=f"{scene.render.resolution_x}  x  {scene.render.resolution_y}")
 
-                col = box.column(align=True)
+                col = section.column(align=True)
 
                 row = utils.bpy.ui.split(col, text="Clip")
                 row.prop(bl_cam.data, "clip_start", text="")
@@ -357,7 +357,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 row.prop(bl_cam.data, "shift_x", text="", slider=True)
                 row.prop(bl_cam.data, "shift_y", text="", slider=True)
 
-                col = box.column(align=True)
+                col = section.column(align=True)
                 row = col.row(align=True)
                 row.prop(pr_cam, "projection", expand=True)
                 match pr_cam.projection:
@@ -368,7 +368,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                     case _:
                         pass
 
-                row = utils.bpy.ui.split(box, text="Perspective Correction")
+                row = utils.bpy.ui.split(section, text="Perspective Correction")
                 if common.audit_camera_verticals(bl_cam):
                     utils.bpy.ui.label(row, text="Camera is vertical.")
                 else:
@@ -378,14 +378,14 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                         text = "Camera is not vertical.",
                     )
 
-                col = box.column(align=True)
+                col = section.column(align=True)
                 col.prop(pr_cam, "ev", slider=True)
 
-                box = layout.box()
-                box.use_property_split = True
-                box.use_property_decorate = False
+                section = layout.box()
+                section.use_property_split = True
+                section.use_property_decorate = False
 
-                col = box.column(align=False)
+                col = section.column(align=False)
 
                 row = utils.bpy.ui.split(col, text="Output Path")
                 row.prop(scene.render, "filepath", text="")
@@ -396,12 +396,12 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 sub.label(text=render_queue.preview_path(context))
                 # TODO: improve handling of camera names and tokens
 
-                col = box.column(align=True)
+                col = section.column(align=True)
                 col.row(align=True).prop(pr_scene.render_queue, "mode", expand=True)
                 col.prop(pr_scene.render_queue, "slots", toggle=True)
                 col.prop(pr_scene.render_queue, "export", toggle=True)
 
-                col = box.column(align=True)
+                col = section.column(align=True)
                 op = col.operator(
                     render_queue.ARK_OT_RenderQueue.bl_idname,
                     text="Render!",
