@@ -8,7 +8,7 @@ import os
 from ark import utils
 addon = utils.bpy.Addon()
 
-from . import funops
+from . import common
 from . import enums
 
 TOKENS = {
@@ -122,7 +122,7 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
             return {'CANCELLED'}
 
         blcol_cameras = utils.bpy.col.obt(self.preferences.container_cameras, local=True)
-        self.shots = funops.get_camera_list(blcol_cameras, mode=self.mode)
+        self.shots = common.get_camera_list(blcol_cameras, mode=self.mode)
 
         if not self.shots:
             self.report({'INFO'}, "No cameras to render")
@@ -151,7 +151,7 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
                 return {'FINISHED'}
 
             if not self.rendering:
-                funops.set_camera_active(self.shots[0], self.preferences)
+                common.set_camera_active(self.shots[0], self.preferences)
                 TOKENS["$camera"] = self.shots[0].name
 
                 if self.export:
