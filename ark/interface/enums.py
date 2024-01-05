@@ -171,6 +171,7 @@ UI_TO_HIDE = [
     'SCENE_PT_simulation',
     'SCENE_PT_custom_props',
 # Properties World
+    'WORLD_PT_context_world',
     'CYCLES_WORLD_PT_preview',
     'CYCLES_WORLD_PT_surface',
     'CYCLES_WORLD_PT_volume',
