@@ -191,14 +191,6 @@ class ARK_OT_CreateWorldHDRI(bpy.types.Operator):
         pr_world.created = True
         return {'FINISHED'}
 
-class ARK_OT_Warning_UpdateWorldHDRI(bpy.types.Operator):
-    bl_idname = f"{addon.name}.warning_update_world_hdir"
-    bl_label = ""
-    bl_options = {'INTERNAL'}
-
-    def execute(self, context):
-        return {'INTERFACE'}
-
 @addon.property
 class WindowManager_Worlds_HDRI(bpy.types.PropertyGroup):
     preview : bpy.props.EnumProperty(
@@ -235,7 +227,6 @@ def UI(preferences, layout):
 CLASSES = [
     ARK_OT_ReloadHDRIPreviews,
     ARK_OT_CreateWorldHDRI,
-    ARK_OT_Warning_UpdateWorldHDRI,
     WindowManager_Worlds_HDRI,
     Preferences_Worlds_HDRI,
 ]
