@@ -98,15 +98,15 @@ def get_tex(context, file):
 def handle_existing_world(world):
     session = addon.session
     w_nodes = world.node_tree.nodes
-    if "HDRI" in w_nodes and w_nodes["HDRI"].image is not None:
-        existing = w_nodes["HDRI"].image.name
+    if "hdri.env" in w_nodes and w_nodes["hdri.env"].image is not None:
+        existing = w_nodes["hdri.env"].image.name
         if existing != session.preview:
             if existing in reload_thumbnails():
                 session.preview = existing
     return None
 
-    world.node_tree.nodes["HDRI"].image = tex
 def apply_world(world, tex):
+    world.node_tree.nodes["hdri.env"].image = tex
     return None
 
 def update_world(self, context):
@@ -130,30 +130,57 @@ def update_world(self, context):
         reload_previews()
     return None
 
+def audit_world(world):
+    return "hdri.env" in  world.node_tree.nodes and not world.node_tree.nodes["hdri.env"].mute
+
 def setup_world(world):
     world.use_nodes = True
     w_nodes = world.node_tree.nodes
     w_links = world.node_tree.links
 
-    n_coord = w_nodes["Texture Coordinate"] if "Texture Coordinate" in w_nodes else w_nodes.new('ShaderNodeTexCoord')
-    n_coord.location = (-700,-200)
+    _ = [True]*len(w_nodes)
+    w_nodes.foreach_set("mute", _)
 
-    n_mapping = w_nodes["Mapping"] if "Mapping" in w_nodes else w_nodes.new('ShaderNodeMapping')
+    n_coord = w_nodes["hdri.coord"] if "hdri.coord" in w_nodes else w_nodes.new('ShaderNodeTexCoord')
+    n_coord.label = n_coord.name = "hdri.coord"
+    n_coord.location = (-700,-200)
+    n_coord.mute = False
+
+    n_mapping = w_nodes["hdri.mapping"] if "hdri.mapping" in w_nodes else w_nodes.new('ShaderNodeMapping')
+    n_mapping.label = n_mapping.name = "hdri.mapping"
     n_mapping.location = (-500, -200)
+    n_mapping.mute = False
     w_links.new(n_coord.outputs[0], n_mapping.inputs['Vector'])
 
-    n_tex = w_nodes["HDRI"] if "HDRI" in w_nodes else w_nodes.new('ShaderNodeTexEnvironment')
-    n_tex.label = n_tex.name = "HDRI"
-    n_tex.location = (-300, -200)
-    w_links.new(n_mapping.outputs[0], n_tex.inputs[0])
+    n_env = w_nodes["hdri.env"] if "hdri.env" in w_nodes else w_nodes.new('ShaderNodeTexEnvironment')
+    n_env.label = n_env.name = "hdri.env"
+    n_env.location = (-300, -200)
+    n_env.mute = False
+    w_links.new(n_mapping.outputs[0], n_env.inputs[0])
 
-    n_background = w_nodes["Background"] if "Background" in w_nodes else w_nodes.new('ShaderNodeBackground')
+    n_background = w_nodes["hdri.background"] if "hdri.background" in w_nodes else w_nodes.new('ShaderNodeBackground')
+    n_background.label = n_background.name = "hdri.background"
     n_background.location = (0, -200)
-    w_links.new(n_tex.outputs[0], n_background.inputs[0])
+    n_background.mute = False
+    w_links.new(n_env.outputs[0], n_background.inputs[0])
 
-    n_output = w_nodes['World Output'] if "Background" in w_nodes else w_nodes.new('ShaderNodeOutputWorld')
+    n_output = w_nodes["hdri.output"] if "hdri.output" in w_nodes else w_nodes.new('ShaderNodeOutputWorld')
+    n_output.label = n_output.name = "hdri.output"
     n_output.location = (200, -200)
+    n_output.mute = False
+    n_output.is_active_output = True
     w_links.new(n_background.outputs[0], n_output.inputs[0])
+    return None
+
+def create_world(world, context):
+    pr_world = getattr(world, addon.name)
+    setup_world(world)
+    pr_world.kind = 'HDRI'
+    if audit_library():
+        hdri = audit_hdri()
+        if hdri:
+            apply_world(world, get_tex(context, hdri))
+    pr_world.active = True
     return None
 
 class ARK_OT_ReloadHDRIPreviews(bpy.types.Operator):
@@ -181,14 +208,7 @@ class ARK_OT_CreateWorldHDRI(bpy.types.Operator):
 
     def execute(self, context):
         world = context.scene.world
-        pr_world = getattr(world, addon.name)
-        setup_world_hdri(world)
-        pr_world.kind = 'HDRI'
-        if audit_library():
-            hdri = audit_hdri()
-            if hdri:
-                apply_world_hdri(world, get_tex(context, hdri))
-        pr_world.created = True
+        create_world(world, context)
         return {'FINISHED'}
 
 @addon.property

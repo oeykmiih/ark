@@ -4,8 +4,23 @@ from ark import utils
 addon = utils.bpy.Addon()
 
 from . import enums
+from . import sun_position
+from . import hdri
+from . import sky
+
 class World(bpy.types.PropertyGroup):
-    created : bpy.props.BoolProperty()
+    sun_position : bpy.props.PointerProperty(type=sun_position.World_SunPosition)
+
+    active : bpy.props.BoolProperty()
+
+    def update_kind(self, context):
+        match self.kind:
+            case 'HDRI':
+                hdri.setup_world(context.scene.world)
+            case 'SKY':
+                sky.setup_world(context.scene.world)
+        return None
+
     kind : bpy.props.EnumProperty(
         name = "kind",
         description = "kind",
