@@ -7,8 +7,11 @@ def get_background_node(world):
     for node in world.node_tree.nodes:
         if node.bl_idname == 'ShaderNodeOutputWorld':
             if node.is_active_output:
-                found = node.inputs[0].links[0].from_node
-                return found if found.bl_idname == 'ShaderNodeBackground' else None
+                if len(node.inputs[0].links) == 0:
+                    return None
+                else:
+                    found = node.inputs[0].links[0].from_node
+                    return found if found.bl_idname == 'ShaderNodeBackground' else None
 
 def get_world_strength(world):
     node = get_background_node(world)
