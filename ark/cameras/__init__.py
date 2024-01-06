@@ -279,8 +279,6 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
         info = header.row(align=True)
         buttons = header.row(align=True)
         buttons.alignment = 'RIGHT'
-        body = col.box()
-
 
         if not ark_hierarchy.audit(preferences):
             info.alert = True
@@ -288,6 +286,8 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
             utils.bpy.ui.empty(buttons, emboss=False)
             buttons.scale_x = 3.0
         else:
+            body = col.box()
+
             blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, local=True)
             common.set_camera_list(session.cameras, blcol_cameras)
             bl_cam = scene.camera
