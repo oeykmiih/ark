@@ -283,10 +283,10 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
 
 
         if not ark_hierarchy.audit(preferences):
-            utils.bpy.ui.alert(info, text="Missing ARK collections")
-            buttons.label(text="")
-            body.scale_y = 1.5
-            body.operator(ARK_OT_CreateArkHierarchy.bl_idname, text = "Add collections")
+            info.alert = True
+            info.operator(ARK_OT_CreateArkHierarchy.bl_idname, text="Missing collections, fix it?")
+            utils.bpy.ui.empty(buttons, emboss=False)
+            buttons.scale_x = 3.0
         else:
             blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, local=True)
             common.set_camera_list(session.cameras, blcol_cameras)
@@ -306,7 +306,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
             buttons.operator(ARK_OT_DuplicateCamera.bl_idname, text="", icon='DUPLICATE')
 
             if len(session.cameras) == 0:
-                utils.bpy.ui.alert(info, text=f"No camera in {blcol_cameras.name}.")
+                utils.bpy.ui.label(info, text=f"No camera in {blcol_cameras.name}.")
             elif not bl_cam:
                 utils.bpy.ui.label(info, text="No active camera.")
             else:
