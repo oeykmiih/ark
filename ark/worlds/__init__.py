@@ -29,11 +29,12 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
         world = context.scene.world
 
         col = layout.column(align=True)
-        header = col.box().row()
-        info = header.row(align=True)
-        buttons = header.row(align=True)
-        buttons.alignment = 'LEFT'
+        col.box().template_ID(context.scene, "world", new=ARK_OT_CreateWorld.bl_idname)
         body = col.box()
+        footer = col.box().row()
+        info = footer.row(align=True)
+        buttons = footer.row(align=True)
+        buttons.alignment = 'RIGHT'
 
         if world is None:
             utils.bpy.ui.label(info, text=f"No active world")
@@ -41,8 +42,6 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
             buttons.scale_x = 1.0
 
             body.row(align=True).prop(session, "kind", expand=True)
-            _ = body.row(align=True)
-            _.template_ID(context.scene, "world", new=ARK_OT_CreateWorld.bl_idname)
         else:
             pr_world = getattr(world, addon.name)
             body.row(align=True).prop(pr_world, "kind", expand=True)
@@ -59,19 +58,11 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
                         if not hdri.audit_world(world):
                             info.alert = True
                             info.operator(hdri.ARK_OT_CreateWorldHDRI.bl_idname, text="Missing world nodes, fix it?")
-                            utils.bpy.ui.empty(buttons, emboss=False)
-                            buttons.scale_x = 1.0
                         else:
-                            _ = buttons.row()
-                            _.alert=True
-                            _.operator(ARK_OT_RemoveWorld.bl_idname, icon='X')
-
                             hdri.handle_existing_world(world)
                             body.template_icon_view(session.hdri, "preview", scale=10)
 
-                            footer = col.box().row()
-                            footer.alignment = 'RIGHT'
-                            footer.operator(hdri.ARK_OT_ReloadHDRIPreviews.bl_idname, icon='NODE_COMPOSITING')
+                            buttons.operator(hdri.ARK_OT_ReloadHDRIPreviews.bl_idname, icon='NODE_COMPOSITING')
 
                             section = layout.box()
                             section.use_property_split = True
@@ -104,27 +95,12 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
                             row = utils.bpy.ui.split(col, text="Film Transparency")
                             row.prop(context.scene.render, "film_transparent", toggle=True)
                 case 'SKY':
+                    utils.bpy.ui.empty(buttons, emboss=False) #NOTE: If buttons is empty footer collapses.
                     if not sky.audit_world(world):
                         info.alert = True
                         info.operator(sky.ARK_OT_CreateWorldSky.bl_idname, text="Missing world nodes, fix it?")
-                        utils.bpy.ui.empty(buttons, emboss=False)
-                        buttons.scale_x = 1.0
                     else:
-                        _ = buttons.row()
-                        _.alert=True
-                        _.operator(ARK_OT_RemoveWorld.bl_idname, icon='X')
-
                         pr_sun = pr_world.sun_position
-
-                        footer = col.box().row()
-                        footer.alignment = 'RIGHT'
-                        row = footer.row(align=True)
-                        row.prop(preferences.sun_position, "show_overlays", icon='OVERLAY', icon_only=True)
-                        sub = row.row(align=True)
-                        sub.enabled = preferences.sun_position.show_overlays
-                        sub.prop(pr_sun, "show_north", icon='PMARKER_SEL', icon_only=True)
-                        sub.prop(pr_sun, "show_analemmas", icon='SHADING_WIRE', icon_only=True)
-                        sub.prop(pr_sun, "show_surface", icon='SHADING_RENDERED', icon_only=True)
 
                         section = layout.box()
                         section.use_property_split = True
@@ -160,7 +136,17 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
                         section.use_property_split = True
                         section.use_property_decorate = False
 
+                        row = section.row(align=True)
+                        row.alignment = 'RIGHT'
+                        row.prop(preferences.sun_position, "show_overlays", icon='OVERLAY', icon_only=True)
+
                         col = section.column(align=True)
+                        sub = row.row(align=True)
+                        sub.enabled = preferences.sun_position.show_overlays
+                        sub.prop(pr_sun, "show_north", icon='PMARKER_SEL', icon_only=True)
+                        sub.prop(pr_sun, "show_analemmas", icon='SHADING_WIRE', icon_only=True)
+                        sub.prop(pr_sun, "show_surface", icon='SHADING_RENDERED', icon_only=True)
+
                         col.prop(pr_sun, "north_offset")
                         col.prop(pr_sun, "coordinates")
 
