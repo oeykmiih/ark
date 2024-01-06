@@ -141,10 +141,7 @@ def ARK_OUTLINER_HT_draw(self, context):
 
     row = layout.row(align=True)
     row.alert = True
-    bt = row.operator(
-        "outliner.orphans_purge",
-        text = "Purge",
-    )
+    bt = row.operator("outliner.orphans_purge", icon='TRASH', text="")
     bt.do_recursive = True
 
     layout.separator()
