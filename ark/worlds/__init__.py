@@ -43,7 +43,6 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
             body.row(align=True).prop(session, "kind", expand=True)
             _ = body.row(align=True)
             _.template_ID(context.scene, "world", new=ARK_OT_CreateWorld.bl_idname)
-            # _.operator(ARK_OT_CreateWorld.bl_idname, text="New", icon='ADD')
         else:
             pr_world = getattr(world, addon.name)
             body.row(align=True).prop(pr_world, "kind", expand=True)
@@ -56,7 +55,6 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
 
                         row = utils.bpy.ui.split(body.row(align=True), text="HDRI Library")
                         row.prop(preferences.hdri, "library", text="")
-                    #TODO: create function to check if world is hdri and all nodes are there
                     else:
                         if not hdri.audit_world(world):
                             info.alert = True
