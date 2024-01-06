@@ -170,14 +170,17 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
                         row.prop(pr_sun, "latitude", text="")
                         row.prop(pr_sun, "longitude", text="")
 
+                        col = section.column(align=True)
+                        row = utils.bpy.ui.split(col, text="Time")
+                        row.prop(pr_sun, "time", text="")
                         row = utils.bpy.ui.split(col, text="Day/Month/Year")
                         row.prop(pr_sun, "day", text="")
                         row.prop(pr_sun, "month", text="")
                         row.prop(pr_sun, "year", text="")
 
+                        col = section.column(align=True)
                         row = utils.bpy.ui.split(col, text="Azimuth", enabled=False)
                         row.prop(pr_sun, "sun_azimuth", text="")
-
                         row = utils.bpy.ui.split(col, text="Elevation", enabled=False)
                         row.prop(pr_sun, "sun_elevation", text="")
 
