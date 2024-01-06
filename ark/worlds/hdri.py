@@ -95,7 +95,7 @@ def get_tex(context, file):
         tex = context.blend_data.images.load(file[1])
     return tex
 
-def handle_existing_world_hdri(world):
+def handle_existing_world(world):
     session = addon.session
     w_nodes = world.node_tree.nodes
     if "HDRI" in w_nodes and w_nodes["HDRI"].image is not None:
@@ -105,15 +105,15 @@ def handle_existing_world_hdri(world):
                 session.preview = existing
     return None
 
-def apply_world_hdri(world, tex):
     world.node_tree.nodes["HDRI"].image = tex
+def apply_world(world, tex):
     return None
 
-def update_world_hdri(self, context):
+def update_world(self, context):
     world = context.scene.world
     pr_world = getattr(world, addon.name)
 
-    setup_world_hdri(world)
+    setup_world(world)
     reload_thumbnails()
 
     if pr_world.kind == 'HDRI':
@@ -123,14 +123,14 @@ def update_world_hdri(self, context):
         file = get_hdri(preferences, session)
         if file:
             tex = get_tex(context, file)
-            apply_world_hdri(world, tex)
+            apply_world(world, tex)
         else:
             pass
 
         reload_previews()
     return None
 
-def setup_world_hdri(world):
+def setup_world(world):
     world.use_nodes = True
     w_nodes = world.node_tree.nodes
     w_links = world.node_tree.links
@@ -203,7 +203,7 @@ class ARK_OT_Warning_UpdateWorldHDRI(bpy.types.Operator):
 class WindowManager_Worlds_HDRI(bpy.types.PropertyGroup):
     preview : bpy.props.EnumProperty(
         items = enum_previews,
-        update = update_world_hdri,
+        update = update_world,
     )
 
     hdris : bpy.props.StringProperty()
