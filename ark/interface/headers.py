@@ -123,7 +123,10 @@ def ARK_OUTLINER_HT_draw(self, context):
     ui_type = 'OUTLINER'
     orphan_loop = False
     for ui_mode in enums.EDITOR_MODE[ui_type]:
-        if ui_mode.startswith("ORPHAN") and not orphan_loop:
+        if not orphan_loop and ui_mode.startswith("ORPHAN"):
+
+            layout.prop(context.space_data, "filter_text", icon='VIEWZOOM', text="")
+
             row = layout.row(align=True)
             row.alert = True
             orphan_loop = True
