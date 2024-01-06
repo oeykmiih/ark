@@ -163,6 +163,7 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
                         section.use_property_decorate = False
 
                         col = section.column(align=True)
+                        col.prop(pr_sun, "north_offset")
                         col.prop(pr_sun, "coordinates")
 
                         row = utils.bpy.ui.split(col, text="Latitude/Longitude  ")
