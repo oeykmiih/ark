@@ -185,6 +185,12 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
                         col.prop_search(pr_sun, "sky_texture", world.node_tree, "nodes")
                         col.prop(pr_sun, "sun_object")
 
+                        col = section.column(align=True)
+                        row = utils.bpy.ui.split(col, text="Google Maps")
+                        _ = row.column(align=True)
+                        _.operator(sun_position.ARK_OT_SunPositionOpenGMaps.bl_idname, text="Open Link")
+                        _.operator(sun_position.ARK_OT_SunPositionPasteGMaps.bl_idname, text="Paste Link")
+
                         n_env = sky.get_env_node(world)
                         section = layout.box()
                         section.use_property_split = True

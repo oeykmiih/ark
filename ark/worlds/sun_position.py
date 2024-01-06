@@ -904,6 +904,39 @@ else:
 
 # --------------------------------------------------------------------------
 
+class ARK_OT_SunPositionPasteGMaps(bpy.types.Operator):
+    bl_idname = f"{addon.name}.sunposition_paste_gmaps"
+    bl_label = ""
+    bl_options = {'UNDO', 'INTERNAL'}
+
+    def execute(self, context):
+        link = bpy.context.window_manager.clipboard
+        m = re.search(r"@([-\d\.]+),([-\d\.]+)", link)
+        if m is None:
+            self.report({'ERROR'}, "Invalid Google Maps link.")
+            return {'CANCELLED'}
+        else:
+            latitude, longitude = m.groups()
+            pr_world = getattr(context.scene.world, addon.name)
+            pr_world.sun_position.latitude = float(latitude)
+            pr_world.sun_position.longitude = float(longitude)
+            return {'FINISHED'}
+
+class ARK_OT_SunPositionOpenGMaps(bpy.types.Operator):
+    bl_idname = f"{addon.name}.sunposition_open_gmaps"
+    bl_label = ""
+    bl_options = {'UNDO', 'INTERNAL'}
+
+    def execute(self, context):
+        pr_world = getattr(context.scene.world, addon.name)
+        print(f"https://www.google.com/maps/place/{pr_world.sun_position.coordinates}")
+
+        # https://www.google.com/maps/place/42°08'20.6"N+19°18'18.9"W/
+        bpy.ops.wm.url_open(url=f"https://www.google.com/maps/place/{pr_world.sun_position.coordinates}")
+        return {'INTERFACE'}
+
+# --------------------------------------------------------------------------
+
 parse_success = True
 
 
@@ -1201,6 +1234,8 @@ def UI(preferences, layout):
     return None
 
 CLASSES = [
+    ARK_OT_SunPositionPasteGMaps,
+    ARK_OT_SunPositionOpenGMaps,
     World_SunPosition,
     Preferences_Worlds_SunPosition,
 ]
