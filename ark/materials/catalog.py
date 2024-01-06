@@ -86,7 +86,10 @@ class ARK_OT_GoToMaterial(bpy.types.Operator):
             bpy.ops.wm.redraw_timer(type='DRAW', iterations=1)
         context.space_data.pin = True
 
-        context.view_layer.objects.active = utils.bpy.obj.obt(session.last_obj)
+        if session.last_obj in context.view_layer.objects:
+            context.view_layer.objects.active = utils.bpy.obj.obt(session.last_obj)
+        else:
+            context.view_layer.objects.active = None
         return {'INTERFACE'}
 
 class ARK_PT_Materials(bpy.types.Panel):
