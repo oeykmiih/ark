@@ -3,16 +3,15 @@ import bpy
 from ark import utils
 addon = utils.bpy.Addon()
 
+from . import enums
 class World(bpy.types.PropertyGroup):
     created : bpy.props.BoolProperty()
     kind : bpy.props.EnumProperty(
         name = "kind",
         description = "kind",
-        items = [
-            ('SKY', "Sky", ""),
-            ('HDRI', "HDRI", ""),
-        ],
-        default = 'SKY',
+        items = enums.WORLD_KIND,
+        default = enums.WORLD_KIND[1][0],
+        update = update_kind,
     )
 
 CLASSES = [
