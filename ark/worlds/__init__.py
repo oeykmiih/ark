@@ -83,9 +83,9 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
                             row = utils.bpy.ui.split(col, text="Strength")
                             n_background = common.get_background_node(world)
                             if n_background is None:
-                                row.enabled = False
+                                utils.bpy.ui.label(info, text="Missing background node.")
                                 utils.bpy.ui.label(row, text="")
-                                utils.bpy.ui.alert(info, text="Missing background node.")
+                                row.enabled = False
                             else:
                                 row.prop(common.get_world_strength(world), "default_value", icon_only=True)
 
@@ -137,7 +137,7 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
                         if n_background is None:
                             row.enabled = False
                             utils.bpy.ui.label(row, text="")
-                            utils.bpy.ui.alert(info, text="Missing background node.")
+                            utils.bpy.ui.label(info, text="Missing background node.")
                         else:
                             row.prop(common.get_world_strength(world), "default_value", icon_only=True)
 
