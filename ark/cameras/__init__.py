@@ -5,9 +5,9 @@ addon = utils.bpy.Addon()
 
 MODULES = {
     "common" : None,
-    "properties" : None,
     "render_queue" : None,
     "view_combinations" : None,
+    "properties" : None, #NOTE: Should be last to register.
 }
 MODULES = utils.import_modules(MODULES)
 
