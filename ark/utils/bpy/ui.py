@@ -3,12 +3,24 @@ import bpy
 
 from . import ops
 
-def label(layout, text="", depress=False, align=True):
+def empty(layout, depress=False, align=True, emboss=True):
     widget = layout.row(align=align)
     widget.operator(
         ops.UTILS_OT_Placeholder.bl_idname,
-        text=text,
-        depress=depress,
+        text = "",
+        depress = depress,
+        emboss = emboss,
+        icon = 'BLANK1',
+    )
+    return widget
+
+def label(layout, text="", depress=False, align=True, emboss=True):
+    widget = layout.row(align=align)
+    widget.operator(
+        ops.UTILS_OT_Placeholder.bl_idname,
+        text = text,
+        depress = depress,
+        emboss = emboss,
     )
     return widget
 
@@ -17,7 +29,7 @@ def alert(layout, text="", align=True):
     widget.alert = True
     widget.operator(
         ops.UTILS_OT_Placeholder.bl_idname,
-        text=text,
+        text = text,
     )
     return widget
 
