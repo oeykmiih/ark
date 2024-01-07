@@ -425,6 +425,7 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
         blcol_cam_props = pr_cam.view.props
 
         layout = layout.row(align=True)
+        if ao is None or not ao.select_get() or blcol_cam_props is None:
             layout.enabled = False
             layout.operator(utils.bpy.ops.UTILS_OT_Placeholder.bl_idname, icon='BLANK1', emboss=False)
             layout.operator(utils.bpy.ops.UTILS_OT_Placeholder.bl_idname, icon='BLANK1', emboss=False)
