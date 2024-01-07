@@ -6,32 +6,15 @@ addon = utils.bpy.Addon()
 
 def add(bl_cam, context, preferences):
     pr_cam = getattr(bl_cam.data, addon.name)
-    pr_cam.view.world = context.scene.world
+    world.set(pr_cam, context)
     structure.create(bl_cam, preferences)
     return None
 
 def update(bl_cam, context, preferences):
     pr_cam = getattr(bl_cam.data, addon.name)
-    context.scene.world = pr_cam.view.world
 
-    update_collections(bl_cam, context, preferences)
-    return None
-
-def update_collections(bl_cam, context, preferences):
-    pr_cam = getattr(bl_cam.data, addon.name)
-
-    update_collection_props(
-        context.view_layer.layer_collection.children[preferences.container_viewcombinations],
-        [pr_cam.view.props.name],
-    )
-    return None
-
-def update_collection_props(container, target):
-    for bllaycol in container.children:
-        if bllaycol.name in target:
-            bllaycol.exclude = False
-        else:
-            bllaycol.exclude = True
+    world.apply(pr_cam, context)
+    structure.apply(pr_cam, context, preferences)
     return None
 
 def cleanse(bl_cam):
@@ -39,6 +22,17 @@ def cleanse(bl_cam):
     pr_cam.view.props = None
     pr_cam.view.world = None
     return None
+
+class world():
+    @staticmethod
+    def set(pr_cam, context):
+        pr_cam.view.world = context.scene.world
+        return None
+
+    @staticmethod
+    def apply(pr_cam, context):
+        context.scene.world = pr_cam.view.world
+        return None
 
 class structure():
     @staticmethod
@@ -53,6 +47,19 @@ class structure():
     def update(bl_cam):
         pr_cam = getattr(bl_cam.data, addon.name)
         pr_cam.view.props.name = f"VC:{bl_cam.name}"
+        return None
+
+    @staticmethod
+    def apply(pr_cam, context, preferences):
+        # Apply props
+        container = context.view_layer.layer_collection.children[preferences.container_viewcombinations]
+        target = [pr_cam.view.props.name]
+
+        for bllaycol in container.children:
+            if bllaycol.name in target:
+                bllaycol.exclude = False
+            else:
+                bllaycol.exclude = True
         return None
 
     @staticmethod
