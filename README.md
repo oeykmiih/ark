@@ -8,7 +8,7 @@ I will try to maintain it as i go, but if a proper dev wants to take over, pleas
 
 ## Download
 
-Latest version: [0.2.0](https://github.com/oeykmiih/ark/releases/download/0.2.0/ark_0-2-0.zip)
+Latest version: [0.3.0](https://github.com/oeykmiih/ark/releases/download/0.3.0/ark_0-3-0.zip)
 
 ### Prerequisites
 
