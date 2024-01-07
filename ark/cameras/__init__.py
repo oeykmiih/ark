@@ -55,7 +55,7 @@ class ARK_OT_UpdateCameraHierarchy(bpy.types.Operator):
     renamed : bpy.props.BoolProperty(default = False)
 
     def execute(self, context):
-        view_combinations.structure.update(context.scene.camera, addon.preferences)
+        view_combinations.structure.update(context.scene.camera)
         return {'FINISHED'}
 
 class ARK_OT_SetCameraActive(bpy.types.Operator):

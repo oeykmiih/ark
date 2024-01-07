@@ -50,7 +50,7 @@ class structure():
         return None
 
     @staticmethod
-    def update(bl_cam, preferences):
+    def update(bl_cam):
         pr_cam = getattr(bl_cam.data, addon.name)
         pr_cam.view.props.name = f"VC:{bl_cam.name}"
         return None
