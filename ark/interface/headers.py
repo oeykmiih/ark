@@ -80,7 +80,7 @@ def ARK_NODE_HT_draw(self, context):
             f"{addon.name}.set_editor_mode",
             text = "",
             icon = enums.EDITOR_MODE_ICONS[ui_type][ui_mode],
-            depress = utils.bpy.validate_properties(enums.EDITOR_MODE[ui_type][ui_mode]),
+            depress = context.space_data.shader_type == ui_mode,
         )
         bt.ui_type = ui_type
         bt.ui_mode = ui_mode

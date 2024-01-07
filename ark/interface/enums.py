@@ -106,9 +106,11 @@ EDITOR_MODE = {
     'ShaderNodeTree' : {
         'OBJECT' : {
             "context.space_data.shader_type" : 'OBJECT',
+            "context.space_data.pin" : False,
         },
         'WORLD' : {
             "context.space_data.shader_type" : 'WORLD',
+            "context.space_data.pin" : False,
         },
     },
     'VIEW_3D' : {
