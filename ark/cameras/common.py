@@ -17,13 +17,13 @@ def add_camera_hierarchy(blcam, preferences, renamed=False):
     view_combinations.collection_hierarchy.save_refs(blcam)
     return None
 
-def set_camera_active(blcam, preferences):
-    bpy.context.scene.camera = blcam
+def set_camera_active(blcam, context, preferences):
+    context.scene.camera = blcam
 
     blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, local=True)
 
     obt_camera_tracker(preferences.trackers_camera, blcam, blcol_cameras)
-    update_camera_properties(blcam, preferences)
+    update_camera_properties(blcam, context, preferences)
     return None
 
 def get_next_camera(container):
@@ -35,10 +35,10 @@ def get_next_camera(container):
             blcam = obj
     return blcam
 
-def set_next_camera_active(preferences):
+def set_next_camera_active(context, preferences):
     next_cam = get_next_camera(utils.bpy.col.obt(preferences.container_cameras))
     if next_cam:
-        set_camera_active(next_cam, preferences)
+        set_camera_active(next_cam, context, preferences)
     return None
 
 def obt_camera_tracker(tracker_name, blcam, blcol):
@@ -50,15 +50,14 @@ def obt_camera_tracker(tracker_name, blcam, blcol):
     tracker.hide_viewport = True
     return None
 
-def update_camera_properties(blcam, preferences):
-    context = bpy.context
+def update_camera_properties(blcam, context, preferences):
     pr_cam = getattr(blcam.data, addon.name)
     properties.Camera.update_exposure(pr_cam, context)
     properties.Camera.update_resolution(pr_cam, context)
-    view_combinations.update(blcam, preferences)
+    view_combinations.update(blcam, context, preferences)
     return None
 
-def add_camera(preferences):
+def add_camera(context, preferences):
     name = preferences.default_name
     blcol_cameras = utils.bpy.col.obt(preferences.container_cameras)
 
@@ -79,10 +78,10 @@ def add_camera(preferences):
 
     force_camera_verticals(blcam)
     add_camera_hierarchy(blcam, preferences)
-    set_camera_active(blcam, preferences)
+    set_camera_active(blcam, context, preferences)
     return None
 
-def duplicate_camera(blcam, preferences):
+def duplicate_camera(blcam, context, preferences):
     name = preferences.default_name
     blcol_cameras = utils.bpy.col.obt(preferences.container_cameras)
 
@@ -93,7 +92,7 @@ def duplicate_camera(blcam, preferences):
     blcol_cameras.objects.link(new_cam)
 
     add_camera_hierarchy(new_cam, preferences)
-    set_camera_active(new_cam, preferences)
+    set_camera_active(new_cam, context, preferences)
     return None
 
 def remove_camera(blcam, context, preferences):
@@ -123,13 +122,13 @@ def audit_camera_verticals(blcam):
     ]
     return all(conditions)
 
-def get_camera_list(container, mode=None):
+def get_camera_list(container, context, mode=None):
     if container is None:
         return None
     mode = 'ALL' if mode is None else mode
     match mode:
         case 'ACTIVE':
-            return [bpy.context.scene.camera]
+            return [context.scene.camera]
         case 'ALL':
             return [obj for obj in container.all_objects if obj.type == 'CAMERA']
         case 'MARKED':

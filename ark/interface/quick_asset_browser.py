@@ -27,7 +27,7 @@ class ARK_OT_CloseAssetBrowser(bpy.types.Operator):
             bpy.ops.wm.call_menu_pie(name=quick_editor.ARK_MT_PIE_SetEditorMode.__name__)
         else:
             session = addon.session
-            session.library = bpy.context.space_data.params.asset_library_reference
+            session.library = context.space_data.params.asset_library_reference
             bpy.ops.screen.area_close()
             session.is_open = False
         return {"FINISHED"}
@@ -76,14 +76,15 @@ class ARK_OT_QuickAssetBrowser(bpy.types.Operator):
     def set_asset_browser_defaults():
         preferences = addon.preferences
         session = addon.session
+        context = bpy.context
 
-        area = bpy.context.screen.areas[-1]
+        area = context.screen.areas[-1]
         if area.ui_type == 'ASSETS':
-            with bpy.context.temp_override(area=area):
+            with context.temp_override(area=area):
                 if session.library:
-                    bpy.context.space_data.params.asset_library_reference = session.library
+                    context.space_data.params.asset_library_reference = session.library
                 else:
-                    bpy.context.space_data.params.asset_library_reference = preferences.library
+                    context.space_data.params.asset_library_reference = preferences.library
 
                 match session.context:
                     case 'VIEW_3D':
@@ -111,7 +112,7 @@ class Preferences_Interface_QuickAssetBrowser(bpy.types.PropertyGroup):
             ('ESSENTIALS', "Essentials", ""),
         ]
 
-        for lib in bpy.context.preferences.filepaths.asset_libraries.keys():
+        for lib in context.preferences.filepaths.asset_libraries.keys():
             items.append((lib, lib, ""))
         return items
 

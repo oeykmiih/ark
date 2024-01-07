@@ -293,7 +293,7 @@ def move_sun(context):
     sun_vector = get_sun_vector(azimuth, elevation)
 
     if sun_props.sky_texture:
-        sky_node = bpy.context.scene.world.node_tree.nodes.get(sun_props.sky_texture)
+        sky_node = context.scene.world.node_tree.nodes.get(sun_props.sky_texture)
         if sky_node is not None and sky_node.type == "TEX_SKY":
             sky_node.texture_mapping.rotation.z = 0.0
             sky_node.sun_direction = sun_vector
@@ -910,7 +910,7 @@ class ARK_OT_SunPositionPasteGMaps(bpy.types.Operator):
     bl_options = {'UNDO', 'INTERNAL'}
 
     def execute(self, context):
-        link = bpy.context.window_manager.clipboard
+        link = context.window_manager.clipboard
         m = re.search(r"@([-\d\.]+),([-\d\.]+)", link)
         if m is None:
             self.report({'ERROR'}, "Invalid Google Maps link.")

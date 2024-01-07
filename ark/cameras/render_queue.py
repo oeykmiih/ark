@@ -99,7 +99,7 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
 
     def terminate(self, context):
         context.scene.render.filepath = self._fpath
-        bpy.context.window_manager.event_timer_remove(self._timer)
+        context.window_manager.event_timer_remove(self._timer)
         bpy.app.handlers.render_cancel.remove(self.cancelled)
         bpy.app.handlers.render_post.remove(self.post)
         bpy.app.handlers.render_pre.remove(self.pre)
@@ -122,7 +122,7 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
             return {'CANCELLED'}
 
         blcol_cameras = utils.bpy.col.obt(self.preferences.container_cameras, local=True)
-        self.shots = common.get_camera_list(blcol_cameras, mode=self.mode)
+        self.shots = common.get_camera_list(blcol_cameras, context, mode=self.mode)
 
         if not self.shots:
             self.report({'INFO'}, "No cameras to render")
@@ -134,8 +134,8 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
         bpy.app.handlers.render_pre.append(self.pre)
         bpy.app.handlers.render_post.append(self.post)
         bpy.app.handlers.render_cancel.append(self.cancelled)
-        self._timer = bpy.context.window_manager.event_timer_add(1, window=bpy.context.window)
-        bpy.context.window_manager.modal_handler_add(self)
+        self._timer = context.window_manager.event_timer_add(1, window=context.window)
+        context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
 
     def modal(self, context, event):
@@ -151,7 +151,7 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
                 return {'FINISHED'}
 
             if not self.rendering:
-                common.set_camera_active(self.shots[0], self.preferences)
+                common.set_camera_active(self.shots[0], context, self.preferences)
                 TOKENS["$camera"] = self.shots[0].name
 
                 if self.export:

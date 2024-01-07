@@ -61,7 +61,7 @@ class ARK_OT_SetCameraActive(bpy.types.Operator):
         preferences = addon.preferences
         bl_cam = context.scene.camera = bpy.data.objects.get(self.name)
 
-        common.set_camera_active(bl_cam, preferences)
+        common.set_camera_active(bl_cam, context, preferences)
         return {'FINISHED'}
 
 class ARK_OT_AddCamera(bpy.types.Operator):
@@ -72,7 +72,7 @@ class ARK_OT_AddCamera(bpy.types.Operator):
     def execute(self, context):
         preferences = addon.preferences
 
-        common.add_camera(preferences)
+        common.add_camera(context, preferences)
         return {'FINISHED'}
 
 class ARK_OT_DuplicateCamera(bpy.types.Operator):
@@ -98,13 +98,13 @@ class ARK_OT_DuplicateCamera(bpy.types.Operator):
         if self.alt:
             for bl_cam in context.selected_objects:
                 if bl_cam.type == 'CAMERA':
-                    common.duplicate_camera(bl_cam, preferences)
+                    common.duplicate_camera(bl_cam, context, preferences)
         elif ao is not None and ao.type == 'CAMERA':
             bl_cam = ao
-            common.duplicate_camera(bl_cam, preferences)
+            common.duplicate_camera(bl_cam, context, preferences)
         elif context.scene.camera is not None:
             bl_cam = context.scene.camera
-            common.duplicate_camera(bl_cam, preferences)
+            common.duplicate_camera(bl_cam, context, preferences)
         return {'FINISHED'}
 
 class ARK_OT_RemoveCamera(bpy.types.Operator):
@@ -135,17 +135,17 @@ class ARK_OT_RemoveCamera(bpy.types.Operator):
                     context,
                     preferences,
                 )
-                common.set_next_camera_active(preferences)
+                common.set_next_camera_active(context, preferences)
             else:
                 return {'CANCELLED'}
         elif ao is not None and ao.type == 'CAMERA':
             bl_cam = ao
             common.remove_camera(bl_cam, context, preferences)
-            common.set_next_camera_active(preferences)
+            common.set_next_camera_active(context, preferences)
         elif context.scene.camera is not None:
             bl_cam = context.scene.camera
             common.remove_camera(bl_cam, context, preferences)
-            common.set_next_camera_active(preferences)
+            common.set_next_camera_active(context, preferences)
         return {'FINISHED'}
 
 class ARK_OT_AddActiveToViewCombination(bpy.types.Operator):
@@ -417,7 +417,6 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
         blcol_cam_viewcombination = view_combinations.collection_hierarchy.get_viewcombination(item)
 
         layout = layout.row(align=True)
-        if ao is None or not ao.select_get() or blcol_cam_viewcombination is None:
             layout.enabled = False
             layout.operator(utils.bpy.ops.UTILS_OT_Placeholder.bl_idname, icon='BLANK1', emboss=False)
             layout.operator(utils.bpy.ops.UTILS_OT_Placeholder.bl_idname, icon='BLANK1', emboss=False)
