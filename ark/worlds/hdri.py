@@ -175,6 +175,9 @@ def create_world(world, context):
     pr_world.active = True
     return None
 
+def get_mapping(world):
+    return world.node_tree.nodes["hdri.mapping"].inputs[2]
+
 class ARK_OT_ReloadHDRIPreviews(bpy.types.Operator):
     bl_idname = f"{addon.name}.reload_previews"
     bl_label = ""
