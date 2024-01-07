@@ -58,6 +58,17 @@ class ARK_OT_UpdateCameraHierarchy(bpy.types.Operator):
         views.structure.update(context.scene.camera)
         return {'FINISHED'}
 
+class ARK_OT_UpdateCameraWorld(bpy.types.Operator):
+    bl_idname = f"{addon.name}.update_camera_world"
+    bl_label = ""
+    bl_options = {'UNDO', 'INTERNAL'}
+
+    renamed : bpy.props.BoolProperty(default = False)
+
+    def execute(self, context):
+        views.world.update(context.scene.camera, context)
+        return {'FINISHED'}
+
 class ARK_OT_SetCameraActive(bpy.types.Operator):
     bl_idname = f"{addon.name}.set_camera_active"
     bl_label = ""
@@ -333,10 +344,13 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 section.use_property_decorate = False
 
                 col = section.column(align=True)
-                row = utils.bpy.ui.split(col, text="World")
-                row.alert = pr_cam.view.world != context.scene.world
-                row.prop(pr_cam.view, "world", text="")
-
+                _ = pr_cam.view.world != context.scene.world
+                label, content = utils.bpy.ui.split2(col, alert=_)
+                if _:
+                    label.operator(ARK_OT_UpdateCameraWorld.bl_idname, text="World")
+                else:
+                    label.label(text="World")
+                content.prop(pr_cam.view, "world", text="")
                 section = layout.box()
                 section.use_property_split = True
                 section.use_property_decorate = False
@@ -571,6 +585,7 @@ CLASSES = [
     ARK_OT_CreateArkHierarchy,
     ARK_OT_CreateCameraHierarchy,
     ARK_OT_UpdateCameraHierarchy,
+    ARK_OT_UpdateCameraWorld,
     ARK_OT_SetCameraActive,
     ARK_OT_AddCamera,
     ARK_OT_DuplicateCamera,

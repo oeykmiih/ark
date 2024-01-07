@@ -6,7 +6,7 @@ addon = utils.bpy.Addon()
 
 def add(bl_cam, context, preferences):
     pr_cam = getattr(bl_cam.data, addon.name)
-    world.set(pr_cam, context)
+    world._update_(pr_cam, context)
     structure.create(bl_cam, preferences)
     return None
 
@@ -25,8 +25,14 @@ def cleanse(bl_cam):
 
 class world():
     @staticmethod
-    def set(pr_cam, context):
+    def _update_(pr_cam, context):
         pr_cam.view.world = context.scene.world
+        return None
+
+    @staticmethod
+    def update(bl_cam, context):
+        pr_cam = getattr(bl_cam.data, addon.name)
+        __class__._update_(pr_cam, context)
         return None
 
     @staticmethod
