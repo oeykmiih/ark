@@ -13,6 +13,10 @@ class Camera_View(bpy.types.PropertyGroup):
         type=bpy.types.Collection,
     )
 
+    world : bpy.props.PointerProperty(
+        type=bpy.types.World,
+    )
+
 class Camera(bpy.types.PropertyGroup):
     view : bpy.props.PointerProperty(type=Camera_View)
 

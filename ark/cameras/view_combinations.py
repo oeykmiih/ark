@@ -5,10 +5,15 @@ from ark import utils
 addon = utils.bpy.Addon()
 
 def add(bl_cam, context, preferences):
+    pr_cam = getattr(bl_cam.data, addon.name)
+    pr_cam.view.world = context.scene.world
     structure.create(bl_cam, preferences)
     return None
 
 def update(bl_cam, context, preferences):
+    pr_cam = getattr(bl_cam.data, addon.name)
+    context.scene.world = pr_cam.view.world
+
     update_collections(bl_cam, context, preferences)
     return None
 
@@ -32,6 +37,7 @@ def update_collection_props(container, target):
 def cleanse(bl_cam):
     pr_cam = getattr(bl_cam.data, addon.name)
     pr_cam.view.props = None
+    pr_cam.view.world = None
     return None
 
 class structure():

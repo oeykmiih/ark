@@ -330,9 +330,14 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 section.use_property_decorate = False
 
                 col = section.column(align=True)
+                col.prop(pr_cam.view, "world")
 
-                row = col.row(align=True)
-                row.prop(pr_cam, "resolution_orientation", expand=True)
+                section = layout.box()
+                section.use_property_split = True
+                section.use_property_decorate = False
+
+                col = section.column(align=True)
+                col.row(align=True).prop(pr_cam, "resolution_orientation", expand=True)
 
                 row = utils.bpy.ui.split(col, text="Ratio")
                 row.prop(pr_cam, "ratio_x", text="")
