@@ -159,7 +159,8 @@ class ARK_OT_AddActiveToViewCombination(bpy.types.Operator):
         bl_cam = bpy.data.objects[self.name]
         ao = context.active_object
 
-        view_combinations.collection_hierarchy.get_viewcombination(bl_cam).objects.link(ao)
+        pr_cam = getattr(bl_cam.data, addon.name)
+        pr_cam.view.props.objects.link(ao)
         return {'FINISHED'}
 
 class ARK_OT_RemoveActiveFromViewCombination(bpy.types.Operator):
@@ -173,7 +174,8 @@ class ARK_OT_RemoveActiveFromViewCombination(bpy.types.Operator):
         bl_cam = bpy.data.objects[self.name]
         ao = context.active_object
 
-        view_combinations.collection_hierarchy.get_viewcombination(bl_cam).objects.unlink(ao)
+        pr_cam = getattr(bl_cam.data, addon.name)
+        pr_cam.view.props.objects.unlink(ao)
         return {'FINISHED'}
 
 class ARK_OT_SetActiveAsBlockout(bpy.types.Operator):
@@ -414,7 +416,8 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
 class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
     def _viewcombinations(self, context, layout, item):
         ao = context.active_object
-        blcol_cam_viewcombination = view_combinations.collection_hierarchy.get_viewcombination(item)
+        pr_cam = getattr(item.data, addon.name)
+        blcol_cam_props = pr_cam.view.props
 
         layout = layout.row(align=True)
             layout.enabled = False
@@ -422,7 +425,7 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
             layout.operator(utils.bpy.ops.UTILS_OT_Placeholder.bl_idname, icon='BLANK1', emboss=False)
         else:
             _ = True
-            if ao.name not in blcol_cam_viewcombination.objects:
+            if ao.name not in blcol_cam_props.objects:
                 layout.operator(ARK_OT_AddActiveToViewCombination.bl_idname, icon='HIDE_ON', emboss=False).name = item.name
                 _ = False
             else:

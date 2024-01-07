@@ -26,10 +26,10 @@ def update_collection_combination_props(container, target):
 class collection_hierarchy():
     @staticmethod
     def create(blcam, preferences):
-        name = blcam.name
+        pr_cam = getattr(blcam.data, addon.name)
 
         blcol_viewcombinations = utils.bpy.col.obt(preferences.container_viewcombinations, force=True)
-        utils.bpy.col.obt(f"VC:{name}", force=True, parent=blcol_viewcombinations)
+        pr_cam.hierarchy.props = utils.bpy.col.obt(f"VC:{blcam.name}", force=True, parent=blcol_viewcombinations)
         return None
 
     @staticmethod
@@ -38,17 +38,17 @@ class collection_hierarchy():
         pr_cam = getattr(blcam.data, addon.name)
 
         blcol_viewcombinations = utils.bpy.col.obt(preferences.container_viewcombinations, force=True)
-        cam_props = utils.bpy.col.obt(pr_cam.hierarchy.props, parent=blcol_viewcombinations)
+        cam_props = pr_cam.hierarchy.props
 
         cam_props.name = f"VC:{name}"
         return None
 
     @staticmethod
     def remove(blcam, preferences):
-        name = blcam.name
+        pr_cam = getattr(blcam.data, addon.name)
 
         blcol_viewcombinations = utils.bpy.col.obt(preferences.container_viewcombinations, force=True)
-        cam_props = utils.bpy.col.obt(f"VC:{name}", local=True)
+        cam_props = pr_cam.hierarchy.props
 
         utils.bpy.col.empty(cam_props, objects=True)
         blcol_viewcombinations.children.unlink(cam_props)
@@ -56,11 +56,11 @@ class collection_hierarchy():
 
     @staticmethod
     def audit(blcam, preferences):
-        name = blcam.name
+        pr_cam = getattr(blcam.data, addon.name)
 
         conditions = [
             utils.bpy.col.obt(preferences.container_viewcombinations),
-            utils.bpy.col.obt(f"VC:{name}", local=True),
+            utils.bpy.col.obt(pr_cam.hierarchy.props.name, local=True),
         ]
         return all(conditions)
 
@@ -70,7 +70,7 @@ class collection_hierarchy():
 
         conditions = [
             utils.bpy.col.obt(preferences.container_viewcombinations),
-            utils.bpy.col.obt(pr_cam.hierarchy.props, local=True),
+            utils.bpy.col.obt(pr_cam.hierarchy.props.name, local=True),
         ]
         return all(conditions)
 
@@ -86,11 +86,6 @@ class collection_hierarchy():
         pr_cam = getattr(blcam.data, addon.name)
         pr_cam.hierarchy.props = ""
         return None
-
-    @staticmethod
-    def get_viewcombination(blcam):
-        pr_cam = getattr(blcam.data, addon.name)
-        return utils.bpy.col.obt(pr_cam.hierarchy.props, local=True)
 
 @addon.property
 class WindowManager_Cameras_ViewCombinations(bpy.types.PropertyGroup):
