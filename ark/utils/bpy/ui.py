@@ -42,3 +42,13 @@ def split(layout, text="", align=True, enabled=True):
 
     sub = row.row(align=True)
     return sub
+
+def split2(layout, align=True, enabled=True, alert=False):
+    row = layout.row(align=True).split(factor=0.4, align=True)
+    row.enabled = enabled
+    row.alert = alert
+    label = row.row()
+    label.alignment = 'RIGHT'
+
+    content = row.row(align=True)
+    return label, content
