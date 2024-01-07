@@ -16,17 +16,19 @@ TOKENS = {
 }
 
 def preview_path(context):
+    pr_queue = addon.get_property("scene")
     tokens = {}
     tokens["$camera"] = context.scene.camera.name
     tokens["$date"] = time.strftime("%y%m%d")
     tokens["$time"] = time.strftime("%H%M%S")
 
-    filepath = context.scene.render.filepath
-    # NOTE: Make fileoutput blender folder if file output is empty
-    dirpath = "//" if filepath == "" else filepath
-    dirpath = replace_tokens(dirpath, tokens=tokens)
-    # dirpath = bpy.path.abspath(dirpath)
-    return bpy.path.native_pathsep(dirpath)
+    path_folder = replace_tokens(pr_queue.path_folder, tokens=tokens)
+    path_folder = "//" if path_folder == "" else path_folder
+
+    path_file = replace_tokens(pr_queue.path_file, tokens=tokens)
+
+    path_full = os.path.join(path_folder, path_file)
+    return bpy.path.native_pathsep(path_full)
 
 def replace_tokens(filepath, tokens):
     for token, value in tokens.items():
@@ -35,39 +37,37 @@ def replace_tokens(filepath, tokens):
     return filepath
 
 class ARK_OT_RenderQueue(bpy.types.Operator):
-    bl_idname = f"{addon.name}.render_queue"
+    bl_idname = f"{addon.name}.queue"
     bl_label = ""
 
     _timer = None
-    _fpath = None
     stop = False
     rendering = False
     shots = None
 
+    slots : bpy.props.BoolProperty()
+    export : bpy.props.BoolProperty()
     mode : bpy.props.EnumProperty(
         name = "",
         items = enums.RENDER_MODE,
         default = 'ACTIVE',
     )
-    slots : bpy.props.BoolProperty()
-    export : bpy.props.BoolProperty()
 
-    def set_filepath(self, context, bl_cam):
-        pr_cam = getattr(bl_cam.data, addon.name)
+    def set_filepath(self, context):
+        pr_queue = addon.get_property("scene")
 
-        # NOTE: Make fileoutput blender folder if file output is empty
-        dirpath = "//" if self._fpath == "" else self._fpath
-        # NOTE: Make fileoutput absolute to easier handling
-        dirpath = bpy.path.abspath(dirpath)
-        dirpath = replace_tokens(dirpath, TOKENS)
+        path_folder = replace_tokens(pr_queue.path_folder, tokens=TOKENS)
+        path_folder = "//" if path_folder == "" else path_folder
 
-        if not os.path.isdir(dirpath):
-            try:
-                os.makedirs(dirpath)
-            except:
-                raise
+        path_file = replace_tokens(pr_queue.path_file, tokens=TOKENS)
 
-        context.scene.render.filepath = dirpath
+        path_folder = bpy.path.abspath(path_folder)
+        path_full = os.path.join(path_folder, path_file)
+
+        if not os.path.isdir(path_folder):
+            os.makedirs(path_folder)
+
+        context.scene.render.filepath = path_full
         return None
 
     @staticmethod
@@ -98,7 +98,7 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
         return None
 
     def terminate(self, context):
-        context.scene.render.filepath = self._fpath
+        context.scene.render.filepath = self.path_folder
         context.window_manager.event_timer_remove(self._timer)
         bpy.app.handlers.render_cancel.remove(self.cancelled)
         bpy.app.handlers.render_post.remove(self.post)
@@ -111,7 +111,7 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
 
     def execute(self, context):
         self.preferences = addon.parent_preferences
-        self._fpath = context.scene.render.filepath
+        self.path_folder = context.scene.render.filepath
 
         if not context.blend_data.is_saved:
             self.report({'ERROR'}, "File needs to be saved before batch rendering")
@@ -156,8 +156,10 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
 
                 if self.export:
                     try:
-                        self.set_filepath(context, self.shots[0])
-                    except:
+                        self.set_filepath(context)
+                    except Exception as e:
+                        import traceback
+                        traceback.print_exc()
                         self.terminate(context)
                         self.report({'ERROR'}, "Invalid path, the render has been cancelled")
                         return {'CANCELLED'}
@@ -188,6 +190,17 @@ class Scene_Cameras_RenderQueue(bpy.types.PropertyGroup):
         name = "Export Renders",
         description = "Save finished renders to specificed path",
         default = True,
+    )
+
+    path_folder : bpy.props.StringProperty(
+        name = "Folder",
+        default = "//",
+        subtype = 'FILE_PATH',
+    )
+
+    path_file : bpy.props.StringProperty(
+        name = "File",
+        default = "$camera",
     )
 
 @addon.property

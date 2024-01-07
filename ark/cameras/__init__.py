@@ -5,7 +5,7 @@ addon = utils.bpy.Addon()
 
 MODULES = {
     "common" : None,
-    "render_queue" : None,
+    "queue" : None,
     "views" : None,
     "properties" : None, # NOTE: Should be last to register.
 }
@@ -398,29 +398,29 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 section.use_property_decorate = False
 
                 col = section.column(align=False)
+                col.prop(pr_scene.queue, "path_folder")
+                col.prop(pr_scene.queue, "path_file")
 
-                row = utils.bpy.ui.split(col, text="Output Path")
-                row.prop(scene.render, "filepath", text="")
                 row = utils.bpy.ui.split(col, text="Final Path", enabled=False)
                 sub = row.box()
                 sub.ui_units_y = 1.0
                 sub.scale_y = 1 / 2.0
-                sub.label(text=render_queue.preview_path(context))
+                sub.label(text=queue.preview_path(context))
                 # TODO: improve handling of camera names and tokens
 
                 col = section.column(align=True)
-                col.row(align=True).prop(pr_scene.render_queue, "mode", expand=True)
-                col.prop(pr_scene.render_queue, "slots", toggle=True)
-                col.prop(pr_scene.render_queue, "export", toggle=True)
+                col.row(align=True).prop(pr_scene.queue, "mode", expand=True)
+                col.prop(pr_scene.queue, "slots", toggle=True)
+                col.prop(pr_scene.queue, "export", toggle=True)
 
                 col = section.column(align=True)
                 op = col.operator(
-                    render_queue.ARK_OT_RenderQueue.bl_idname,
+                    queue.ARK_OT_RenderQueue.bl_idname,
                     text="Render!",
                 )
-                op.mode = pr_scene.render_queue.mode
-                op.slots = pr_scene.render_queue.slots
-                op.export = pr_scene.render_queue.export
+                op.mode = pr_scene.queue.mode
+                op.slots = pr_scene.queue.slots
+                op.export = pr_scene.queue.export
         return None
 
 class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
