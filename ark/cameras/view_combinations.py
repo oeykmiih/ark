@@ -51,13 +51,8 @@ class structure():
 
     @staticmethod
     def update(bl_cam, preferences):
-        name = bl_cam.name
         pr_cam = getattr(bl_cam.data, addon.name)
-
-        blcol_viewcombinations = utils.bpy.col.obt(preferences.container_viewcombinations, force=True)
-        cam_props = pr_cam.view.props
-
-        cam_props.name = f"VC:{name}"
+        pr_cam.view.props.name = f"VC:{bl_cam.name}"
         return None
 
     @staticmethod
@@ -75,21 +70,28 @@ class structure():
     def audit(bl_cam, preferences):
         pr_cam = getattr(bl_cam.data, addon.name)
 
-        conditions = [
-            utils.bpy.col.obt(preferences.container_viewcombinations),
-            utils.bpy.col.obt(pr_cam.view.props.name, local=True),
-        ]
-        return all(conditions)
+        if pr_cam.view.props is None:
+            return False
+        else:
+            blcol_viewcombinations = utils.bpy.col.obt(preferences.container_viewcombinations)
+            conditions = [
+                pr_cam.view.props.name[3:] == bl_cam.name,
+                pr_cam.view.props.name in blcol_viewcombinations.children,
+            ]
+            return all(conditions)
 
     @staticmethod
     def audit_previous(bl_cam, preferences):
         pr_cam = getattr(bl_cam.data, addon.name)
 
-        conditions = [
-            utils.bpy.col.obt(preferences.container_viewcombinations),
-            utils.bpy.col.obt(pr_cam.view.props.name, local=True),
-        ]
-        return all(conditions)
+        if pr_cam.view.props is None:
+            return False
+        else:
+            conditions = [
+                utils.bpy.col.obt(preferences.container_viewcombinations),
+                utils.bpy.col.obt(pr_cam.view.props.name, local=True),
+            ]
+            return all(conditions)
 
 @addon.property
 class WindowManager_Cameras_ViewCombinations(bpy.types.PropertyGroup):

@@ -36,8 +36,8 @@ class ARK_OT_CreateArkHierarchy(bpy.types.Operator):
         ark_hierarchy.create(preferences, context)
         return {'FINISHED'}
 
-class ARK_OT_AddCameraHierarchy(bpy.types.Operator):
-    bl_idname = f"{addon.name}.add_camera_hierarchy"
+class ARK_OT_CreateCameraHierarchy(bpy.types.Operator):
+    bl_idname = f"{addon.name}.create_camera_hierarchy"
     bl_label = ""
     bl_options = {'UNDO', 'INTERNAL'}
 
@@ -47,7 +47,15 @@ class ARK_OT_AddCameraHierarchy(bpy.types.Operator):
         view_combinations.structure.create(context.scene.camera, addon.preferences)
         return {'FINISHED'}
 
-        common.add_camera_hierarchy(bl_cam, preferences, renamed=self.renamed)
+class ARK_OT_UpdateCameraHierarchy(bpy.types.Operator):
+    bl_idname = f"{addon.name}.add_camera_hierarchy"
+    bl_label = ""
+    bl_options = {'UNDO', 'INTERNAL'}
+
+    renamed : bpy.props.BoolProperty(default = False)
+
+    def execute(self, context):
+        view_combinations.structure.update(context.scene.camera, addon.preferences)
         return {'FINISHED'}
 
 class ARK_OT_SetCameraActive(bpy.types.Operator):
@@ -309,13 +317,12 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 utils.bpy.ui.label(info, text="No active camera.")
             else:
                 if not view_combinations.structure.audit(bl_cam, preferences):
-                    renamed = view_combinations.structure.audit_previous(bl_cam, preferences)
-                    text = "%s" % "Camera was renamed, sync hierarchy?" if renamed else "Missing camera hierarchy, fix it?"
-                    info.alert = True
-                    info.operator(
-                        ARK_OT_AddCameraHierarchy.bl_idname,
-                        text = text,
-                    ).renamed = renamed
+                    if view_combinations.structure.audit_previous(bl_cam, preferences):
+                        info.alert = True
+                        info.operator(ARK_OT_UpdateCameraHierarchy.bl_idname, text="Camera was renamed, sync hierarchy?")
+                    else:
+                        info.alert = True
+                        info.operator(ARK_OT_CreateCameraHierarchy.bl_idname, text="Missing camera collections, fix it?")
                 else:
                     info.label(text="")
 
@@ -560,7 +567,8 @@ def UI(preferences, layout):
 
 CLASSES = [
     ARK_OT_CreateArkHierarchy,
-    ARK_OT_AddCameraHierarchy,
+    ARK_OT_CreateCameraHierarchy,
+    ARK_OT_UpdateCameraHierarchy,
     ARK_OT_SetCameraActive,
     ARK_OT_AddCamera,
     ARK_OT_DuplicateCamera,
