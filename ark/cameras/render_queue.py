@@ -52,8 +52,8 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
     slots : bpy.props.BoolProperty()
     export : bpy.props.BoolProperty()
 
-    def set_filepath(self, context, blcam):
-        pr_cam = getattr(blcam.data, addon.name)
+    def set_filepath(self, context, bl_cam):
+        pr_cam = getattr(bl_cam.data, addon.name)
 
         # NOTE: Make fileoutput blender folder if file output is empty
         dirpath = "//" if self._fpath == "" else self._fpath

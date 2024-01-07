@@ -8,11 +8,13 @@ addon = utils.bpy.Addon()
 from . import defaults
 from . import enums
 
-class Camera_Hierarchy(bpy.types.PropertyGroup):
-    props : bpy.props.StringProperty()
+class Camera_View(bpy.types.PropertyGroup):
+    props : bpy.props.PointerProperty(
+        type=bpy.types.Collection,
+    )
 
 class Camera(bpy.types.PropertyGroup):
-    hierarchy : bpy.props.PointerProperty(type=Camera_Hierarchy)
+    view : bpy.props.PointerProperty(type=Camera_View)
 
     def set_aperture(self, value):
         self["aperture"] = value
@@ -190,7 +192,7 @@ class Camera(bpy.types.PropertyGroup):
     )
 
 CLASSES = [
-    Camera_Hierarchy,
+    Camera_View,
     Camera,
 ]
 

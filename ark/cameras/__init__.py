@@ -312,8 +312,8 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
             elif not bl_cam:
                 utils.bpy.ui.label(info, text="No active camera.")
             else:
-                if not view_combinations.collection_hierarchy.audit(bl_cam, preferences):
-                    renamed = view_combinations.collection_hierarchy.audit_previous(bl_cam, preferences)
+                if not view_combinations.structure.audit(bl_cam, preferences):
+                    renamed = view_combinations.structure.audit_previous(bl_cam, preferences)
                     text = "%s" % "Camera was renamed, sync hierarchy?" if renamed else "Missing camera hierarchy, fix it?"
                     info.alert = True
                     info.operator(
