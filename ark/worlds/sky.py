@@ -15,31 +15,25 @@ def create_world(world, context):
     return None
 
 def audit_world(world):
-    return "sky.env" in  world.node_tree.nodes and not world.node_tree.nodes["sky.env"].mute
+    return "sky.env" in  world.node_tree.nodes
 
 def setup_world(world):
     world.use_nodes = True
     w_nodes = world.node_tree.nodes
     w_links = world.node_tree.links
 
-    _ = [True]*len(w_nodes)
-    w_nodes.foreach_set("mute", _)
-
     n_env = w_nodes["sky.env"] if "sky.env" in w_nodes else w_nodes.new('ShaderNodeTexSky')
     n_env.label = n_env.name = "sky.env"
     n_env.location = (-200, 200)
-    n_env.mute = False
 
     n_background = w_nodes["sky.background"] if "sky.background" in w_nodes else w_nodes.new('ShaderNodeBackground')
     n_background.label = n_background.name = "sky.background"
     n_background.location = (0, 200)
-    n_background.mute = False
     w_links.new(n_env.outputs[0], n_background.inputs[0])
 
     n_output = w_nodes["sky.output"] if "sky.output" in w_nodes else w_nodes.new('ShaderNodeOutputWorld')
     n_output.label = n_output.name = "sky.output"
     n_output.location = (200, 200)
-    n_output.mute = False
     n_output.is_active_output = True
     w_links.new(n_background.outputs[0], n_output.inputs[0])
 

@@ -131,43 +131,35 @@ def update_world(self, context):
     return None
 
 def audit_world(world):
-    return "hdri.env" in  world.node_tree.nodes and not world.node_tree.nodes["hdri.env"].mute
+    return "hdri.env" in  world.node_tree.nodes
 
 def setup_world(world):
     world.use_nodes = True
     w_nodes = world.node_tree.nodes
     w_links = world.node_tree.links
 
-    _ = [True]*len(w_nodes)
-    w_nodes.foreach_set("mute", _)
-
     n_coord = w_nodes["hdri.coord"] if "hdri.coord" in w_nodes else w_nodes.new('ShaderNodeTexCoord')
     n_coord.label = n_coord.name = "hdri.coord"
     n_coord.location = (-700,-200)
-    n_coord.mute = False
 
     n_mapping = w_nodes["hdri.mapping"] if "hdri.mapping" in w_nodes else w_nodes.new('ShaderNodeMapping')
     n_mapping.label = n_mapping.name = "hdri.mapping"
     n_mapping.location = (-500, -200)
-    n_mapping.mute = False
     w_links.new(n_coord.outputs[0], n_mapping.inputs['Vector'])
 
     n_env = w_nodes["hdri.env"] if "hdri.env" in w_nodes else w_nodes.new('ShaderNodeTexEnvironment')
     n_env.label = n_env.name = "hdri.env"
     n_env.location = (-300, -200)
-    n_env.mute = False
     w_links.new(n_mapping.outputs[0], n_env.inputs[0])
 
     n_background = w_nodes["hdri.background"] if "hdri.background" in w_nodes else w_nodes.new('ShaderNodeBackground')
     n_background.label = n_background.name = "hdri.background"
     n_background.location = (0, -200)
-    n_background.mute = False
     w_links.new(n_env.outputs[0], n_background.inputs[0])
 
     n_output = w_nodes["hdri.output"] if "hdri.output" in w_nodes else w_nodes.new('ShaderNodeOutputWorld')
     n_output.label = n_output.name = "hdri.output"
     n_output.location = (200, -200)
-    n_output.mute = False
     n_output.is_active_output = True
     w_links.new(n_background.outputs[0], n_output.inputs[0])
     return None
