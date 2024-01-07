@@ -333,7 +333,9 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 section.use_property_decorate = False
 
                 col = section.column(align=True)
-                col.prop(pr_cam.view, "world")
+                row = utils.bpy.ui.split(col, text="World")
+                row.alert = pr_cam.view.world != context.scene.world
+                row.prop(pr_cam.view, "world", text="")
 
                 section = layout.box()
                 section.use_property_split = True

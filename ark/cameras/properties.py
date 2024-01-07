@@ -14,6 +14,7 @@ class Camera_View(bpy.types.PropertyGroup):
     )
 
     world : bpy.props.PointerProperty(
+        name = "World",
         type=bpy.types.World,
     )
 
