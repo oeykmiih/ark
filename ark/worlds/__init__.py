@@ -102,7 +102,7 @@ class ARK_PT_PROPERTIES_World(bpy.types.Panel):
                             col = section.column(align=True)
                             col.prop(hdri.get_mapping(world), "default_value", text="Rotation", index=2)
                 case 'SKY':
-                    utils.bpy.ui.empty(buttons, emboss=False) #NOTE: If buttons is empty footer collapses.
+                    utils.bpy.ui.empty(buttons, emboss=False) # NOTE: If buttons is empty footer collapses.
                     if not sky.audit_world(world):
                         info.alert = True
                         info.operator(sky.ARK_OT_CreateWorldSky.bl_idname, text="Missing world nodes, fix it?")

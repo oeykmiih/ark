@@ -7,7 +7,7 @@ MODULES = {
     "common" : None,
     "render_queue" : None,
     "views" : None,
-    "properties" : None, #NOTE: Should be last to register.
+    "properties" : None, # NOTE: Should be last to register.
 }
 MODULES = utils.import_modules(MODULES)
 

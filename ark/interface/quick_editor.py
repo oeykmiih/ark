@@ -44,7 +44,7 @@ class ARK_MT_PIE_SetEditorMode(bpy.types.Menu):
 
         for ui_type in enums.EDITOR_TYPE:
             pie_count += 1
-            #NOTE: This is legacy code to handle proper layout, keeping it if pie menu count goes down again
+            # NOTE: This is legacy code to handle proper layout, keeping it if pie menu count goes down again
             ##         4
             ##     5       6
             ## 1              2
