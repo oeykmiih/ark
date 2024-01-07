@@ -44,8 +44,8 @@ class ARK_OT_AddCameraHierarchy(bpy.types.Operator):
     renamed : bpy.props.BoolProperty(default = False)
 
     def execute(self, context):
-        preferences = addon.preferences
-        bl_cam = context.scene.camera
+        view_combinations.structure.create(context.scene.camera, addon.preferences)
+        return {'FINISHED'}
 
         common.add_camera_hierarchy(bl_cam, preferences, renamed=self.renamed)
         return {'FINISHED'}
@@ -58,10 +58,8 @@ class ARK_OT_SetCameraActive(bpy.types.Operator):
     name: bpy.props.StringProperty()
 
     def execute(self, context):
-        preferences = addon.preferences
         bl_cam = context.scene.camera = bpy.data.objects.get(self.name)
-
-        common.set_camera_active(bl_cam, context, preferences)
+        common.set_camera_active(bl_cam, context, addon.preferences)
         return {'FINISHED'}
 
 class ARK_OT_AddCamera(bpy.types.Operator):
@@ -70,9 +68,7 @@ class ARK_OT_AddCamera(bpy.types.Operator):
     bl_options = {'UNDO', 'INTERNAL'}
 
     def execute(self, context):
-        preferences = addon.preferences
-
-        common.add_camera(context, preferences)
+        common.add_camera(context, addon.preferences)
         return {'FINISHED'}
 
 class ARK_OT_DuplicateCamera(bpy.types.Operator):
