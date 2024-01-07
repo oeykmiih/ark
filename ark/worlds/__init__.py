@@ -212,6 +212,7 @@ class ARK_OT_CreateWorld(bpy.types.Operator):
         world = bpy.data.worlds.new("World")
         world.use_nodes = True
         world.node_tree.nodes.clear()
+        world.use_fake_user = True
         context.scene.world = world
 
         match session.kind:
