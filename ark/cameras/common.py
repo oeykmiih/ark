@@ -6,7 +6,7 @@ from ark import utils
 addon = utils.bpy.Addon()
 
 from . import properties
-from . import view_combinations
+from . import views
 
 def set_camera_active(bl_cam, context, preferences):
     context.scene.camera = bl_cam
@@ -45,7 +45,7 @@ def update_camera_properties(bl_cam, context, preferences):
     pr_cam = getattr(bl_cam.data, addon.name)
     properties.Camera.update_exposure(pr_cam, context)
     properties.Camera.update_resolution(pr_cam, context)
-    view_combinations.update(bl_cam, context, preferences)
+    views.update(bl_cam, context, preferences)
     return None
 
 def add_camera(context, preferences):
@@ -68,7 +68,7 @@ def add_camera(context, preferences):
     )
 
     force_camera_verticals(bl_cam)
-    view_combinations.add(bl_cam, context, preferences)
+    views.add(bl_cam, context, preferences)
     set_camera_active(bl_cam, context, preferences)
     return None
 
@@ -78,17 +78,17 @@ def duplicate_camera(bl_cam, context, preferences):
 
     new_cam = bl_cam.copy()
     new_cam.data = bl_cam.data.copy()
-    view_combinations.structure.cleanse(new_cam)
+    views.cleanse(new_cam)
 
     blcol_cameras.objects.link(new_cam)
 
-    view_combinations.add(new_cam, context, preferences)
+    views.add(new_cam, context, preferences)
     set_camera_active(new_cam, context, preferences)
     return None
 
 def remove_camera(bl_cam, context, preferences):
-    if view_combinations.structure.audit(bl_cam, preferences):
-        view_combinations.structure.remove(bl_cam, preferences)
+    if views.structure.audit(bl_cam, preferences):
+        views.structure.remove(bl_cam, preferences)
 
     utils.bpy.obj.remove(bl_cam, purge_data=True)
     return None

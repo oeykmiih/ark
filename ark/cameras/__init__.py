@@ -6,7 +6,7 @@ addon = utils.bpy.Addon()
 MODULES = {
     "common" : None,
     "render_queue" : None,
-    "view_combinations" : None,
+    "views" : None,
     "properties" : None, #NOTE: Should be last to register.
 }
 MODULES = utils.import_modules(MODULES)
@@ -15,14 +15,14 @@ class ark_hierarchy():
     @staticmethod
     def create(preferences, context):
         blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, force=True, parent=context.scene.collection)
-        blcol_viewcombinations = utils.bpy.col.obt(preferences.container_viewcombinations, force=True, parent=context.scene.collection)
+        blcol_views = utils.bpy.col.obt(preferences.container_views, force=True, parent=context.scene.collection)
         return None
 
     @staticmethod
     def audit(preferences):
         conditions = [
             utils.bpy.col.obt(preferences.container_cameras, local=True),
-            utils.bpy.col.obt(preferences.container_viewcombinations, local=True),
+            utils.bpy.col.obt(preferences.container_views, local=True),
         ]
         return all(conditions)
 
@@ -44,7 +44,7 @@ class ARK_OT_CreateCameraHierarchy(bpy.types.Operator):
     renamed : bpy.props.BoolProperty(default = False)
 
     def execute(self, context):
-        view_combinations.structure.create(context.scene.camera, addon.preferences)
+        views.structure.create(context.scene.camera, addon.preferences)
         return {'FINISHED'}
 
 class ARK_OT_UpdateCameraHierarchy(bpy.types.Operator):
@@ -55,7 +55,7 @@ class ARK_OT_UpdateCameraHierarchy(bpy.types.Operator):
     renamed : bpy.props.BoolProperty(default = False)
 
     def execute(self, context):
-        view_combinations.structure.update(context.scene.camera)
+        views.structure.update(context.scene.camera)
         return {'FINISHED'}
 
 class ARK_OT_SetCameraActive(bpy.types.Operator):
@@ -152,8 +152,8 @@ class ARK_OT_RemoveCamera(bpy.types.Operator):
             common.set_next_camera_active(context, preferences)
         return {'FINISHED'}
 
-class ARK_OT_AddActiveToViewCombination(bpy.types.Operator):
-    bl_idname = f"{addon.name}.add_active_to_view_combination"
+class ARK_OT_AddActiveToView(bpy.types.Operator):
+    bl_idname = f"{addon.name}.add_active_to_view"
     bl_label = ""
     bl_options = {'UNDO', 'INTERNAL'}
 
@@ -167,8 +167,8 @@ class ARK_OT_AddActiveToViewCombination(bpy.types.Operator):
         pr_cam.view.props.objects.link(ao)
         return {'FINISHED'}
 
-class ARK_OT_RemoveActiveFromViewCombination(bpy.types.Operator):
-    bl_idname = f"{addon.name}.remove_active_from_view_combination"
+class ARK_OT_RemoveActiveFromView(bpy.types.Operator):
+    bl_idname = f"{addon.name}.remove_active_from_view"
     bl_label = ""
     bl_options = {'UNDO', 'INTERNAL'}
 
@@ -316,8 +316,8 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
             elif not bl_cam:
                 utils.bpy.ui.label(info, text="No active camera.")
             else:
-                if not view_combinations.structure.audit(bl_cam, preferences):
-                    if view_combinations.structure.audit_previous(bl_cam, preferences):
+                if not views.structure.audit(bl_cam, preferences):
+                    if views.structure.audit_previous(bl_cam, preferences):
                         info.alert = True
                         info.operator(ARK_OT_UpdateCameraHierarchy.bl_idname, text="Camera was renamed, sync hierarchy?")
                     else:
@@ -424,7 +424,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
         return None
 
 class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
-    def _viewcombinations(self, context, layout, item):
+    def _views(self, context, layout, item):
         ao = context.active_object
         pr_cam = getattr(item.data, addon.name)
         blcol_cam_props = pr_cam.view.props
@@ -437,10 +437,10 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
         else:
             _ = True
             if ao.name not in blcol_cam_props.objects:
-                layout.operator(ARK_OT_AddActiveToViewCombination.bl_idname, icon='HIDE_ON', emboss=False).name = item.name
+                layout.operator(ARK_OT_AddActiveToView.bl_idname, icon='HIDE_ON', emboss=False).name = item.name
                 _ = False
             else:
-                layout.operator(ARK_OT_RemoveActiveFromViewCombination.bl_idname, icon='HIDE_OFF', depress=True).name = item.name
+                layout.operator(ARK_OT_RemoveActiveFromView.bl_idname, icon='HIDE_OFF', depress=True).name = item.name
 
             sub = layout.row()
             sub.enabled = _
@@ -461,7 +461,7 @@ class ARK_UL_PROPERTIES_CameraList(bpy.types.UIList):
         row = layout.row()
         row.alignment = 'RIGHT'
 
-        self._viewcombinations(context, row, item)
+        self._views(context, row, item)
 
         sub = row.row(align=True)
         op = sub.operator(
@@ -541,10 +541,10 @@ class Preferences_Cameras(bpy.types.PropertyGroup):
         default = "#Props",
     )
 
-    container_viewcombinations : bpy.props.StringProperty(
-        name = "View Combinations",
-        description = "Collection name where to store all View Combinations",
-        default = "#ViewCombinations",
+    container_views : bpy.props.StringProperty(
+        name = "Views",
+        description = "Collection name where to store all Views",
+        default = "#Views",
     )
 
     trackers_camera : bpy.props.StringProperty(
@@ -556,7 +556,7 @@ def UI(preferences, layout):
     box = layout.box()
     box.prop(preferences, "container_cameras")
     box.prop(preferences, "container_props")
-    box.prop(preferences, "container_viewcombinations")
+    box.prop(preferences, "container_views")
     box.prop(preferences, "trackers_camera")
 
     for name in (name for name, module in MODULES.items() if hasattr(module, "UI")):
@@ -576,8 +576,8 @@ CLASSES = [
     ARK_OT_DuplicateCamera,
     ARK_OT_RemoveCamera,
     ARK_OT_ForceCameraVerticals,
-    ARK_OT_AddActiveToViewCombination,
-    ARK_OT_RemoveActiveFromViewCombination,
+    ARK_OT_AddActiveToView,
+    ARK_OT_RemoveActiveFromView,
     ARK_OT_SetActiveAsBlockout,
     ARK_OT_UnsetActiveAsBlockout,
     ARK_UL_PROPERTIES_CameraList,

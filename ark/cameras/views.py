@@ -39,8 +39,8 @@ class structure():
     def create(bl_cam, preferences):
         pr_cam = getattr(bl_cam.data, addon.name)
 
-        blcol_viewcombinations = utils.bpy.col.obt(preferences.container_viewcombinations, force=True)
-        pr_cam.view.props = utils.bpy.col.obt(f"VC:{bl_cam.name}", force=True, parent=blcol_viewcombinations)
+        blcol_views = utils.bpy.col.obt(preferences.container_views, force=True)
+        pr_cam.view.props = utils.bpy.col.obt(f"VC:{bl_cam.name}", force=True, parent=blcol_views)
         return None
 
     @staticmethod
@@ -52,7 +52,7 @@ class structure():
     @staticmethod
     def apply(pr_cam, context, preferences):
         # Apply props
-        container = context.view_layer.layer_collection.children[preferences.container_viewcombinations]
+        container = context.view_layer.layer_collection.children[preferences.container_views]
         target = [pr_cam.view.props.name]
 
         for bllaycol in container.children:
@@ -66,11 +66,11 @@ class structure():
     def remove(bl_cam, preferences):
         pr_cam = getattr(bl_cam.data, addon.name)
 
-        blcol_viewcombinations = utils.bpy.col.obt(preferences.container_viewcombinations, force=True)
+        blcol_views = utils.bpy.col.obt(preferences.container_views, force=True)
         cam_props = pr_cam.view.props
 
         utils.bpy.col.empty(cam_props, objects=True)
-        blcol_viewcombinations.children.unlink(cam_props)
+        blcol_views.children.unlink(cam_props)
         return None
 
     @staticmethod
@@ -80,10 +80,10 @@ class structure():
         if pr_cam.view.props is None:
             return False
         else:
-            blcol_viewcombinations = utils.bpy.col.obt(preferences.container_viewcombinations)
+            blcol_views = utils.bpy.col.obt(preferences.container_views)
             conditions = [
                 pr_cam.view.props.name[3:] == bl_cam.name,
-                pr_cam.view.props.name in blcol_viewcombinations.children,
+                pr_cam.view.props.name in blcol_views.children,
             ]
             return all(conditions)
 
@@ -95,22 +95,22 @@ class structure():
             return False
         else:
             conditions = [
-                utils.bpy.col.obt(preferences.container_viewcombinations),
+                utils.bpy.col.obt(preferences.container_views),
                 utils.bpy.col.obt(pr_cam.view.props.name, local=True),
             ]
             return all(conditions)
 
 @addon.property
-class WindowManager_Cameras_ViewCombinations(bpy.types.PropertyGroup):
+class WindowManager_Cameras_Views(bpy.types.PropertyGroup):
     pass
 
 @addon.property
-class Preferences_Cameras_ViewCombinations(bpy.types.PropertyGroup):
+class Preferences_Cameras_Views(bpy.types.PropertyGroup):
     pass
 
 CLASSES = [
-    WindowManager_Cameras_ViewCombinations,
-    Preferences_Cameras_ViewCombinations,
+    WindowManager_Cameras_Views,
+    Preferences_Cameras_Views,
 ]
 
 def register():
