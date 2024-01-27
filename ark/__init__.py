@@ -11,7 +11,7 @@ bl_info = {
     "warning" : "",
 }
 
-__version__ = "0.3.0"
+__version__ = "0.3.0-240127"
 __prefix__ = "ARK"
 
 from ark import utils
