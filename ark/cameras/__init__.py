@@ -16,6 +16,7 @@ class ark_hierarchy():
     def create(preferences, context):
         blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, force=True, parent=context.scene.collection)
         blcol_views = utils.bpy.col.obt(preferences.container_views, force=True, parent=context.scene.collection)
+        blcol_props = utils.bpy.col.obt(preferences.container_props, force=True, parent=context.scene.collection)
         return None
 
     @staticmethod
@@ -23,6 +24,7 @@ class ark_hierarchy():
         conditions = [
             utils.bpy.col.obt(preferences.container_cameras, local=True),
             utils.bpy.col.obt(preferences.container_views, local=True),
+            utils.bpy.col.obt(preferences.container_props, local=True),
         ]
         return all(conditions)
 
@@ -294,7 +296,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
         col = layout.column(align=True)
         header = col.box().row()
         info = header.row(align=True)
-        buttons = header.row(align=True)
+        buttons = header.row()
         buttons.alignment = 'RIGHT'
 
         if not ark_hierarchy.audit(preferences):
@@ -318,9 +320,19 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                     "uilist_index",
                 )
 
-            buttons.operator(ARK_OT_AddCamera.bl_idname, text="", icon='ADD')
-            buttons.operator(ARK_OT_RemoveCamera.bl_idname, text="", icon='REMOVE')
-            buttons.operator(ARK_OT_DuplicateCamera.bl_idname, text="", icon='DUPLICATE')
+            buttons.prop(
+                    context.view_layer.layer_collection.children[preferences.container_props],
+                    "exclude",
+                    icon_only = True,
+                    # NOTE: Icon index subtracts one when disabled,
+                    icon = 'MESH_MONKEY' if context.view_layer.layer_collection.children[preferences.container_props].exclude else 'MESH_CYLINDER',
+                    invert_checkbox = True,
+            )
+
+            row = buttons.row(align=True)
+            row.operator(ARK_OT_AddCamera.bl_idname, text="", icon='ADD')
+            row.operator(ARK_OT_RemoveCamera.bl_idname, text="", icon='REMOVE')
+            row.operator(ARK_OT_DuplicateCamera.bl_idname, text="", icon='DUPLICATE')
 
             if len(session.cameras) == 0:
                 utils.bpy.ui.label(info, text=f"No camera in {blcol_cameras.name}.")
