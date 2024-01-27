@@ -57,7 +57,6 @@ class structure():
 
     @staticmethod
     def apply(pr_cam, context, preferences):
-        # Apply props
         container = context.view_layer.layer_collection.children[preferences.container_views]
         target = [pr_cam.view.props.name]
 
