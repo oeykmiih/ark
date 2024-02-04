@@ -133,7 +133,7 @@ class Camera(bpy.types.PropertyGroup):
         description = "",
         default = defaults.RATIO_A,
         min = 0.01,
-        max = 10,
+        max = 100,
         precision = 2,
         update = update_resolution,
     )
@@ -143,7 +143,7 @@ class Camera(bpy.types.PropertyGroup):
         description = "",
         default = defaults.RATIO_B,
         min = 0.01,
-        max = 10,
+        max = 100,
         precision = 2,
         update = update_resolution,
     )
