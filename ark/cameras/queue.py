@@ -18,6 +18,7 @@ TOKENS = {
 def preview_path(context):
     pr_queue = addon.get_property("scene")
     tokens = {}
+    tokens["$file"] = bpy.path.display_name_from_filepath(bpy.data.filepath)
     tokens["$camera"] = context.scene.camera.name
     tokens["$date"] = time.strftime("%y%m%d")
     tokens["$time"] = time.strftime("%H%M%S")
@@ -170,6 +171,7 @@ class ARK_OT_RenderQueue(bpy.types.Operator):
     def invoke(self, context, event):
         TOKENS["$date"] = time.strftime("%y%m%d")
         TOKENS["$time"] = time.strftime("%H%M%S")
+        TOKENS["$file"] = bpy.path.display_name_from_filepath(bpy.data.filepath)
         return self.execute(context)
 
 @addon.property
