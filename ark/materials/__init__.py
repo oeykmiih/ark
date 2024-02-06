@@ -6,6 +6,7 @@ addon = utils.bpy.Addon()
 
 MODULES = {
     "catalog" : None,
+    "groups" : None,
 }
 MODULES = utils.import_modules(MODULES)
 
