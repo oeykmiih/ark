@@ -16,8 +16,8 @@ MODULES = utils.import_modules(MODULES)
 
 class ARK_OT_ToggleInterface(bpy.types.Operator):
     bl_idname = f"{addon.name}.toggle_interface"
-    bl_label = ""
-    bl_options = {'INTERNAL'}
+    bl_label = "Simplify!"
+    bl_description = "Toggles interface simplification."
 
     # NOTE: This disables the Operator for everything but the TOPBAR.
     ## Only needed because the operator appears when searching since it's
@@ -54,7 +54,6 @@ def ARK_BT_UPPERBAR_ToggleInterface(self, context):
     row.ui_units_x = 3
     op = row.operator(
         ARK_OT_ToggleInterface.bl_idname,
-        text="Simplify!",
         emboss = session.toggle,
         depress = session.toggle,
     )
