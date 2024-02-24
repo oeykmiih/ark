@@ -134,17 +134,18 @@ class ARK_PT_Materials(bpy.types.Panel):
         column = body.column()
         if materials:
             for material in materials:
-                is_current = (material.name == session.current_blmat)
+                if material is not None:
+                    is_current = (material.name == session.current_blmat)
 
-                row = column.row(align=True)
-                row.alert = (material.users == 0)
-                opr = row.operator(
-                    ARK_OT_GoToMaterial.bl_idname,
-                    text = material.name,
-                    emboss = is_current,
-                    depress = is_current,
-                )
-                opr.name = material.name
+                    row = column.row(align=True)
+                    row.alert = (material.users == 0)
+                    opr = row.operator(
+                        ARK_OT_GoToMaterial.bl_idname,
+                        text = material.name,
+                        emboss = is_current,
+                        depress = is_current,
+                    )
+                    opr.name = material.name
         else:
             column.label(text="")
         return None
