@@ -80,7 +80,6 @@ class ARK_OT_GoToMaterial(bpy.types.Operator):
         context.view_layer.objects.active = tracker
         tracker.data.materials.clear()
         tracker.data.materials.append(material)
-        session.current_blmat = material.name
 
         with contextlib.redirect_stdout(io.StringIO()):
             bpy.ops.wm.redraw_timer(type='DRAW', iterations=1)
@@ -135,7 +134,7 @@ class ARK_PT_Materials(bpy.types.Panel):
         if materials:
             for material in materials:
                 if material is not None:
-                    is_current = (material.name == session.current_blmat)
+                    is_current = (material.node_tree == context.space_data.id_from.active_material.node_tree)
 
                     row = column.row(align=True)
                     row.alert = (material.users == 0)
@@ -171,12 +170,6 @@ class WindowManager_Materials_Catalog(bpy.types.PropertyGroup):
         name="Last Valid Object",
         default="",
     )
-
-    current_blmat : bpy.props.StringProperty(
-        name="Current Material",
-        default="",
-    )
-
 @addon.property
 class Preferences_Materials_Catalog(bpy.types.PropertyGroup):
     trackers_material : bpy.props.StringProperty(
