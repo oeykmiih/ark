@@ -30,6 +30,33 @@ def import_modules(modules):
         del _frame
     return modules
 
+# CREDIT : Scatter5
+def import_libraries(modules):
+    import importlib
+    import inspect
+    import os
+    import sys
+    _frame = inspect.currentframe()
+    try:
+        frame = _frame.f_back
+        package = inspect.getmodule(frame).__package__
+        depth = len(str(package).split("."))
+        DIR = os.path.abspath(os.path.join(os.path.dirname(inspect.getfile(frame)), "libs"))
+        delete = False
+        try:
+            if DIR not in sys.path:
+                sys.path.insert(0, DIR)
+                delete = True
+            for name, module in modules.items():
+                modules[name] = importlib.import_module(name)
+        finally:
+            if delete:
+                sys.path.remove(DIR)
+        frame.f_locals.update(modules)
+    finally:
+        del _frame
+    return modules
+
 # CREDIT: https://devtalk.blender.org/t/20040
 def cleanse_globals(libraries=[]):
     import inspect
