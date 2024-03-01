@@ -266,6 +266,6 @@ def register():
     return None
 
 def unregister():
-    utils.bpy.unregister_classes(CLASSES)
     utils.bpy.unregister_modules(MODULES)
+    utils.bpy.unregister_classes(CLASSES)
     return None

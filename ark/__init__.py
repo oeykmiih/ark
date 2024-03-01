@@ -60,6 +60,10 @@ PROPS = [
     Scene,
 ]
 
+# Note: Registering PROPS classes need their child PROPS to be already registered.
+##  Unregistering MODULES might depend on a registered PROP,
+## thus we got to keep PROPS until all child MODULES are unregistered.
+
 def register():
     utils.bpy.register_modules(MODULES)
     utils.bpy.register_classes(PROPS)
@@ -67,7 +71,7 @@ def register():
     return None
 
 def unregister():
-    utils.bpy.unregister_classes(PROPS)
     utils.bpy.unregister_modules(MODULES)
+    utils.bpy.unregister_classes(PROPS)
     utils.cleanse_globals()
     return None
