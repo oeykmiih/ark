@@ -117,6 +117,9 @@ def register():
     return None
 
 def unregister():
+    if addon.session.toggle == True:
+        ARK_OT_ToggleInterface.run()
+
     bpy.app.handlers.load_pre.remove(load_pre)
     bpy.app.handlers.load_post.remove(load_post)
     bpy.types.TOPBAR_MT_editor_menus.remove(ARK_BT_UPPERBAR_ToggleInterface)
