@@ -102,10 +102,9 @@ def load_post(self):
 @bpy.app.handlers.persistent
 def load_pre(self):
     session = addon.session
+    if session.toggle == True:
+        ARK_OT_ToggleInterface.run()
     return None
-
-    # NOTE: bpy.app.load_pre handler doesn't seem to work with app templates,
-    ## so we can't disable before and enable after loading a file, will raise Exception.
 
 def register():
     utils.bpy.register_modules(MODULES)
