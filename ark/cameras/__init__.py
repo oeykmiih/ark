@@ -172,12 +172,21 @@ class ARK_OT_AddActiveToView(bpy.types.Operator):
 
     name : bpy.props.StringProperty()
 
+    def invoke(self, context, event):
+        self.alt = event.alt
+        return self.execute(context)
+
     def execute(self, context):
         bl_cam = bpy.data.objects[self.name]
         ao = context.active_object
 
         pr_cam = getattr(bl_cam.data, addon.name)
-        pr_cam.view.props.objects.link(ao)
+        if self.alt:
+            for blob in context.selected_objects:
+                if blob.name not in pr_cam.view.props.objects:
+                    pr_cam.view.props.objects.link(blob)
+        elif ao is not None:
+            pr_cam.view.props.objects.link(ao)
         return {'FINISHED'}
 
 class ARK_OT_RemoveActiveFromView(bpy.types.Operator):
@@ -187,12 +196,21 @@ class ARK_OT_RemoveActiveFromView(bpy.types.Operator):
 
     name : bpy.props.StringProperty()
 
+    def invoke(self, context, event):
+        self.alt = event.alt
+        return self.execute(context)
+
     def execute(self, context):
         bl_cam = bpy.data.objects[self.name]
         ao = context.active_object
 
         pr_cam = getattr(bl_cam.data, addon.name)
-        pr_cam.view.props.objects.unlink(ao)
+        if self.alt:
+            for blob in context.selected_objects:
+                if blob.name in pr_cam.view.props.objects:
+                    pr_cam.view.props.objects.unlink(blob)
+        elif ao is not None:
+            pr_cam.view.props.objects.unlink(ao)
         return {'FINISHED'}
 
 class ARK_OT_SetActiveAsBlockout(bpy.types.Operator):
@@ -264,9 +282,9 @@ class ARK_OT_ForceCameraVerticals(bpy.types.Operator):
 
     def execute(self, context):
         if self.alt:
-            for bl_cam in context.selected_objects:
-                if bl_cam.type == 'CAMERA':
-                    common.force_camera_verticals(bl_cam)
+            for blob in context.selected_objects:
+                if blob.type == 'CAMERA':
+                    common.force_camera_verticals(blob)
             if context.scene.camera not in context.selected_objects:
                 common.force_camera_verticals(context.scene.camera)
         else:
