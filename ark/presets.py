@@ -6,6 +6,20 @@ import bpy
 from ark import utils
 addon = utils.bpy.Addon()
 
+class ARK_OT_CopyPreferences(bpy.types.Operator):
+    """Copies all (possible) preferences"""
+    bl_idname = "ark.copy_preferences"
+    bl_label = "Copy Preferences"
+
+    def execute(self, context):
+        rna_paths = [
+            "bpy.context.preferences.filepaths",
+            "bpy.context.preferences.view",
+            "bpy.context.preferences.system",
+        ]
+        bpy.context.window_manager.clipboard = utils.bpy.rna2json.dump_multiple(rna_paths)
+        return {'FINISHED'}
+
 class ARK_OT_VIEW3D_CopyViewportSettings(bpy.types.Operator):
     """Copies viewport settings to clipboard."""
     bl_idname = "ark.copy_viewport_settings"
@@ -56,6 +70,7 @@ class Preferences_Interface_Presets(bpy.types.PropertyGroup):
 
 CLASSES = [
     ARK_OT_VIEW3D_CopyViewportSettings,
+    ARK_OT_CopyPreferences,
     ARK_OT_ApplyJSONProperties,
     WindowManager_Interface_Presets,
     Preferences_Interface_Presets,
