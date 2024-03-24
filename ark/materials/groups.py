@@ -8,6 +8,11 @@ class ARK_OT_PurgeDuplicatedNodeGroups(bpy.types.Operator):
     bl_idname = f"{addon.name}.purge_duplicated_nodegroups"
     bl_label = "Purge Duplicated NodeGroups"
 
+    @classmethod
+    def poll(cls, context):
+        if context.area.ui_type == 'ShaderNodeTree':
+            return True
+
     def execute(self, context):
         for ngroup in bpy.data.node_groups:
             base, sep, ext = ngroup.name.rpartition('.')
@@ -27,11 +32,10 @@ class ARK_OT_PushNodeGroupValues(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        for node in context.selected_nodes:
-            if node.bl_idname == 'ShaderNodeGroup':
-                return True
-        else:
-            return False
+        if context.area.ui_type == 'ShaderNodeTree':
+            for node in context.selected_nodes:
+                if node.bl_idname == 'ShaderNodeGroup':
+                    return True
 
     def execute(self, context):
         for node in context.selected_nodes:
@@ -49,11 +53,10 @@ class ARK_OT_ResetNodeGroupValues(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        for node in context.selected_nodes:
-            if node.bl_idname == 'ShaderNodeGroup':
-                return True
-        else:
-            return False
+        if context.area.ui_type == 'ShaderNodeTree':
+            for node in context.selected_nodes:
+                if node.bl_idname == 'ShaderNodeGroup':
+                    return True
 
     def execute(self, context):
         for node in context.selected_nodes:
