@@ -8,10 +8,11 @@ addon = utils.bpy.Addon()
 
 from . import enums
 
-# NOTE: keep name in sync with hide.HEADERS
+# NOTE: keep name in sync with interface.headers
 class ARK_OT_SetEditorMode(bpy.types.Operator):
+    """Changes editor type for this area."""
     bl_idname = f"{addon.name}.set_editor_mode"
-    bl_label = ""
+    bl_label = "Set Editor Mode"
     bl_options = {'INTERNAL'}
 
     ui_type : bpy.props.StringProperty(
@@ -63,8 +64,9 @@ class ARK_MT_PIE_SetEditorMode(bpy.types.Menu):
 
 # NOTE: keep name in sync with hide.HEADERS
 class ARK_OT_QuickEditorType(bpy.types.Operator):
+    """Changes editor type for this area."""
     bl_idname = f"{addon.name}.quick_editor_type"
-    bl_label = ""
+    bl_label = "Quick Editor Type"
     bl_options = {'INTERNAL'}
 
     shift : bpy.props.BoolProperty()
