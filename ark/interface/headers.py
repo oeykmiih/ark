@@ -64,7 +64,8 @@ def ARK_ASSETS_HT_draw(self, context):
 def ARK_NODE_HT_draw(self, context):
     layout = self.layout
 
-    box = layout.box()
+    row = layout.row(align=True)
+    box = row.box()
     box.ui_units_x = 1.6
     bt = box.operator(
         f"{addon.name}.quick_editor_type",
@@ -73,6 +74,16 @@ def ARK_NODE_HT_draw(self, context):
         emboss = False,
     )
     bt.ui_type = 'VIEW_3D'
+
+    sub = row.row(align=True)
+    sub.ui_units_x = 1.0
+    sub.prop(
+        context.area,
+        "ui_type",
+        text = "",
+        icon = 'DOWNARROW_HLT',
+        icon_only = True,
+    )
 
     row = layout.row(align=True)
     ui_type = 'ShaderNodeTree'
@@ -110,7 +121,8 @@ def ARK_NODE_HT_draw(self, context):
 def ARK_OUTLINER_HT_draw(self, context):
     layout = self.layout
 
-    box = layout.box()
+    row = layout.row(align=True)
+    box = row.box()
     box.ui_units_x = 1.6
     bt = box.operator(
         f"{addon.name}.quick_editor_type",
@@ -119,6 +131,16 @@ def ARK_OUTLINER_HT_draw(self, context):
         emboss = False,
     )
     bt.ui_type = 'PROPERTIES'
+
+    sub = row.row(align=True)
+    sub.ui_units_x = 1.0
+    sub.prop(
+        context.area,
+        "ui_type",
+        text = "",
+        icon = 'DOWNARROW_HLT',
+        icon_only = True,
+    )
 
     row = layout.row(align=True)
     ui_type = 'OUTLINER'
@@ -151,7 +173,8 @@ def ARK_OUTLINER_HT_draw(self, context):
 def ARK_PROPERTIES_HT_draw(self, context):
     layout = self.layout
 
-    box = layout.box()
+    row = layout.row(align=True)
+    box = row.box()
     box.ui_units_x = 1.6
     bt = box.operator(
         f"{addon.name}.quick_editor_type",
@@ -160,6 +183,16 @@ def ARK_PROPERTIES_HT_draw(self, context):
         emboss = False,
     )
     bt.ui_type = 'OUTLINER'
+
+    sub = row.row(align=True)
+    sub.ui_units_x = 1.0
+    sub.prop(
+        context.area,
+        "ui_type",
+        text = "",
+        icon = 'DOWNARROW_HLT',
+        icon_only = True,
+    )
 
     layout.separator_spacer()
 
@@ -171,7 +204,8 @@ def ARK_PROPERTIES_HT_draw(self, context):
 def ARK_VIEW3D_HT_draw(self, context):
     layout = self.layout
 
-    box = layout.box()
+    row = layout.row(align=True)
+    box = row.box()
     box.ui_units_x = 1.6
     bt = box.operator(
         f"{addon.name}.quick_editor_type",
@@ -180,6 +214,16 @@ def ARK_VIEW3D_HT_draw(self, context):
         emboss = False,
     )
     bt.ui_type = 'ShaderNodeTree'
+
+    sub = row.row(align=True)
+    sub.ui_units_x = 1.0
+    sub.prop(
+        context.area,
+        "ui_type",
+        text = "",
+        icon = 'DOWNARROW_HLT',
+        icon_only = True,
+    )
 
     row = layout.row(align=True)
     ui_type = 'VIEW_3D'
@@ -192,8 +236,19 @@ def ARK_VIEW3D_HT_draw(self, context):
         )
         bt.ui_type = ui_type
         bt.ui_mode = ui_mode
+    row.popover(panel="VIEW3D_PT_shading", text="")
 
     row = layout.row(align=True)
+
+    sub = row.row(align=True)
+    bt = sub.operator(
+        "view3d.view_camera",
+        text = "",
+        icon = 'CAMERA_DATA',
+        depress = (context.area.spaces.active.region_3d.view_perspective == 'CAMERA'),
+        )
+    sub.enabled = context.scene.camera is not None
+
     bt = row.operator(
         "view3d.view_selected",
         text = "",
@@ -204,21 +259,6 @@ def ARK_VIEW3D_HT_draw(self, context):
         ARK_OT_VIEW3D_ZoomExtents.bl_idname,
         text = "",
         icon = 'VIEW_ZOOM',
-    )
-
-    bt = row.operator(
-        "view3d.view_camera",
-        text = "",
-        icon = 'CAMERA_DATA',
-        depress = (context.area.spaces.active.region_3d.view_perspective == 'CAMERA'),
-        )
-
-    row = layout.row(align=True)
-    bt = row.prop(
-        context.space_data.overlay,
-        "show_outline_selected",
-        text = "",
-        icon = 'MESH_CUBE',
     )
 
     row = layout.row(align=True)
@@ -249,6 +289,15 @@ def ARK_VIEW3D_HT_draw(self, context):
             icon = 'CAMERA_STEREO',
         )
         sub.enabled = False
+
+    row = layout.row(align=True)
+    bt = row.prop(
+        context.space_data.overlay,
+        "show_outline_selected",
+        text = "",
+        icon = 'MESH_CUBE',
+    )
+    row.popover(panel="VIEW3D_PT_overlay", text="")
 
     row = layout.row(align=True)
     object_mode = 'OBJECT' if context.active_object is None else context.active_object.mode
