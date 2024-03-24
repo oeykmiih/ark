@@ -57,6 +57,7 @@ class ARK_MT_PIE_SetEditorMode(bpy.types.Menu):
 
             operator = layout.operator(
                 f"{addon.name}.set_editor_mode",
+                text = ui_type.replace("_", " ").title() if "_" in ui_type or ui_type.isupper() else ui_type,
                 icon = enums.EDITOR_TYPE_ICONS[ui_type]
             )
             operator.ui_type = ui_type
