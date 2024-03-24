@@ -8,8 +8,9 @@ addon = utils.bpy.Addon()
 from . import enums
 
 class ARK_OT_VIEW3D_ZoomExtents(bpy.types.Operator):
+    """Move view to scene extents."""
     bl_idname = f"{addon.name}.zoom_extents"
-    bl_label = ""
+    bl_label = "Zoom Extents"
     bl_options = {'INTERNAL'}
 
     @classmethod
