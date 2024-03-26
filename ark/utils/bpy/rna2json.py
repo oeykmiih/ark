@@ -138,14 +138,11 @@ def _rna2json_node(node, data, parent, exc_props=[]):
     data_type = type(data)
 
     if issubclass(data_type, EXC_CLASSES):
-        return node
-
-    if data is None:
-        return node
+        return None
 
     # NOTE: point-cache has eternal nested pointer to itself.
     if data == parent:
-        return node
+        return None
 
     if data_type not in typemap:
         try:
@@ -246,9 +243,6 @@ def dump_multiple_to_file(rna_paths: list, file_path: str) -> None:
     return None
 
 def _json2rna_node(node, data, exc_props={"bl_idname"}) -> None:
-    if data is None:
-        return None
-
     rna_props = data.bl_rna.properties
     rna_keys = rna_props.keys()
 
