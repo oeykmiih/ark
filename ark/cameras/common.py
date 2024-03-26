@@ -10,6 +10,8 @@ from . import views
 
 def set_camera_active(bl_cam, context, preferences):
     context.scene.camera = bl_cam
+    bl_cam.select_set(True)
+    context.view_layer.objects.active = bl_cam
 
     blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, local=True)
 
@@ -69,10 +71,13 @@ def add_camera(context, preferences):
 
     force_camera_verticals(bl_cam)
     views.add(bl_cam, context, preferences)
+
+    bpy.ops.object.select_all(action='DESELECT')
     set_camera_active(bl_cam, context, preferences)
     return None
 
-def duplicate_camera(bl_cam, context, preferences):
+def _duplicate_camera(bl_cam, context, preferences):
+    """Shared by duplicate_camera and duplicate_cameras"""
     name = preferences.default_name
     blcol_cameras = utils.bpy.col.obt(preferences.container_cameras)
 
@@ -83,6 +88,23 @@ def duplicate_camera(bl_cam, context, preferences):
     blcol_cameras.objects.link(new_cam)
 
     views.add(new_cam, context, preferences)
+    new_cam.select_set(True)
+    return new_cam
+
+def duplicate_camera(bl_cam, context, preferences):
+    """Duplicates a single camera"""
+    bpy.ops.object.select_all(action='DESELECT')
+
+    new_cam = _duplicate_camera(bl_cam, context, preferences)
+    set_camera_active(new_cam, context, preferences)
+    return None
+
+def duplicate_cameras(bl_cams, context, preferences):
+    """Duplicates multiple cameras"""
+    bpy.ops.object.select_all(action='DESELECT')
+
+    for bl_cam in bl_cams:
+        new_cam = _duplicate_camera(bl_cam, context, preferences)
     set_camera_active(new_cam, context, preferences)
     return None
 

@@ -113,9 +113,13 @@ class ARK_OT_DuplicateCamera(bpy.types.Operator):
         ao = context.active_object
 
         if self.alt:
-            for bl_cam in context.selected_objects:
-                if bl_cam.type == 'CAMERA':
-                    common.duplicate_camera(bl_cam, context, preferences)
+            selected_cameras = [blob for blob in context.selected_objects if blob.type == 'CAMERA']
+            if len(selected_cameras) > 0:
+                common.duplicate_cameras(
+                    [blob for blob in context.selected_objects if blob.type == 'CAMERA'],
+                    context,
+                    preferences,
+                )
         elif ao is not None and ao.type == 'CAMERA':
             bl_cam = ao
             common.duplicate_camera(bl_cam, context, preferences)
