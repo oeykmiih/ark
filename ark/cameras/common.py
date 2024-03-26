@@ -10,8 +10,6 @@ from . import views
 
 def set_camera_active(bl_cam, context, preferences):
     context.scene.camera = bl_cam
-    bl_cam.select_set(True)
-    context.view_layer.objects.active = bl_cam
 
     blcol_cameras = utils.bpy.col.obt(preferences.container_cameras, local=True)
 
@@ -89,6 +87,7 @@ def _duplicate_camera(bl_cam, context, preferences):
 
     views.add(new_cam, context, preferences)
     new_cam.select_set(True)
+    context.view_layer.objects.active = new_cam
     return new_cam
 
 def duplicate_camera(bl_cam, context, preferences):
