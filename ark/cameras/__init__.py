@@ -385,6 +385,7 @@ class ARK_PT_PROPERTIES_Scene(bpy.types.Panel):
                 else:
                     label.label(text="World")
                 content.prop(pr_cam.view, "world", text="")
+
                 section = layout.box()
                 section.use_property_split = True
                 section.use_property_decorate = False
