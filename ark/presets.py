@@ -6,10 +6,10 @@ import bpy
 from ark import utils
 addon = utils.bpy.Addon()
 
-class ARK_OT_CopyPreferences(bpy.types.Operator):
-    """Copies all (possible) preferences"""
-    bl_idname = "ark.copy_preferences"
-    bl_label = "Copy Preferences"
+class ARK_OT_CopyUserPreferences(bpy.types.Operator):
+    """Copies all (possible) user preferences"""
+    bl_idname = "ark.copy_user_preferences"
+    bl_label = "Copy User Preferences"
 
     def execute(self, context):
         rna_paths = [
@@ -19,6 +19,13 @@ class ARK_OT_CopyPreferences(bpy.types.Operator):
         ]
         bpy.context.window_manager.clipboard = utils.bpy.rna2json.dump_multiple(rna_paths)
         return {'FINISHED'}
+
+def ARK_MT_USERPREF_CopyUserPreferences(self, context):
+    layout = self.layout
+    layout.separator()
+    layout.operator(ARK_OT_CopyUserPreferences.bl_idname, text=ARK_OT_CopyUserPreferences.bl_label)
+    layout.operator(ARK_OT_ApplyJSONProperties.bl_idname, text="Paste User Preferences")
+    return None
 
 class ARK_OT_VIEW3D_CopyViewportSettings(bpy.types.Operator):
     """Copies viewport settings to clipboard"""
@@ -76,8 +83,8 @@ class Preferences_Interface_Presets(bpy.types.PropertyGroup):
     pass
 
 CLASSES = [
-    ARK_OT_CopyPreferences,
     ARK_OT_ApplyJSONProperties,
+    ARK_OT_CopyUserPreferences,
     ARK_OT_VIEW3D_CopyViewportSettings,
     WindowManager_Interface_Presets,
     Preferences_Interface_Presets,
@@ -85,10 +92,14 @@ CLASSES = [
 
 def register():
     utils.bpy.register_classes(CLASSES)
+
+    bpy.types.USERPREF_MT_save_load.append(ARK_MT_USERPREF_CopyUserPreferences)
     bpy.types.VIEW3D_MT_object_context_menu.append(ARK_MT_VIEW3D_TransferViewportSettings)
     return None
 
 def unregister():
     bpy.types.VIEW3D_MT_object_context_menu.remove(ARK_MT_VIEW3D_TransferViewportSettings)
+    bpy.types.USERPREF_MT_save_load.remove(ARK_MT_USERPREF_CopyUserPreferences)
+
     utils.bpy.unregister_classes(CLASSES)
     return None
